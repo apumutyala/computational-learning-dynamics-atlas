@@ -289,7 +289,7 @@ canvas.addEventListener('pointerup', e => {
   down = null;
   if (moved > (touch ? 12 : 6) || (touch && held > 600)) return;
   const id = pick(e.clientX, e.clientY, touch);
-  if (id) travel(id, 'scene'); else if (!S.current && S.cluster) { S.cluster = null; renderDock(); computeTargets(); }
+  if (id) travel(id, 'scene'); else if (!S.current && S.cluster) { S.cluster = null; renderDock(); computeTargets(); } else if (!S.current && !$('#welcome').classList.contains('hide')) hideWelcome();
 });
 canvas.addEventListener('wheel', () => { stopDrift(); hideHint(); }, { passive: true });
 let driftTimer;
@@ -661,26 +661,20 @@ function setHyp(on) {
 }
 $('#t-hyp').onclick = () => setHyp(!S.showHyp);
 $('#t-drift').onclick = () => { S.drift = !S.drift; $('#t-drift').setAttribute('aria-pressed', String(S.drift)); controls.autoRotate = S.drift && !S.current; };
-$('#t-overview').onclick = () => { closeToolsMenu(); if (!panel.hidden) closePanel(); S.cluster = null; renderDock(); computeTargets(); flyHome(); if (!(isMobile() && welcomeDismissed())) $('#welcome').classList.remove('hide'); updateOffset(); };
+function hideWelcome() { $('#welcome').classList.add('hide'); updateOffset(); rememberWelcome(); }
+$('#welcome-close').onclick = hideWelcome;
+// Overview resets the view; it reopens the welcome window only if it is closed, and closes it if it is open.
+$('#t-overview').onclick = e => { e.currentTarget.blur(); closeToolsMenu(); const w = $('#welcome'), wasOpen = !w.classList.contains('hide') && panel.hidden && !S.cluster; if (!panel.hidden) closePanel(); S.cluster = null; renderDock(); computeTargets(); flyHome(); w.classList.toggle('hide', wasOpen); updateOffset(); rememberWelcome(); };
 
 /* ---------------- phone helpers: welcome card, overflow menu, sheet swipe ---------------- */
 const WELCOME_KEY = 'atlas.welcomeDismissed';
 function welcomeDismissed() { try { return sessionStorage.getItem(WELCOME_KEY) === '1'; } catch { return false; } }
-function dismissWelcome() {
-  $('#welcome').classList.add('hide');
-  try { sessionStorage.setItem(WELCOME_KEY, '1'); } catch { /* storage unavailable */ }
-  updateOffset();
-}
-function showWelcome() {
-  if (S.chatOpen) closeChat();
-  if (!panel.hidden) closePanel();
-  try { sessionStorage.removeItem(WELCOME_KEY); } catch { /* storage unavailable */ }
-  $('#welcome').classList.remove('hide'); updateOffset();
-}
-document.querySelectorAll('[data-welcome-dismiss]').forEach(b => b.addEventListener('click', dismissWelcome));
+function rememberWelcome() { const closed = $('#welcome').classList.contains('hide'); try { closed ? sessionStorage.setItem(WELCOME_KEY, '1') : sessionStorage.removeItem(WELCOME_KEY); } catch { /* storage unavailable */ } }
+document.querySelectorAll('[data-welcome-dismiss]').forEach(b => b.addEventListener('click', hideWelcome));
+// The logo doubles as an info button: reopen (or close) the welcome card.
 const brand = $('.brand');
 brand.setAttribute('role', 'button'); brand.tabIndex = 0; brand.title = 'About this atlas';
-brand.addEventListener('click', () => $('#welcome').classList.contains('hide') ? showWelcome() : dismissWelcome());
+brand.addEventListener('click', () => { const w = $('#welcome'); if (w.classList.contains('hide')) { if (S.chatOpen) closeChat(); if (!panel.hidden) closePanel(); w.classList.remove('hide'); updateOffset(); rememberWelcome(); } else hideWelcome(); });
 brand.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); brand.click(); } });
 if (isMobile() && welcomeDismissed()) $('#welcome').classList.add('hide');
 
