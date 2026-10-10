@@ -1,9 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from './vendor/OrbitControls.js';
 
-const API = 'port/8000'.startsWith('__') ? 'http://127.0.0.1:8000' : 'port/8000';
-// The AI chat and connection summaries need a backend that isn't part of this static site.
-const AI_ENABLED = false;
+// AI chat and connection summaries need the backend in backend/ (a Cloudflare Worker).
+// Set this to its URL, e.g. 'https://atlas-ai.<account>.workers.dev'. Empty string = AI off:
+// all AI UI stays hidden and the page makes no AI network calls.
+const AI_API = '';
+const API = AI_API.replace(/\/+$/, '');
+const AI_ENABLED = !!AI_API;
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const inlineMd = s => esc(s)
@@ -46,12 +49,12 @@ controls.enableDamping = true; controls.dampingFactor = 0.07; controls.rotateSpe
 controls.minDistance = 40; controls.maxDistance = 1500;
 controls.autoRotate = S.drift; controls.autoRotateSpeed = 0.22;
 
-const pointVert = `attribute float size;attribute float alpha;attribute vec3 color;varying vec3 vColor;varying float vAlpha;uniform float uScale;
-void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);gl_Position=projectionMatrix*mv;float d=-mv.z;gl_PointSize=clamp(size*uScale/d,1.5,110.0);vColor=color;vAlpha=alpha*clamp(1.35-d/1700.0,0.3,1.0);}`;
+const pointVert = `attribute float size;attribute float alpha;attribute vec3 color;varying vec3 vColor;varying float vAlpha;uniform float uScale;uniform float uMax;
+void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);gl_Position=projectionMatrix*mv;float d=-mv.z;gl_PointSize=clamp(size*uScale/d,1.5,uMax*max(size,8.0)/22.0);vColor=color;vAlpha=alpha*clamp(1.35-d/1700.0,0.3,1.0);}`;
 const pointFrag = `varying vec3 vColor;varying float vAlpha;uniform float uCore;
 void main(){vec2 c=gl_PointCoord-0.5;float d=length(c);if(d>0.5)discard;float core=smoothstep(uCore,uCore*0.6,d);float halo=pow(smoothstep(0.5,0.0,d),2.4)*0.6;gl_FragColor=vec4(vColor*(0.7+core*0.55),(core+halo)*vAlpha);}`;
-const uScale = { value: 900 };
-const pointMat = (core = 0.17) => new THREE.ShaderMaterial({ vertexShader: pointVert, fragmentShader: pointFrag, uniforms: { uScale, uCore: { value: core } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+const uScale = { value: 900 }, uMax = { value: 34 * Math.min(devicePixelRatio, 2) }; // cap ≈ 34 CSS px so close-ups don't balloon
+const pointMat = (core = 0.17) => new THREE.ShaderMaterial({ vertexShader: pointVert, fragmentShader: pointFrag, uniforms: { uScale, uMax, uCore: { value: core } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
 
 // dust
 {
@@ -188,17 +191,17 @@ function flyEdge(e) {
 }
 function flyHome() { flyTo(new THREE.Vector3(0, 0, 0), HOME.length()); }
 function updateOffset() {
-  const panelOpen = !$('#panel').hidden, chatOpen = S.chatOpen;
+  const panelOpen = !$('#panel').hidden, chatOpen = S.chatOpen, side = $('#learn-side'), sideOpen = !!side && !side.hidden;
   if (isMobile()) {
     // Bottom sheet: centre the scene in the visible strip between the top bar and the sheet's top edge.
-    const welcomeEl = $('#welcome'), sheet = chatOpen ? $('#chat') : panelOpen ? $('#panel') : !welcomeEl.classList.contains('hide') ? welcomeEl : null;
+    const welcomeEl = $('#welcome'), sheet = chatOpen ? $('#chat') : panelOpen ? $('#panel') : sideOpen ? side : !welcomeEl.classList.contains('hide') ? welcomeEl : null;
     const top = $('#topbar').getBoundingClientRect().bottom;
     const sheetTop = sheet ? Math.max(top + 120, sheet.getBoundingClientRect().top) : innerHeight;
     targetOffset = { x: 0, y: sheet ? Math.max(0, innerHeight / 2 - (top + sheetTop) / 2) : 0 };
   }
   else {
     const welcome = !$('#welcome').classList.contains('hide') && !panelOpen;
-    const pw = panelOpen ? $('#panel').offsetWidth + 16 : 0, cw = chatOpen ? $('#chat').offsetWidth + 16 : welcome ? $('#welcome').offsetWidth + 24 : 0;
+    const pw = panelOpen ? $('#panel').offsetWidth + 16 : 0, cw = chatOpen ? $('#chat').offsetWidth + 16 : sideOpen ? side.offsetWidth + 16 : welcome ? $('#welcome').offsetWidth + 24 : 0;
     targetOffset = { x: (pw - cw) / 2, y: 0 };
   }
   document.body.classList.toggle('panel-open', panelOpen);
@@ -447,6 +450,22 @@ function routeCard(fromId, toId) {
   S.pendingRoute = path ? { path, from: fromId, target: toId } : null;
   openPanel(html, toId);
 }
+// Learning paths: highlight a whole route (node ids + edge ids) and optionally focus/fly to one node on it.
+function highlightRoute(ids, edgeIds) { S.route = ids ? ids.slice() : null; S.routeEdges = ids ? new Set(edgeIds || []) : null; computeTargets(); }
+function showRoute(ids, edgeIds, focusId) {
+  abortExplain(); closeSatellite(); clearSearch();
+  if (!panel.hidden) { panel.hidden = true; updateOffset(); }
+  S.cluster = null; S.focusEdge = null; S.focusFrom = null; S.mode = 'path'; S.current = focusId || null;
+  controls.autoRotate = false; $('#welcome').classList.add('hide');
+  highlightRoute(ids, edgeIds);
+  if (focusId) { flyNode(focusId); if (S.trail[S.trail.length - 1] !== focusId) S.trail.push(focusId); history.replaceState(null, '', '#' + focusId); }
+  else if (ids && ids.length) {
+    const all = ids.map(id => byId.get(id).v), c = all.reduce((s, v) => s.add(v), new THREE.Vector3()).multiplyScalar(1 / all.length);
+    flyTo(c, Math.max(240, Math.max(...all.map(v => v.distanceTo(c))) * 2.4));
+  }
+  renderDock(); renderChatContext(); updateOffset();
+}
+function clearRoute() { if (S.mode === 'path') { S.mode = 'idle'; S.current = null; } highlightRoute(null); renderDock(); }
 const shortName = s => s.length > 26 ? s.split(/[,:(&—–]/)[0].trim().slice(0, 26) : s;
 
 function clusterCard(name) {
@@ -742,3 +761,6 @@ const hashId = decodeURIComponent(location.hash.slice(1));
 if (byId.has(hashId)) setTimeout(() => travel(hashId, 'start'), 300);
 addEventListener('hashchange', () => { const id = decodeURIComponent(location.hash.slice(1)); if (byId.has(id) && id !== S.current) travel(id, 'start'); });
 window.__atlas = { S, travel, byId, project, enter };
+// Learning harness (learn.js) gets only this surface; the atlas keeps working if it fails to load.
+const learnAPI = { S, byId, edges, nodes, EV, enter, travel, showRoute, highlightRoute, clearRoute, closePanel, updateOffset, isMobile, esc, clusterColor: id => clusterOf.get(byId.get(id).group).color, edgeById: id => edges.find(e => e.id === id) || null, edgeBetween: (a, b) => adj.get(a)?.find(e => other(e, a) === b) || null };
+import('./learn.js?v=20261010c').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
