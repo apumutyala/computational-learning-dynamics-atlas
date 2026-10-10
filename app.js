@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { OrbitControls } from './vendor/OrbitControls.js';
 
 const API = 'port/8000'.startsWith('__') ? 'http://127.0.0.1:8000' : 'port/8000';
+// The AI chat and connection summaries need a backend that isn't part of this static site.
+const AI_ENABLED = false;
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const inlineMd = s => esc(s)
@@ -45,11 +47,11 @@ controls.minDistance = 40; controls.maxDistance = 1500;
 controls.autoRotate = S.drift; controls.autoRotateSpeed = 0.22;
 
 const pointVert = `attribute float size;attribute float alpha;attribute vec3 color;varying vec3 vColor;varying float vAlpha;uniform float uScale;
-void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);gl_Position=projectionMatrix*mv;float d=-mv.z;gl_PointSize=clamp(size*uScale/d,1.5,90.0);vColor=color;vAlpha=alpha*clamp(1.35-d/1700.0,0.3,1.0);}`;
-const pointFrag = `varying vec3 vColor;varying float vAlpha;
-void main(){vec2 c=gl_PointCoord-0.5;float d=length(c);if(d>0.5)discard;float core=smoothstep(0.17,0.02,d);float halo=pow(smoothstep(0.5,0.0,d),2.4)*0.6;gl_FragColor=vec4(vColor*(0.7+core*0.55),(core+halo)*vAlpha);}`;
+void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);gl_Position=projectionMatrix*mv;float d=-mv.z;gl_PointSize=clamp(size*uScale/d,1.5,110.0);vColor=color;vAlpha=alpha*clamp(1.35-d/1700.0,0.3,1.0);}`;
+const pointFrag = `varying vec3 vColor;varying float vAlpha;uniform float uCore;
+void main(){vec2 c=gl_PointCoord-0.5;float d=length(c);if(d>0.5)discard;float core=smoothstep(uCore,uCore*0.6,d);float halo=pow(smoothstep(0.5,0.0,d),2.4)*0.6;gl_FragColor=vec4(vColor*(0.7+core*0.55),(core+halo)*vAlpha);}`;
 const uScale = { value: 900 };
-const pointMat = () => new THREE.ShaderMaterial({ vertexShader: pointVert, fragmentShader: pointFrag, uniforms: { uScale }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+const pointMat = (core = 0.17) => new THREE.ShaderMaterial({ vertexShader: pointVert, fragmentShader: pointFrag, uniforms: { uScale, uCore: { value: core } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
 
 // dust
 {
@@ -80,7 +82,7 @@ nodeGeo.setAttribute('position', new THREE.BufferAttribute(nPos, 3));
 nodeGeo.setAttribute('color', new THREE.BufferAttribute(nCol, 3));
 nodeGeo.setAttribute('size', new THREE.BufferAttribute(nSize, 1));
 nodeGeo.setAttribute('alpha', new THREE.BufferAttribute(nAlpha, 1));
-scene.add(new THREE.Points(nodeGeo, pointMat()));
+scene.add(new THREE.Points(nodeGeo, pointMat(0.3)));
 
 // edges
 const E = edges.length;
@@ -123,18 +125,18 @@ function computeTargets() {
   if (cur) adj.get(cur.id).filter(visible).forEach(e => neigh.add(other(e, cur.id)));
   const fe = S.focusEdge;
   nodes.forEach((n, i) => {
-    let size = n.kind === 'proposal' ? 14 : 11, alpha = .9;
+    let size = n.kind === 'proposal' ? 26 : 22, alpha = .9;
     if (cur) {
-      if (n.id === cur.id) { size = 19; alpha = 1; }
-      else if (neigh.has(n.id)) { size = 11; alpha = 1; }
+      if (n.id === cur.id) { size = 46; alpha = 1; }
+      else if (neigh.has(n.id)) { size = Math.max(size, 25); alpha = 1; }
       else if (n.group === cur.group) { alpha = .42; }
       else alpha = .22;
     }
     if (S.cluster && !cur) alpha = n.group === S.cluster ? 1 : .2;
     if (searchMatch) alpha = searchMatch.has(n.id) ? 1 : .14;
-    if (fe && (fe.a === n.id || fe.b === n.id)) { size = Math.max(size, 15); alpha = 1; }
-    if (S.route && S.route.includes(n.id)) { size = Math.max(size, 13); alpha = 1; }
-    if (n.id === S.hover) { size += 5; alpha = 1; }
+    if (fe && (fe.a === n.id || fe.b === n.id)) { size = Math.max(size, 32); alpha = 1; }
+    if (S.route && S.route.includes(n.id)) { size = Math.max(size, 28); alpha = 1; }
+    if (n.id === S.hover) { size += 8; alpha = 1; }
     tSize[i] = size; tAlpha[i] = alpha;
   });
   edges.forEach((e, i) => {
@@ -368,7 +370,7 @@ function renderNode(id, originId) {
     <div class="section-title">Connections <span>${vis.length} shown${hiddenHyp ? ` · ${hiddenHyp} hidden` : ''}</span></div>
     ${conn || '<p class="meta" style="margin-top:8px">No connections at this evidence setting.</p>'}
     ${hiddenHyp ? `<p class="hidden-note">${hiddenHyp} untested hypothesis connection${hiddenHyp > 1 ? 's are' : ' is'} hidden. <button class="text-btn" data-showhyp>Show hypotheses</button></p>` : ''}
-    <div class="panel-actions"><button class="btn primary" data-ask>Ask about this topic</button>${n.guide ? `<a class="btn" href="docs/${n.guide}" download>Read the guide ↓</a>` : ''}</div>
+    <div class="panel-actions">${AI_ENABLED ? '<button class="btn primary" data-ask>Ask about this topic</button>' : ''}${n.guide ? `<a class="btn${AI_ENABLED ? '' : ' primary'}" href="docs/${n.guide}" download>Read the guide ↓</a>` : ''}</div>
     <p class="foot-note">Proposed tests are atlas proposals, not reported results.</p>
   </div>`;
   openPanel(html, originId);
@@ -387,18 +389,18 @@ function crossing(fromId, e, routeInfo) {
   <div class="panel-body">
     <div class="cross"><div class="end"><small>From</small><b>${esc(a.name)}</b></div><div class="line" style="background:linear-gradient(90deg,${ca},${EV[e.type].color},${cb})"></div><div class="end to"><small>To</small><b>${esc(b.name)}</b></div></div>
     <div class="rel"><span class="badge c-${e.type}">${EV[e.type].label}</span><span class="relation">${esc(e.relation)}</span></div>
-    <div class="ai"><span class="eyebrow"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5 9.6 6.4 14.5 8 9.6 9.6 8 14.5 6.4 9.6 1.5 8 6.4 6.4Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Why this connects · AI summary</span><p id="explain"><span class="shimmer" style="width:96%"></span><span class="shimmer" style="width:88%"></span><span class="shimmer" style="width:62%"></span></p></div>
+    ${AI_ENABLED ? `<div class="ai"><span class="eyebrow"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5 9.6 6.4 14.5 8 9.6 9.6 8 14.5 6.4 9.6 1.5 8 6.4 6.4Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Why this connects · AI summary</span><p id="explain"><span class="shimmer" style="width:96%"></span><span class="shimmer" style="width:88%"></span><span class="shimmer" style="width:62%"></span></p></div>` : ''}
     <p class="record"><b>Recorded connection:</b> ${esc(e.text)}</p>
     ${e.url ? `<a class="src" href="${e.url}" target="_blank" rel="noopener noreferrer">Evidence for this connection ↗</a>` : '<p class="meta">Atlas proposal with no external source; treat it as a hypothesis to test.</p>'}
     <div class="panel-actions">
       ${last ? `<button class="btn primary" data-enter="${b.id}">Enter ${esc(shortName(b.name))} →</button>` : `<button class="btn primary" data-next>Next step →</button><button class="btn" data-enter="${routeInfo.target}">Skip to ${esc(shortName(byId.get(routeInfo.target).name))}</button>`}
       <button class="btn" data-enter="${a.id}" data-back>Stay on ${esc(shortName(a.name))}</button>
     </div>
-    <p class="foot-note">The AI summary is generated from the recorded connection and both topic records. The evidence label comes from the atlas, not the model.</p>
+    ${AI_ENABLED ? '<p class="foot-note">The AI summary is generated from the recorded connection and both topic records. The evidence label comes from the atlas, not the model.</p>' : ''}
   </div>`;
   S.routeInfo = routeInfo || null;
   openPanel(html, toId);
-  explainEdge(e, fromId);
+  if (AI_ENABLED) explainEdge(e, fromId);
 }
 
 function routeCard(fromId, toId) {
@@ -543,6 +545,7 @@ function openChat(focusTopic) {
   setTimeout(() => input.focus(), 50);
 }
 function closeChat() { S.chatOpen = false; chatEl.hidden = true; document.body.classList.remove('chat-open'); $('#ask-btn').setAttribute('aria-expanded', 'false'); updateOffset(); }
+if (!AI_ENABLED) $('#ask-btn').style.display = 'none';
 $('#ask-btn').onclick = () => S.chatOpen ? closeChat() : openChat();
 $('#chat-close').onclick = closeChat;
 $('#chat-clear').onclick = () => { S.chat = []; renderMessages(); };
