@@ -1,0 +1,689 @@
+{
+ "version": 1,
+ "paths": [
+  {
+   "id": "regression-to-gps",
+   "title": "From regression to Gaussian processes",
+   "summary": "Start from least squares and end at the kernel view of learning: regularized linear models, margins, Bayesian kernel regression, and the infinite-width bridge to neural networks.",
+   "audience": "Newcomers with undergraduate calculus and linear algebra; no machine-learning background assumed.",
+   "level": "intro",
+   "skills": [
+    "stats-ml",
+    "linear-algebra",
+    "probability"
+   ],
+   "estHours": 8,
+   "steps": [
+    {
+     "node": "ridge",
+     "objective": "Derive the ridge estimate w = (XᵀX + λI)⁻¹Xᵀy, explain how λ trades bias for variance, and show that it equals the posterior mean under Gaussian noise and a Gaussian prior on w.",
+     "why": "Least squares is the simplest learner whose every quantity can be computed by hand; everything later on this path generalizes it.",
+     "via": null
+    },
+    {
+     "node": "logistic",
+     "objective": "Fit a logistic regression by maximizing the Bernoulli log-likelihood, interpret a coefficient as a change in log-odds, and add an L2 penalty to it.",
+     "why": "The atlas edge says linear and generalized linear methods share explicit features and regularization while using different response distributions: same linear predictor, new likelihood.",
+     "via": "thesis-f72a5148"
+    },
+    {
+     "node": "svm",
+     "objective": "State the soft-margin SVM objective (hinge loss plus ‖w‖² penalty), explain why only support vectors determine the solution, and use the kernel trick to classify with an RBF kernel.",
+     "why": "SVMs swap the logistic loss for the hinge loss and introduce kernels, the key idea needed for Gaussian processes. There is no direct atlas edge from logistic regression; the step is a change of loss function.",
+     "via": null
+    },
+    {
+     "node": "gp",
+     "objective": "Compute a GP posterior mean and variance for a small 1-D dataset with a squared-exponential kernel, and show that with a linear kernel the posterior mean equals the ridge prediction.",
+     "why": "The atlas edge describes a shared kernel regularization framework with different loss functions and uncertainty interpretation; the GP adds calibrated predictive variance that the SVM lacks (and the ridge↔GP edge is an exact conditional identity).",
+     "via": "rel-5197de90"
+    },
+    {
+     "node": "ntk",
+     "objective": "Explain the two infinite-width limits: a randomly initialized wide network is a GP (NNGP), and gradient-descent training of it behaves like kernel regression with the neural tangent kernel.",
+     "why": "The atlas edge: infinite-width initialization connects neural networks to GPs, while training uses a tangent kernel. This is the doorway from classical kernels to learning-dynamics theory.",
+     "via": "rel-83a740bb"
+    }
+   ]
+  },
+  {
+   "id": "signals-to-convnets",
+   "title": "Signals to convolutional networks",
+   "summary": "Learn how sampled signals are represented in frequency and scale, how fixed filters are built, and how designed wavelet filter banks become the scattering transform and then learned CNNs.",
+   "audience": "Newcomers with undergraduate calculus (complex exponentials help); no signal-processing course required.",
+   "level": "intro",
+   "skills": [
+    "signals-estimation",
+    "linear-algebra",
+    "deep-learning"
+   ],
+   "estHours": 9,
+   "steps": [
+    {
+     "node": "sampling",
+     "objective": "State the sampling theorem (sample faster than twice the highest frequency), predict the alias frequency of an undersampled sinusoid, and explain why an anti-aliasing filter comes before the sampler.",
+     "why": "Every digital signal starts as samples; knowing what sampling destroys is the first condition for any later estimate or model.",
+     "via": null
+    },
+    {
+     "node": "fourier",
+     "objective": "Compute a DFT with numpy.fft, read a magnitude spectrum, and explain the time–frequency trade-off of a finite window.",
+     "why": "The atlas edge is an exact conditional identity: uniform sampling replicates spectra, and non-overlap under a band limit enables ideal reconstruction. Aliasing is only fully understood in the frequency domain.",
+     "via": "thesis-38614cf7"
+    },
+    {
+     "node": "conv",
+     "objective": "Implement a moving-average and a simple FIR low-pass filter, and verify numerically that convolution in time equals multiplication of spectra.",
+     "why": "The atlas edge: Fourier representations and FFT computation support filtering and convolution. The convolution theorem turns filter design into spectrum shaping.",
+     "via": "rel-dc7fdd0d"
+    },
+    {
+     "node": "wavelet",
+     "objective": "Run a two-level Haar wavelet decomposition, identify approximation and detail coefficients, and explain why wavelets localize in both time and scale where Fourier bases do not.",
+     "why": "The atlas edge: filter-bank operations construct multiresolution approximations and detail coefficients. Wavelets are cascades of the filters you just built.",
+     "via": "rel-999ca0e7"
+    },
+    {
+     "node": "scattering",
+     "objective": "Describe the scattering transform as cascaded wavelet convolution, complex modulus and averaging, and state which invariances (translation, small deformations) it is designed to provide.",
+     "why": "The atlas edge: wavelet convolutions, modulus and averaging construct scattering representations — a convolutional network whose filters are designed rather than learned.",
+     "via": "thesis-b284108b"
+    },
+    {
+     "node": "cnn",
+     "objective": "Train a small CNN on an image dataset, compute the output shape and parameter count of a conv layer, and contrast its learned filters with the fixed scattering filters.",
+     "why": "The atlas edge: scattering gives a mathematically structured convolutional representation, not a universal identity with trained CNNs. Comparing the two shows what learning adds and what structure guarantees.",
+     "via": "thesis-ed0d2540"
+    }
+   ]
+  },
+  {
+   "id": "estimation-to-control",
+   "title": "Estimation to control: Kalman → LQG → MPC",
+   "summary": "Turn regression into recursive state estimation, learn what makes states observable and reachable, and compose estimators with optimal feedback into LQG and model predictive control.",
+   "audience": "Learners comfortable with linear algebra and Gaussian probability, e.g. after a first ML or signals course.",
+   "level": "intermediate",
+   "skills": [
+    "signals-estimation",
+    "control",
+    "linear-algebra"
+   ],
+   "estHours": 16,
+   "steps": [
+    {
+     "node": "ridge",
+     "objective": "Write the regularized least-squares estimate and interpret the regularizer as a Gaussian prior on the weights.",
+     "why": "Least squares with a prior is the static special case of the Kalman filter.",
+     "via": null
+    },
+    {
+     "node": "kalman",
+     "objective": "Implement the Kalman predict/update equations for a constant-velocity tracker, and explain the gain as a ratio of prior to measurement uncertainty.",
+     "why": "The atlas edge: regression weights can be treated as a state for sequential Gaussian inference — recursive least squares is a Kalman filter with a static state.",
+     "via": "rel-ed344378"
+    },
+    {
+     "node": "fisher",
+     "objective": "Compute the Fisher information of a linear-Gaussian measurement model and relate its inverse to the Cramér–Rao lower bound on estimator variance.",
+     "why": "The atlas edge: stochastic estimation must incorporate measurement/process uncertainty and prior information, not only an unweighted fit. The Kalman covariance has an information-form dual.",
+     "via": "rel-d1331277"
+    },
+    {
+     "node": "observability",
+     "objective": "Test observability of an LTI system with the rank of [C; CA; …; CAⁿ⁻¹] and design a Luenberger observer for a two-state system.",
+     "why": "The atlas edge is a conditional identity: for known deterministic linear dynamics and independent Gaussian sensor noise, initial-state Fisher information is the (noise-weighted) observability Gramian. Observability asks whether the data can pin down the state at all.",
+     "via": "rel-45385910"
+    },
+    {
+     "node": "reachability",
+     "objective": "Test reachability with the rank of [B, AB, …, Aⁿ⁻¹B] and state the duality between the pairs (A, B) and (Aᵀ, Bᵀ).",
+     "why": "The atlas edge is an exact duality: the LTI reachability pair (A,B) is dual to the observability pair (Aᵀ,Bᵀ). Whatever you learned about sensing transfers to actuation.",
+     "via": "rel-9a824080"
+    },
+    {
+     "node": "lqr",
+     "objective": "Solve the discrete algebraic Riccati equation (e.g. with scipy.linalg.solve_discrete_are) to obtain the LQR gain K, and show how changing Q and R trades state error against control effort.",
+     "why": "The atlas edge: state feedback requires the appropriate reachable or stabilizable structure. LQR is the optimal state feedback once reachability holds.",
+     "via": "rel-33d0eb58"
+    },
+    {
+     "node": "lqg",
+     "objective": "Build an LQG controller by feeding Kalman-filter estimates into the LQR gain, and state the separation principle and the assumptions it relies on.",
+     "why": "The atlas edge: LQG combines linear-quadratic feedback with Gaussian state estimation under its model assumptions — the filter from step 2 meets the controller from step 6.",
+     "via": "rel-5c2bece1"
+    },
+    {
+     "node": "mpc",
+     "objective": "Formulate a finite-horizon constrained quadratic program for a linear plant, apply only the first input each step (receding horizon), and explain when unconstrained MPC with an LQR terminal cost reproduces LQR.",
+     "why": "MPC keeps the quadratic cost of LQR/LQG but handles input and state constraints by re-solving online. The atlas has no direct LQG–MPC edge; the step is a pedagogical generalization.",
+     "via": null
+    },
+    {
+     "node": "constrainedrl",
+     "objective": "Describe a predictive safety filter: given a learner's proposed action, solve a small MPC problem that keeps the system in a safe set and fall back to a certified plan when needed.",
+     "why": "The atlas edge: a predictive safety filter can modify a learner's proposed input and fall back to a previously certified plan — MPC becomes a guard around learned controllers.",
+     "via": "rel-b741c809"
+    }
+   ]
+  },
+  {
+   "id": "graphical-models-to-belief-states",
+   "title": "Graphical models to belief-state world models",
+   "summary": "Follow one idea — factorize a joint distribution and pass messages — from static graphical models through HMMs and dynamic Bayesian networks to learned latent world models and belief-state planning.",
+   "audience": "Learners comfortable with Bayes' rule and conditional independence who want the probabilistic backbone of world models.",
+   "level": "intermediate",
+   "skills": [
+    "probability",
+    "signals-estimation",
+    "rl"
+   ],
+   "estHours": 15,
+   "steps": [
+    {
+     "node": "pgm",
+     "objective": "Write the joint distribution implied by a small directed and a small undirected graph, and read off one conditional independence from each.",
+     "why": "Graphical models are the shared language for every factorized model on this path.",
+     "via": null
+    },
+    {
+     "node": "factorgraph",
+     "objective": "Convert a Bayesian network into a factor graph by drawing one factor node per local conditional and connecting it to its variable arguments.",
+     "why": "The atlas edge: factor graphs explicitly represent local factors and their variable arguments, the form message passing operates on.",
+     "via": "thesis-3a1efd72"
+    },
+    {
+     "node": "beliefprop",
+     "objective": "Run sum-product by hand on a three-variable chain to obtain exact marginals, and explain why the result is exact only on cycle-free graphs.",
+     "why": "The atlas edge is a conditional identity: sum-product computes exact marginal functions on a finite cycle-free factor graph.",
+     "via": "thesis-f5fcb554"
+    },
+    {
+     "node": "hmm",
+     "objective": "Implement the forward–backward algorithm for a two-state HMM and use Viterbi to decode the most likely regime sequence.",
+     "why": "The atlas edge: forward–backward inference is a sum-product instance on a hidden-state chain.",
+     "via": "thesis-9fd1df85"
+    },
+    {
+     "node": "dbn",
+     "objective": "Draw the two-slice template of a dynamic Bayesian network and show how both the HMM and the linear-Gaussian state-space model (Kalman) are special cases.",
+     "why": "The atlas edge: HMMs are a discrete-state special case of dynamic Bayesian networks. DBNs let states be factored and continuous.",
+     "via": "thesis-2261d0d3"
+    },
+    {
+     "node": "world",
+     "objective": "Describe PlaNet/Dreamer-style recurrent state-space models: a deterministic recurrent path plus a stochastic latent, trained with reconstruction and KL terms, used to imagine action-conditioned rollouts.",
+     "why": "The atlas edge: PlaNet combines deterministic recurrence, stochastic latent state, variational filtering and action-conditioned prediction — a learned DBN with actions.",
+     "via": "thesis-1abe886c"
+    },
+    {
+     "node": "pomdp",
+     "objective": "Write the belief update b′(s′) ∝ O(o | s′) Σₛ T(s′ | s, a) b(s), and explain why planning over beliefs makes a POMDP a fully observed (but continuous-state) MDP.",
+     "why": "The atlas edge: PlaNet formulates control from pixels as partial-observation planning in a learned latent model. The POMDP is the formal problem the world model approximates.",
+     "via": "thesis-6e499eff"
+    },
+    {
+     "node": "psr",
+     "objective": "Define a predictive state as the vector of probabilities of future observation tests given history, and state the result that a finite POMDP has a linear PSR of dimension at most its number of hidden states.",
+     "why": "The atlas edge: a finite POMDP admits a finite linear predictive-state representation. PSRs replace unobservable latent states with predictions you can check against data.",
+     "via": "thesis-990390b9"
+    }
+   ]
+  },
+  {
+   "id": "sequence-models-rnn-to-ssm",
+   "title": "Sequence models: RNNs, state-space models and attention",
+   "summary": "Start from softmax attention, see how linear attention turns it into a recurrence, then follow recurrent memory through HiPPO, S4 and Mamba until Mamba-2's state-space duality closes the loop back to attention.",
+   "audience": "Learners who have trained a neural network and know at a high level what an RNN and a transformer are.",
+   "level": "intermediate",
+   "skills": [
+    "deep-learning",
+    "dynamical-systems",
+    "linear-algebra"
+   ],
+   "estHours": 14,
+   "steps": [
+    {
+     "node": "attention",
+     "objective": "Implement scaled dot-product attention with a causal mask, and state its O(T²) time and memory cost in sequence length T.",
+     "why": "Softmax attention is the reference point every efficient sequence model on this path is measured against.",
+     "via": null
+    },
+    {
+     "node": "linearattention",
+     "objective": "Replace softmax(QKᵀ)V with a kernel feature map φ(Q)(φ(K)ᵀV), show the cost becomes linear in T, and say what is lost relative to softmax.",
+     "why": "The atlas edge: kernel-feature attention permits a recurrent formulation; it is not a universal exact softmax rewrite.",
+     "via": "rel-a3ad2296"
+    },
+    {
+     "node": "rnn",
+     "objective": "Show that causal linear attention is an RNN with a matrix-valued state Sₜ = Sₜ₋₁ + φ(kₜ)vₜᵀ, then write a standard RNN hₜ = σ(W hₜ₋₁ + U xₜ) and explain vanishing/exploding gradients via the eigenvalues of W.",
+     "why": "The atlas edge is a conditional identity: the specified kernelized causal attention admits recurrent accumulation of summaries.",
+     "via": "rel-2d53673"
+    },
+    {
+     "node": "hippo",
+     "objective": "Explain how HiPPO derives a linear ODE for coefficients that compress the input history onto orthogonal (Legendre) polynomials, giving memory by design rather than by training.",
+     "why": "The atlas edge: polynomial projection dynamics produce recurrent memory updates — a principled answer to the RNN memory problem.",
+     "via": "cap-hippo-rnn"
+    },
+    {
+     "node": "s4",
+     "objective": "Show that a discretized linear SSM can be computed either as a recurrence or as a convolution with kernel K = (CB, CAB, CA²B, …), and explain why S4's structured A makes that kernel cheap.",
+     "why": "The atlas edge: HiPPO supplies structured memory dynamics used in the SSM lineage; S4 initializes its state matrix from HiPPO.",
+     "via": "cap-hippo-s4"
+    },
+    {
+     "node": "mamba",
+     "objective": "Explain what selectivity means in Mamba (step size and B, C depend on the input), why that breaks the fixed-convolution form, and how a parallel scan keeps training efficient.",
+     "why": "The atlas edge: input-dependent selectivity extends fixed SSM dynamics and removes fixed-convolution evaluation.",
+     "via": "rel-abfe7d04"
+    },
+    {
+     "node": "ssd",
+     "objective": "Describe state-space duality: a selective SSM with scalar-times-identity state matrix computes the same map as a semiseparable masked matrix, enabling a quadratic attention-like and a linear recurrent algorithm.",
+     "why": "The atlas edge: structured state-space duality refines selective SSM computation through semiseparable matrices.",
+     "via": "rel-b3b73487"
+    },
+    {
+     "node": "hybrid",
+     "objective": "Describe how Griffin (local attention plus gated linear recurrence) and Jamba (Mamba plus attention plus mixture-of-experts layers) interleave mechanisms, and state the recall-versus-constant-memory trade-off that motivates them.",
+     "why": "Having seen that SSMs and attention are related but not identical, the practical answer is to combine them; the atlas edges cite Griffin (attention–hybrid) and Jamba (Mamba–hybrid). There is no direct SSD–hybrid edge.",
+     "via": null
+    }
+   ]
+  },
+  {
+   "id": "physics-informed-learning",
+   "title": "Physics-informed and operator learning",
+   "summary": "Learn dynamics from data with sparse regression and Koopman embeddings, then build physics into neural networks through structured vector fields, PDE residuals and operator learning.",
+   "audience": "Learners with ODE basics and some neural-network experience, e.g. engineers or physicists entering ML.",
+   "level": "intermediate",
+   "skills": [
+    "dynamical-systems",
+    "calculus-odes",
+    "deep-learning"
+   ],
+   "estHours": 14,
+   "steps": [
+    {
+     "node": "ridge",
+     "objective": "Solve a least-squares problem Θ ξ ≈ y for coefficients ξ over a matrix Θ of candidate features.",
+     "why": "Equation discovery on this path is regression over a library of candidate terms.",
+     "via": null
+    },
+    {
+     "node": "sindy",
+     "objective": "Recover the Lorenz equations from simulated trajectories with sequentially thresholded least squares over a polynomial library, and explain how SINDYc adds control inputs.",
+     "why": "The atlas edge: dynamics discovery uses regression over candidate governing terms, with sparsity-promoting selection.",
+     "via": "rel-92bb909f"
+    },
+    {
+     "node": "koopman",
+     "objective": "Run DMD on snapshot data to fit a linear operator, and explain how the Koopman operator acts linearly on observables of a nonlinear system and why finite closure is an assumption to test.",
+     "why": "The atlas edge: the controlled sparse-identification paper explicitly connects to DMD and Koopman operator theory — an alternative to sparse nonlinear terms is linear dynamics in lifted coordinates.",
+     "via": "rel-29b994c3"
+    },
+    {
+     "node": "node",
+     "objective": "Define a neural ODE dx/dt = f_θ(x, t), integrate it with an ODE solver, and train it on trajectory data by backpropagating through (or adjoint-solving) the solver.",
+     "why": "Instead of choosing a library or a lifting, learn the vector field itself. There is no direct Koopman–neural-ODE edge; this is a change of representation.",
+     "via": null
+    },
+    {
+     "node": "hnn",
+     "objective": "Train a Hamiltonian neural network that learns a scalar H(q, p) and uses (∂H/∂p, −∂H/∂q) as the vector field, and verify that its predicted energy stays nearly constant on a pendulum.",
+     "why": "The atlas edge: Hamiltonian structure constrains the vector field for conservative dynamics — the neural ODE with physics built in.",
+     "via": "rel-4ebe8a3"
+    },
+    {
+     "node": "pinn",
+     "objective": "Solve a 1-D heat or Burgers equation with a PINN by adding the autodiff PDE residual and boundary terms to the loss, and name one known failure mode (e.g. stiff or multiscale problems).",
+     "why": "The atlas edge: both incorporate physical knowledge, but structured vector fields and soft PDE residuals are different constructions.",
+     "via": "rel-79e783bc"
+    },
+    {
+     "node": "operator",
+     "objective": "Explain how FNO and DeepONet learn a map from input functions (e.g. initial conditions) to solution functions, and why one trained operator can answer many PDE instances while a PINN solves one.",
+     "why": "The atlas edge: both address differential-equation problems, but operator learning and residual-constrained single solutions differ.",
+     "via": "rel-4e5a02ea"
+    }
+   ]
+  },
+  {
+   "id": "model-based-rl-and-safe-action",
+   "title": "Model-based RL, planning and safe action",
+   "summary": "From the RL problem to learned world models, receding-horizon planning, and the certificates (safety filters, barrier and Lyapunov functions) that keep learned controllers inside safe sets.",
+   "audience": "Learners who know basic probability and have seen an MDP; control background helpful but not required.",
+   "level": "intermediate",
+   "skills": [
+    "rl",
+    "control",
+    "optimization"
+   ],
+   "estHours": 14,
+   "steps": [
+    {
+     "node": "rl",
+     "objective": "Define an MDP, return, value function and policy; implement tabular Q-learning on a gridworld; and contrast model-free with model-based learning in sample efficiency.",
+     "why": "Everything on this path is a way to choose actions in an MDP; start with the problem and the simplest solver.",
+     "via": null
+    },
+    {
+     "node": "world",
+     "objective": "Explain how a learned world model lets an agent train a policy on imagined trajectories, and name two ways model error can be exploited by the policy.",
+     "why": "The atlas edge: world models support policy training through imagined trajectories.",
+     "via": "rel-74574ae1"
+    },
+    {
+     "node": "mpc",
+     "objective": "Plan with a learned dynamics model in a receding-horizon loop (e.g. random shooting or CEM), executing only the first action and replanning each step.",
+     "why": "The atlas edge (a construction proposal, not an established result): use calibrated action-conditioned learned dynamics within receding-horizon planning, with explicit uncertainty.",
+     "via": "rel-cecd74b4"
+    },
+    {
+     "node": "constrainedrl",
+     "objective": "Formulate a constrained MDP (maximize return subject to expected cost ≤ d) and explain how a safety filter differs from adding a penalty to the reward.",
+     "why": "The atlas edge: a predictive safety filter can modify a learner's proposed input and fall back to a previously certified plan.",
+     "via": "rel-b741c809"
+    },
+    {
+     "node": "barrier",
+     "objective": "Write the control barrier function condition ḣ(x, u) ≥ −α(h(x)) for safe set {h ≥ 0}, and implement a one-constraint QP that minimally modifies a nominal action to satisfy it.",
+     "why": "The atlas edge: CBF action filtering enforces a specified feasible invariance inequality, not arbitrary semantic preferences.",
+     "via": "rel-2e0be585"
+    },
+    {
+     "node": "lyapunov",
+     "objective": "Verify stability of a continuous-time linear system ẋ = Ax by finding P ≻ 0 with AᵀP + PA ≺ 0, and explain how a CLF-CBF QP combines stability and safety and which one it relaxes when they conflict.",
+     "why": "The atlas edge: CLF-CBF optimization distinguishes stability and safety constraints and may relax the stability objective.",
+     "via": "rel-750a7e29"
+    }
+   ]
+  },
+  {
+   "id": "generative-transport",
+   "title": "Generative models: flows, diffusion and Schrödinger bridges",
+   "summary": "View generative modeling as transporting noise to data along a learned vector field: neural ODEs, flow matching, diffusion, the score-SDE unification, and endpoint-constrained bridges.",
+   "audience": "Learners who have trained neural networks and are comfortable with Gaussians and basic ODEs.",
+   "level": "advanced",
+   "skills": [
+    "generative-models",
+    "probability",
+    "calculus-odes"
+   ],
+   "estHours": 16,
+   "steps": [
+    {
+     "node": "node",
+     "objective": "Integrate a learned vector field f_θ(x, t) from t = 0 to 1 and state the instantaneous change-of-variables formula d log p/dt = −tr(∂f/∂x) used by continuous normalizing flows.",
+     "why": "Every model on this path generates by integrating (or simulating) a learned field; neural ODEs are the deterministic base case.",
+     "via": null
+    },
+    {
+     "node": "flow",
+     "objective": "Train a flow-matching model on 2-D data using the linear interpolation path xₜ = (1−t)x₀ + t x₁ and regression target x₁ − x₀, then sample by ODE integration.",
+     "why": "The atlas edge: continuous normalizing flows learn vector fields along probability paths and integrate them for generation; flow matching trains that field by simulation-free regression.",
+     "via": "rel-95cf2629"
+    },
+    {
+     "node": "diffusion",
+     "objective": "Implement the DDPM forward noising process and the noise-prediction training loss, and sample with the reverse process on a toy dataset.",
+     "why": "The atlas edge: flow matching admits diffusion probability paths as specific choices, and also non-diffusion paths. Diffusion is one particular path.",
+     "via": "rel-10daea46"
+    },
+    {
+     "node": "score",
+     "objective": "Write the reverse-time SDE dx = [f − g² ∇ₓ log pₜ(x)] dt + g dw̄ and the probability-flow ODE that shares its marginals, and relate the denoiser to the score ∇ₓ log pₜ.",
+     "why": "The atlas edge: the SDE framework unifies score-based and diffusion generative modeling, and its probability-flow ODE brings you back to the neural-ODE view of step 1.",
+     "via": "rel-86e1f24"
+    },
+    {
+     "node": "bridge",
+     "objective": "State the Schrödinger bridge problem (the path measure closest in KL to a reference diffusion with both endpoint marginals fixed), its link to entropy-regularized optimal transport, and how iterative proportional fitting solves it.",
+     "why": "The atlas edge: diffusion Schrödinger bridges extend score-based generation through endpoint-constrained transport — map between two arbitrary distributions, not only noise to data.",
+     "via": "rel-6dbd2320"
+    }
+   ]
+  },
+  {
+   "id": "how-deep-nets-learn",
+   "title": "How deep nets learn: from kernels to developmental stages",
+   "summary": "Learning-dynamics theory from tractable limits (NTK, deep linear networks) to training as a control problem, singular learning theory, the local learning coefficient, and measured developmental stages and interventions.",
+   "audience": "Learners with solid linear algebra and probability who have trained networks and want the theory of how training unfolds.",
+   "level": "advanced",
+   "skills": [
+    "theory",
+    "deep-learning",
+    "optimization"
+   ],
+   "estHours": 22,
+   "steps": [
+    {
+     "node": "gp",
+     "objective": "Compute a GP posterior and explain how the kernel encodes the prior over functions.",
+     "why": "Kernel regression is the solvable reference point for the first theory of wide networks.",
+     "via": null
+    },
+    {
+     "node": "ntk",
+     "objective": "Explain why, in the NTK limit, the network output evolves as kernel gradient descent with a fixed tangent kernel, and why this lazy regime does not learn features.",
+     "why": "The atlas edge: infinite-width initialization connects neural networks to GPs, while training uses a tangent kernel.",
+     "via": "rel-83a740bb"
+    },
+    {
+     "node": "deeplinear",
+     "objective": "Reproduce Saxe et al.'s result that a two-layer linear network learns the singular modes of the input–output correlation one at a time, with sigmoidal trajectories and learning time inversely proportional to singular value.",
+     "why": "The atlas edge: both provide tractable learning-dynamics descriptions, but their limits and parameterizations differ — deep linear nets show stagewise, feature-like learning that the NTK limit misses.",
+     "via": "rel-647b463b"
+    },
+    {
+     "node": "trainingdynamics",
+     "objective": "Frame training as a controlled dynamical system: parameters are the state, data and hyperparameters are inputs, and evaluations are outputs; give one intervention (e.g. data reweighting) and the response you would measure.",
+     "why": "The atlas edge: deep linear models admit explicit learning-dynamics analysis despite nonlinear parameter dynamics — the solvable case motivates treating general training as a system to predict and steer.",
+     "via": "rel-697e0ede"
+    },
+    {
+     "node": "slt",
+     "objective": "Explain why neural networks are singular models (non-identifiable, degenerate Fisher information), and state Watanabe's free-energy asymptotic F ≈ n·Lₙ + λ log n with the learning coefficient λ replacing d/2.",
+     "why": "The atlas edge (conditional theory): connects learning geometry to SGD using specialized local assumptions; general Adam dynamics are not covered.",
+     "via": "rel-6a0ea0d1"
+    },
+    {
+     "node": "llc",
+     "objective": "Describe how the local learning coefficient is estimated with localized, tempered SGLD around a trained parameter, and list two settings in which the estimate is unreliable.",
+     "why": "The atlas edge: the LLC localizes singular statistical complexity and estimates it with tempered local sampling.",
+     "via": "rel-7f8f96a1"
+    },
+    {
+     "node": "development",
+     "objective": "Summarize the evidence that changes in estimated LLC align with distinct training stages in small transformers (e.g. a transient ridge-like phase on in-context regression), and state why this is association, not causation.",
+     "why": "The atlas edge (empirical): changes in measured degeneracy associate with training stages in the tested models; suggestive, not universal.",
+     "via": "rel-87622a01"
+    },
+    {
+     "node": "patterning",
+     "objective": "Explain how susceptibility-guided data reweighting is used to steer which solution a model learns, and describe how the parentheses-balancing experiment uses LLC-style observables to choose and check the intervention.",
+     "why": "The atlas edge (measured intervention): data reweighting changes learned solution selection, extending developmental work beyond observation.",
+     "via": "cap-patterning-development"
+    }
+   ]
+  },
+  {
+   "id": "capable-systems-llm-to-vla",
+   "title": "Building capable systems: LLMs to VLAs in the closed loop",
+   "summary": "Climb the capability stack from transformers to language, vision-language and vision-language-action models, then place the learned policy back inside a feedback loop with a plant, sensors and actuators.",
+   "audience": "Learners who have trained neural networks and want a map of modern foundation-model systems and how they meet control.",
+   "level": "advanced",
+   "skills": [
+    "deep-learning",
+    "control",
+    "rl"
+   ],
+   "estHours": 14,
+   "steps": [
+    {
+     "node": "attention",
+     "objective": "Implement a transformer block (attention, MLP, residuals, layer norm) and explain what a causal mask does.",
+     "why": "The transformer is the shared backbone of every model on this path.",
+     "via": null
+    },
+    {
+     "node": "llm",
+     "objective": "Describe the stages of an LLM pipeline — next-token pretraining, instruction tuning, preference training, and RL on verifiable outcomes — and what each stage is evaluated on.",
+     "why": "The atlas edge: the original transformer provides an attention-based sequence architecture; instruction training and reasoning RL are added on top.",
+     "via": "rel-2c2f2bc8"
+    },
+    {
+     "node": "vlm",
+     "objective": "Explain the LLaVA recipe: a pretrained vision encoder, a learned projection into the LLM's token space, and visual instruction tuning.",
+     "why": "The atlas edge: LLaVA connects a vision encoder with a language model using visual instruction tuning.",
+     "via": "rel-9a37dee3"
+    },
+    {
+     "node": "vla",
+     "objective": "Contrast RT-2 (robot actions emitted as discrete tokens by a co-fine-tuned VLM) with π₀ (a VLM plus a continuous flow-matching action expert).",
+     "why": "The atlas edge: RT-2 co-fine-tunes visual-language models on robot-action and web data — a VLA is a VLM that outputs actions.",
+     "via": "rel-44fe5b7d"
+    },
+    {
+     "node": "policy",
+     "objective": "Explain diffusion policy: denoising a chunk of future actions conditioned on observations, executed in receding-horizon fashion, and why it handles multimodal demonstrations.",
+     "why": "The atlas edge: diffusion policy is another construction for observation-conditioned action chunks and receding-horizon execution.",
+     "via": "rel-5aa38918"
+    },
+    {
+     "node": "control",
+     "objective": "Draw the closed loop for a VLA-driven robot (controller, actuators, plant, sensors, disturbances, fallback), identify where policy inference latency enters as a delay, and name one failure that a network-only benchmark would miss.",
+     "why": "The atlas edge: receding-horizon execution links action generation to closed-loop feedback; latency remains a limitation. Capability claims have to be made at the closed-loop boundary, not only for the network.",
+     "via": "rel-897b7dde"
+    }
+   ]
+  },
+  {
+   "id": "capstone-learning-geometry-meets-control",
+   "title": "Capstone: learning geometry meets system control",
+   "summary": "Walk the exact bridges from input/output data to Hankel singular values, Gramians and Fisher information, and arrive at the local learning coefficient — learning where these objects connect and where they do not.",
+   "audience": "Advanced learners who have done the estimation-to-control path or a linear-systems course and want the cross-cutting synthesis behind the atlas.",
+   "level": "advanced",
+   "skills": [
+    "control",
+    "linear-algebra",
+    "theory"
+   ],
+   "estHours": 20,
+   "steps": [
+    {
+     "node": "sysid",
+     "objective": "Design an input/output experiment (e.g. a step or PRBS input) for an unknown linear plant and fit an ARX model by least squares.",
+     "why": "Everything on this path starts from measured input/output behavior rather than assumed internal structure.",
+     "via": null
+    },
+    {
+     "node": "era",
+     "objective": "Run the Eigensystem Realization Algorithm on impulse-response (Markov parameter) data to obtain a reduced state-space model (A, B, C).",
+     "why": "The atlas edge: ERA identifies reduced linear dynamical models from response data.",
+     "via": "rel-aac91f66"
+    },
+    {
+     "node": "hankel",
+     "objective": "Assemble the block Hankel matrix of Markov parameters CAᵏB, compute its SVD, and use the singular-value decay to choose a model order.",
+     "why": "The atlas edge: response Markov parameters populate the Hankel matrix used in ERA's SVD.",
+     "via": "rel-cef587d9"
+    },
+    {
+     "node": "balanced",
+     "objective": "Perform balanced truncation on a stable LTI system and check the H∞ error bound ‖G − Gᵣ‖∞ ≤ 2 Σ (discarded Hankel singular values).",
+     "why": "The atlas edge: balanced truncation retains directions associated with larger Hankel singular values.",
+     "via": "rel-97371398"
+    },
+    {
+     "node": "balancedpod",
+     "objective": "Explain how balanced POD builds approximate balancing modes from direct and adjoint simulation snapshots, avoiding full Gramian computation for large systems.",
+     "why": "The atlas edge: balanced POD uses direct and adjoint response snapshots for a scalable balancing approximation.",
+     "via": "rel-8f87c99f"
+    },
+    {
+     "node": "gramian",
+     "objective": "Compute reachability and observability Gramians from the Lyapunov equations A·Wc + Wc·Aᵀ + BBᵀ = 0 and Aᵀ·Wo + Wo·A + CᵀC = 0 for a stable continuous-time system, and verify σᵢ = √λᵢ(Wc·Wo).",
+     "why": "The atlas edge is exact: for the specified snapshot factors, the cross-snapshot SVD yields the balancing bases and Hankel singular values — the snapshots are factors of the Gramians.",
+     "via": "rel-6a4068a7"
+    },
+    {
+     "node": "observability",
+     "objective": "Use the observability Gramian to rank which initial-state directions are hardest to recover from outputs.",
+     "why": "The atlas edge is exact: the stable LTI observability Gramian is positive definite exactly when the realization is observable.",
+     "via": "rel-19add361"
+    },
+    {
+     "node": "fisher",
+     "objective": "Show that under known linear dynamics and independent Gaussian sensor noise, the Fisher information about the initial state equals the noise-weighted observability Gramian.",
+     "why": "The atlas edge is a conditional identity: this is the restricted, exact bridge from system theory to statistics.",
+     "via": "rel-45385910"
+    },
+    {
+     "node": "llc",
+     "objective": "Show that a regular, identifiable d-parameter model has LLC d/2, and give one reason Hankel singular values and the LLC cannot be the same quantity in general.",
+     "why": "The atlas edge: a locally regular identifiable model has LLC d/2, but singular loss geometry requires more than the Hessian — and the atlas marks the Hankel–LLC link as a non-equivalence.",
+     "via": "rel-5502fb4c"
+    }
+   ]
+  },
+  {
+   "id": "capstone-alignment-belief-state",
+   "title": "Capstone: capable, correctable belief-state systems",
+   "summary": "Connect reward misspecification, preference learning, assistance games and belief-state world models into the atlas's alignment thesis, including what would falsify it.",
+   "audience": "Advanced learners who know RL and the basics of LLM post-training and want the alignment synthesis behind the atlas.",
+   "level": "advanced",
+   "skills": [
+    "rl",
+    "probability",
+    "theory"
+   ],
+   "estHours": 14,
+   "steps": [
+    {
+     "node": "rl",
+     "objective": "State the RL objective as expected discounted return under a given reward, and identify where the reward comes from in a deployed system.",
+     "why": "Every alignment question on this path starts from what the agent is optimizing.",
+     "via": null
+    },
+    {
+     "node": "rewardhack",
+     "objective": "Give a concrete example where optimizing a proxy reward lowers true return, and state the scope of Skalse et al.'s result (finite MDPs, specified policy sets).",
+     "why": "The atlas edge: improved proxy return need not imply improved true return; the theorem is scoped to finite MDPs and policy sets.",
+     "via": "thesis-4f62b27c"
+    },
+    {
+     "node": "preference",
+     "objective": "Write the Bradley–Terry preference likelihood used for reward modeling, and contrast RLHF (reward model plus KL-regularized RL) with DPO (direct optimization on preference pairs).",
+     "why": "The atlas edge: the reward-hacking analysis studies ordering reversals between proxy and true returns — learned preference rewards are exactly such proxies.",
+     "via": "thesis-b06c8fa2"
+    },
+    {
+     "node": "assistance",
+     "objective": "Describe the cooperative inverse RL game: the robot does not know the human's reward parameter and must infer it from behavior while acting.",
+     "why": "The atlas edge: CIRL keeps uncertainty about a human reward parameter and models communicative teaching and learning, instead of fixing a learned reward.",
+     "via": "thesis-cf022352"
+    },
+    {
+     "node": "pomdp",
+     "objective": "Explain how the assistance game reduces to a coordination POMDP whose hidden state includes the human's objective, so the agent plans over a belief about it.",
+     "why": "The atlas edge: CIRL reduces optimal joint-policy computation to a coordination POMDP under the formal game's assumptions.",
+     "via": "thesis-4c5e2864"
+    },
+    {
+     "node": "world",
+     "objective": "Explain how a learned latent world model approximates belief-state planning, and what intervention test distinguishes a valid consequence model from a good one-step predictor.",
+     "why": "The atlas edge: PlaNet formulates control from pixels as partial-observation planning in a learned latent model.",
+     "via": "thesis-6e499eff"
+    },
+    {
+     "node": "alignmentthesis",
+     "objective": "State the thesis's components (preserved measurements, explicit beliefs, action-conditioned world models, uncertainty over objectives, measured learning response) and its stated falsifier.",
+     "why": "The atlas edge (a thesis component, explicitly a hypothesis): learn useful action-conditioned consequence models and test their intervention validity. The thesis is rejected if better proxy optimization systematically destroys independently evaluated user utility.",
+     "via": "thesis-f3b46f83"
+    }
+   ]
+  }
+ ]
+}
