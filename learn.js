@@ -3,14 +3,18 @@
 const $ = s => document.querySelector(s);
 const LS_KEY = 'atlas.learn.v1';
 const SKILLS = { 'linear-algebra': 'Linear algebra', probability: 'Probability', optimization: 'Optimization', 'calculus-odes': 'Calculus & ODEs', 'stats-ml': 'Statistical ML', 'deep-learning': 'Deep learning', 'signals-estimation': 'Signals & estimation', control: 'Control', 'dynamical-systems': 'Dynamical systems', 'generative-models': 'Generative models', rl: 'Reinforcement learning', theory: 'Learning theory' };
-const PRIOR = .25, MIN_Q = 8, MAX_Q = 12, SLOPE = 7;
-const DIFF_AT = [0, .3, .5, .7];            // mastery at which an item of difficulty d is a coin flip (before guessing)
-const LEVEL_TARGET = { intro: .3, intermediate: .5, advanced: .7 };
-const LEVEL_NEED = [0, .55, .7, .82, .9];  // skill mastery that counts as having "demonstrated" a node of level L
+const PRIOR = .25, MIN_Q = 8, MAX_Q = 12, SLOPE = 2.2;
+const B = [0, -1.4, 0, 1.4];               // logit ability at which an item of difficulty d is a coin flip (before guessing)
+const V0 = 8, VSELF = 1.5;                 // prior variance of logit ability: untested vs self-reported
+// Skill families: the probe opens with one item per family. KIN: close pairs, where an answer is weak evidence (weight SPILL).
+const FAMILY = { probability: 0, 'stats-ml': 0, 'linear-algebra': 0, optimization: 0, 'signals-estimation': 1, control: 1, rl: 1, 'deep-learning': 2, 'generative-models': 2, theory: 3, 'dynamical-systems': 3, 'calculus-odes': 3 };
+const KIN = ['probability|stats-ml', 'probability|theory', 'signals-estimation|control', 'deep-learning|generative-models', 'dynamical-systems|calculus-odes', 'linear-algebra|optimization'], SPILL = .5;
+const kin = (a, b) => KIN.includes(a + '|' + b) || KIN.includes(b + '|' + a);
+const LEVEL_TARGET = { intro: .3, intermediate: .55, advanced: .72 };
+const LEVEL_NEED = [0, .6, .72, .82, .9];  // skill mastery that counts as having "demonstrated" a node of level L
 const LEVEL_NAME = ['', 'Intro', 'Intermediate', 'Advanced', 'Frontier'];
 const X = '<svg viewBox="0 0 16 16" fill="none"><path d="m4 4 8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
-const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0;
 const sig = x => 1 / (1 + Math.exp(-x));
 const pct = x => Math.round(x * 100);
 
@@ -59,16 +63,35 @@ function nodeMeta(id) {
 }
 
 /* ---------------- learner model ---------------- */
-// mastery m[s] ∈ [0,1]; P(correct) = g + (1-g)·σ(SLOPE·(m − DIFF_AT[d])), g = 1/#choices.
-const newModel = priors => ({ m: { ...priors }, n: {}, seen: {} });
+// IRT with uncertainty: logit ability θ_s ~ N(μ, v) per skill, mastery m[s] = σ(μ) ∈ [0,1], variance v[s].
+// P(correct) = g + (1-g)·σ(SLOPE·(θ − B[d])), g = 1/#choices (0 for "I don't know"). Each answer is an exact grid
+// posterior moment-matched back to a Gaussian; kin skills (KIN) get the same evidence down-weighted by SPILL.
+const newModel = priors => ({ m: { ...priors }, n: {}, seen: {}, self: { ...priors }, v: Object.fromEntries(Object.keys(priors).map(s => [s, VSELF])) });
 const mOf = (M, s) => M.m[s] ?? PRIOR;
-function pCorrect(M, it) { const g = 1 / it.choices.length; return g + (1 - g) * sig(SLOPE * (mOf(M, it.skill) - DIFF_AT[it.difficulty || 2])); }
-function observe(M, it, correct) {
-  const s = it.skill, n = M.n[s] || 0, lr = .34 / (1 + .45 * n);
-  M.m[s] = clamp(mOf(M, s) + lr * ((correct ? 1 : 0) - pCorrect(M, it)), .02, .98);
-  M.n[s] = n + 1;
+const lg = m => { m = clamp(+m || PRIOR, .02, .98); return Math.log(m / (1 - m)); };
+const vOf = (M, s) => { const v = +M.v?.[s]; return v > 0 ? v : s in M.m ? VSELF / (1 + (M.n[s] || 0)) : V0; };
+const GRID = Array.from({ length: 121 }, (_, i) => i / 10 - 6);
+function posterior(mu, v, it, correct, g, w) {
+  const b = B[it.difficulty] ?? 0; let W = 0, S = 0, S2 = 0;
+  for (const t of GRID) { const p = g + (1 - g) * sig(SLOPE * (t - b)), x = Math.exp(-((t - mu) ** 2) / (2 * v)) * (correct ? p : 1 - p) ** w; W += x; S += x * t; S2 += x * t * t; }
+  const m = S / W; return [m, Math.max(.05, S2 / W - m * m)];
+}
+function observe(M, it, correct, idk) {
+  const g = idk ? 0 : 1 / it.choices.length; if (!M.v || typeof M.v !== 'object') M.v = {};
+  Object.keys(SKILLS).forEach(s => { const own = s === it.skill; if (!own && !kin(s, it.skill)) return;
+    const [mu, v] = posterior(lg(mOf(M, s)), vOf(M, s), it, correct, own ? g : 1 / it.choices.length, own ? 1 : SPILL);
+    M.m[s] = clamp(sig(mu), .02, .98); M.v[s] = v; });
+  M.n[it.skill] = (M.n[it.skill] || 0) + 1;
   const ev = M.seen[it.node] ||= { c: 0, t: 0 };
   ev.t++; if (correct) ev.c++;
+}
+const conf = (M, s) => { const n = (M.n[s] || 0) + (M.self?.[s] != null ? .6 : 0); return n / (n + 1.5); }; // weight of direct evidence (self-report = 0.6 answer)
+// Expected share of a skill's mastery variance (in σ(θ) space) that one answer at difficulty d removes; exact on the grid.
+function gainOf(M, s, d, g) {
+  const mu = lg(mOf(M, s)), v = vOf(M, s), b = B[d] ?? 0, a = [0, 0, 0, 0, 0, 0];
+  for (const t of GRID) { const w = Math.exp(-((t - mu) ** 2) / (2 * v)), p = g + (1 - g) * sig(SLOPE * (t - b)), m = sig(t); a[0] += w; a[1] += w * m; a[2] += w * m * m; a[3] += w * p; a[4] += w * p * m; a[5] += w * p * m * m; }
+  const vr = (W, S, S2) => W > 1e-12 ? S2 / W - (S / W) ** 2 : 0, V = vr(a[0], a[1], a[2]), P = a[3] / a[0];
+  return V > 1e-9 ? (V - P * vr(a[3], a[4], a[5]) - (1 - P) * vr(a[0] - a[3], a[1] - a[4], a[2] - a[5])) / V : 0;
 }
 function goalVotes(bgAns) {
   const v = {};
@@ -80,44 +103,64 @@ function priorsFrom(bgAns) {
   D.bg.forEach(q => (bgAns[q.id] || []).forEach(oid => { const o = q.options.find(o => o.id === oid); Object.entries(o?.sets || {}).forEach(([s, x]) => { if (SKILLS[s]) pr[s] = Math.max(pr[s] ?? 0, clamp(+x)); }); }));
   return pr;
 }
-// score = goal match + level fit + skill relevance (room to grow in the path's skills)
-function scorePath(p, M, votes) {
-  const maxV = Math.max(1, ...Object.values(votes));
-  const goal = (votes[p.id] || 0) / maxV;
-  const ms = (p.skills?.length ? p.skills : [...new Set(p.steps.flatMap(s => nodeMeta(s.node).skills))]).map(s => mOf(M, s));
-  const fit = clamp(1 - Math.abs(mean(ms) - (LEVEL_TARGET[p.level] ?? .5)) * 2.2);
-  const rel = mean(ms.map(m => 4 * m * (1 - m)));
-  return { p, score: 2 * goal + 1.2 * fit + .8 * rel, goal, fit, rel };
+// Core skills of a path: share of its steps that exercise each skill, plus a bonus for the path's declared skills.
+const coreW = new WeakMap();
+function core(p) {
+  if (!coreW.has(p)) { const w = {}; p.steps.forEach(st => nodeMeta(st.node).skills.forEach(s => w[s] = (w[s] || 0) + 1 / p.steps.length)); (p.skills || []).forEach(s => { if (SKILLS[s]) w[s] = (w[s] || 0) + .5; });
+    const t = Object.values(w).reduce((a, x) => a + x, 0) || 1; coreW.set(p, Object.entries(w).map(([s, x]) => [s, x / t])); }
+  return coreW.get(p);
+}
+const overall = M => { let a = .5 * PRIOR, b = .5; Object.keys(SKILLS).forEach(s => { const c = conf(M, s); a += c * mOf(M, s); b += c; }); return a / b; };
+// score = goal match + level fit + strength in the core skills + room to grow. lvl = core-weighted mastery where each skill
+// counts by its evidence: untested skills are uncertain (low weight, leaning to the learner's overall level), not weak.
+// str = evidence-weighted signed strength (+ measured strong, − measured weak, 0 untested). opt > 0: optimistic view.
+function scorePath(p, M, votes, opt = 0) {
+  const maxV = Math.max(1, ...Object.values(votes)), goal = (votes[p.id] || 0) / maxV, G = overall(M);
+  let a = 0, b = 0, str = 0, rel = 0;
+  core(p).forEach(([s, x]) => { const m = mOf(M, s), c = conf(M, s), u = .15 * (1 - c);
+    a += x * (c * m + u * ((m + G) / 2 + opt)); b += x * (c + u); str += x * c * (2 * m - 1); rel += x * 4 * m * (1 - m); });
+  const lvl = a / b, fit = clamp(1 - Math.abs(lvl - (LEVEL_TARGET[p.level] ?? .55)) * 2.2);
+  return { p, score: 3 * goal + 1.2 * fit + 1.5 * str + .3 * rel, goal, fit, rel, str, lvl };
 }
 const rankPaths = (M, votes) => D.paths.map(p => scorePath(p, M, votes)).sort((a, b) => b.score - a.score);
+// A step is skipped only with evidence: 2+ correct on its node, or every skill it uses answered 2+ times and measured at its level.
 function demonstrated(M, id) {
-  const ev = M.seen[id];
-  if (ev?.t) { if (ev.c / ev.t >= .67) return true; if (!ev.c) return false; }
-  const nm = nodeMeta(id);
-  return nm.skills.length > 0 && nm.skills.every(s => (M.n[s] || 0) > 0 && mOf(M, s) >= LEVEL_NEED[nm.level]);
+  const ev = M.seen[id], nm = nodeMeta(id);
+  if (ev?.t && ev.c / ev.t < .67) return false;
+  if (ev?.c >= 2) return true;
+  return nm.skills.length > 0 && nm.skills.every(s => (M.n[s] || 0) >= 2 && mOf(M, s) >= LEVEL_NEED[nm.level]);
 }
 // start = first step whose node the learner has not demonstrated (steps are skipped only as a leading run)
 function startStep(p, M) { let i = 0; while (i < p.steps.length - 1 && demonstrated(M, p.steps[i].node)) i++; return i; }
 
-// Item selection: maximize (skill relevance to candidate paths) × (Fisher-style information at current mastery) × (skill uncertainty)
+// Item selection. Explore: the first items cover distinct skill families (background-weighted). Exploit: maximize
+// (core-skill relevance to the top candidate paths) × (expected share of the skill's variance the answer removes).
+// Candidates = the current top 3 plus the top 3 if every untested core skill turned out strong (so specialists get asked about their field).
 function skillRelevance(M, votes) {
-  const r = {}, top = rankPaths(M, votes).slice(0, 3), w = [1, .6, .4];
-  top.forEach(({ p }, k) => {
-    (p.skills || []).forEach(s => r[s] = (r[s] || 0) + w[k]);
-    p.steps.forEach(st => nodeMeta(st.node).skills.forEach(s => r[s] = (r[s] || 0) + w[k] * .5 / p.steps.length * 2));
-  });
+  const r = {}, w = [1, .7, .5], top = [...rankPaths(M, votes).slice(0, 3), ...D.paths.map(p => scorePath(p, M, votes, .35)).sort((a, b) => b.score - a.score).slice(0, 3)];
+  top.forEach(({ p }, k) => core(p).forEach(([s, x]) => r[s] = (r[s] || 0) + w[k % 3] * x));
   const mx = Math.max(.001, ...Object.values(r)); Object.keys(r).forEach(s => r[s] /= mx);
   return { r, onPath: new Set(top.flatMap(({ p }) => p.steps.map(s => s.node))) };
 }
+const NFAM = new Set(Object.values(FAMILY)).size;
+let IMP = null; // how central a skill is across all paths (opening items favour central skills: theory over calculus)
+const imp = s => (IMP ||= D.paths.reduce((r, p) => (core(p).forEach(([k, x]) => r[k] = (r[k] || 0) + x / D.paths.length * 4), r), {}))[s] || 0;
 function nextItem(ob) {
-  const M = ob.model, { r, onPath } = skillRelevance(M, ob.votes), asked = new Set(ob.asked.map(a => a.id)), last = ob.asked[ob.asked.length - 1];
-  let best = null, bs = -1;
+  const M = ob.model, asked = new Set(ob.asked.map(a => a.id)), sk = ob.asked.map(a => D.items.find(i => i.id === a.id)?.skill);
+  const fams = new Set(sk.map(s => FAMILY[s])), explore = ob.asked.length < NFAM && D.items.some(it => !fams.has(FAMILY[it.skill]));
+  const { r, onPath } = skillRelevance(M, ob.votes), pri = ob.priors || {}, fc = {}, ft = {}; // share correct per family: dig into strong families
+  ob.asked.forEach((a, i) => { const f = FAMILY[sk[i]]; ft[f] = (ft[f] || 0) + 1; fc[f] = (fc[f] || 0) + (a.correct ? 1 : 0); });
+  const famStr = f => ft[f] ? fc[f] / ft[f] : 0;
+  let best = null, bs = -1, gains = new Map();
   for (const it of D.items) {
-    if (asked.has(it.id)) continue;
-    const s = sig(SLOPE * (mOf(M, it.skill) - DIFF_AT[it.difficulty || 2])), info = s * (1 - s) + .02;
-    const unc = 1 / (1 + (M.n[it.skill] || 0));
-    let sc = ((r[it.skill] || 0) + .12) * info * (.35 + unc) * (onPath.has(it.node) ? 1.3 : 1);
-    if (last && D.items.find(i => i.id === last.id)?.skill === it.skill) sc *= .55;
+    if (asked.has(it.id) || (explore && fams.has(FAMILY[it.skill]))) continue;
+    const key = it.skill + it.difficulty + it.choices.length, n = M.n[it.skill] || 0;
+    const gain = gains.get(key) ?? gains.set(key, gainOf(explore && !n ? { m: { [it.skill]: Math.max(mOf(M, it.skill), .5) }, v: { [it.skill]: vOf(M, it.skill) }, n: {} } : M, it.skill, it.difficulty, 1 / it.choices.length)).get(key);
+    // (opening items are pitched at mid-scale: a first answer should be able to show strength, not just weakness)
+    let sc = explore ? gain * (1 + 2 * (pri[it.skill] || 0)) * (.3 + imp(it.skill))
+      : ((r[it.skill] || 0) + .12) * gain * (.35 + 1 / (1 + n)) * (onPath.has(it.node) ? 1.3 : 1) * (n > 1 ? 1 : 1 + 3 * famStr(FAMILY[it.skill]) * (n ? .5 + imp(it.skill) : 1))
+        * (1 + clamp(2 * mOf(M, it.skill) - 1) * ((it.difficulty || 2) - 2) * .7); // a skill that looks strong: probe its ceiling
+    if (sk.length && sk[sk.length - 1] === it.skill) sc *= .55;
     if (sc > bs) { bs = sc; best = it; }
   }
   return best;
@@ -187,7 +230,7 @@ function startProbe() {
 function answer(choice, idk) {
   if (!ob?.cur || ob.fb) return;
   const it = ob.cur, correct = !idk && choice === it.answer;
-  observe(ob.model, it, correct);
+  observe(ob.model, it, correct, idk);
   ob.asked.push({ id: it.id, correct, idk: !!idk }); ob.tops.push(rankPaths(ob.model, ob.votes)[0]?.p.id);
   ob.fb = { choice: idk ? -1 : choice, correct, idk: !!idk };
   renderModal('[data-l="next"]');
@@ -210,7 +253,7 @@ function finishProbe() {
 function masteryBars(M, priors) {
   const skills = Object.keys(SKILLS).filter(s => (M.n[s] || 0) > 0 || s in (priors || {})).sort((a, b) => (M.n[b] || 0) - (M.n[a] || 0) || mOf(M, b) - mOf(M, a));
   if (!skills.length) return '<p class="l-note">No skills measured yet.</p>';
-  return `<ul class="l-mastery">${skills.map(s => { const m = mOf(M, s), n = M.n[s] || 0; return `<li><span class="l-sk">${esc(SKILLS[s])}</span><span class="l-meter" role="meter" aria-label="${esc(SKILLS[s])} mastery" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct(m)}"><i style="width:${pct(m)}%"></i></span><span class="l-val">${pct(m)}%</span><small>${n ? `${n} question${n > 1 ? 's' : ''}` : 'self-reported'}</small></li>`; }).join('')}</ul>`;
+  return `<ul class="l-mastery">${skills.map(s => { const m = mOf(M, s), n = M.n[s] || 0; return `<li><span class="l-sk">${esc(SKILLS[s])}</span><span class="l-meter" role="meter" aria-label="${esc(SKILLS[s])} mastery" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct(m)}"><i style="width:${pct(m)}%"></i></span><span class="l-val">${pct(m)}%</span><small>${n ? `${n} question${n > 1 ? 's' : ''}${n < 2 ? ' · low confidence' : ''}` : 'self-reported'}</small></li>`; }).join('')}</ul>`;
 }
 function renderResults(d) {
   const M = st.model, rec = st.rec && D.pathById.get(st.rec.path);
@@ -225,7 +268,7 @@ function renderResults(d) {
 function whyText(p) {
   const s = scorePath(p, st.model, st.votes || {}), bits = [];
   if (s.goal > 0) bits.push('matches your goal');
-  const above = mean((p.skills || []).map(k => mOf(st.model, k))) > (LEVEL_TARGET[p.level] ?? .5);
+  const above = s.lvl > (LEVEL_TARGET[p.level] ?? .55);
   bits.push(s.fit > .7 ? 'pitched at your level' : above ? (s.fit > .4 ? 'you will move quickly' : 'mostly review for you') : (s.fit > .4 ? 'a reasonable stretch' : 'a big stretch from your level'));
   if (s.rel > .7) bits.push('exercises skills you are ready to grow');
   return bits.join(' · ');
@@ -334,7 +377,7 @@ function quizAnswer(choice, idk) {
   const q = view.quiz; if (!q || q.fb || q.i >= q.items.length) return;
   const it = q.items[q.i], correct = !idk && choice === it.answer;
   q.fb = { choice: idk ? -1 : choice, correct, idk: !!idk }; q.res.push(correct);
-  st.model ||= newModel({}); observe(st.model, it, correct); save();
+  st.model ||= newModel({}); observe(st.model, it, correct, idk); save();
   renderSide('[data-l="quiz-next"]');
 }
 function quizNext() {
