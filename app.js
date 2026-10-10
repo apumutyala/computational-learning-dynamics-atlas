@@ -272,7 +272,7 @@ canvas.addEventListener('pointerup', e => {
   down = null;
   if (moved > 6) return;
   const id = pick(e.clientX, e.clientY);
-  if (id) travel(id, 'scene'); else if (!S.current && S.cluster) { S.cluster = null; renderDock(); computeTargets(); }
+  if (id) travel(id, 'scene'); else if (!S.current && S.cluster) { S.cluster = null; renderDock(); computeTargets(); } else if (!S.current && !$('#welcome').classList.contains('hide')) hideWelcome();
 });
 canvas.addEventListener('wheel', () => { stopDrift(); hideHint(); }, { passive: true });
 let driftTimer;
@@ -660,7 +660,10 @@ function setHyp(on) {
 }
 $('#t-hyp').onclick = () => setHyp(!S.showHyp);
 $('#t-drift').onclick = () => { S.drift = !S.drift; $('#t-drift').setAttribute('aria-pressed', String(S.drift)); controls.autoRotate = S.drift && !S.current; };
-$('#t-overview').onclick = () => { if (!panel.hidden) closePanel(); S.cluster = null; renderDock(); computeTargets(); flyHome(); $('#welcome').classList.remove('hide'); updateOffset(); };
+function hideWelcome() { $('#welcome').classList.add('hide'); updateOffset(); }
+$('#welcome-close').onclick = hideWelcome;
+// Overview resets the view; it reopens the welcome window only if it is closed, and closes it if it is open.
+$('#t-overview').onclick = e => { e.currentTarget.blur(); const w = $('#welcome'), wasOpen = !w.classList.contains('hide') && panel.hidden && !S.cluster; if (!panel.hidden) closePanel(); S.cluster = null; renderDock(); computeTargets(); flyHome(); w.classList.toggle('hide', wasOpen); updateOffset(); };
 $('#t-drift').setAttribute('aria-pressed', String(S.drift));
 let toastT;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; t.style.opacity = 1; clearTimeout(toastT); toastT = setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.hidden = true, 300); }, 2200); }

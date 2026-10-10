@@ -54,7 +54,9 @@ a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}
 
 /* welcome */
 #welcome{position:fixed;left:24px;top:84px;width:min(380px,calc(100vw - 48px));padding:22px 22px 18px;z-index:10;transition:opacity .4s,transform .4s}
-#welcome.hide{opacity:0;transform:translateY(8px);pointer-events:none}
+#welcome.hide{opacity:0;transform:translateY(8px);pointer-events:none;visibility:hidden;transition:opacity .4s,transform .4s,visibility 0s .4s}
+#welcome-close{position:absolute;top:12px;right:12px}
+#t-overview{user-select:none;-webkit-tap-highlight-color:transparent}
 .eyebrow{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;font-weight:600;color:var(--muted)}
 #welcome h1{font:500 27px/1.2 var(--font-display);letter-spacing:-.4px;margin:8px 0 10px}
 #welcome p{color:#c3cac5;margin:0 0 14px;font-size:var(--t-md)}
