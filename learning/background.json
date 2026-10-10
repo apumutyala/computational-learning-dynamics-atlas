@@ -1,0 +1,84 @@
+{
+ "version": 1,
+ "questions": [
+  {
+   "id": "bg-math",
+   "prompt": "Which statement best describes your math background?",
+   "type": "single",
+   "options": [
+    {"id": "math-hs", "label": "Mostly high-school algebra; I haven't taken calculus beyond the basics", "sets": {"linear-algebra": 0.1, "calculus-odes": 0.1}, "goal": null},
+    {"id": "math-calc", "label": "I've taken calculus and can multiply matrices and solve a linear system by hand", "sets": {"linear-algebra": 0.3, "calculus-odes": 0.35, "optimization": 0.15}, "goal": null},
+    {"id": "math-eig", "label": "I've used eigenvalues or the SVD in practice and can solve a linear ODE like ẋ = Ax", "sets": {"linear-algebra": 0.6, "calculus-odes": 0.55, "optimization": 0.3, "dynamical-systems": 0.25}, "goal": null},
+    {"id": "math-adv", "label": "I'm comfortable with matrix calculus, Lagrange multipliers/convex duality, and stability analysis of nonlinear ODEs", "sets": {"linear-algebra": 0.85, "calculus-odes": 0.8, "optimization": 0.65, "dynamical-systems": 0.5}, "goal": null}
+   ]
+  },
+  {
+   "id": "bg-prob",
+   "prompt": "How comfortable are you with probability and statistics?",
+   "type": "single",
+   "options": [
+    {"id": "prob-basic", "label": "I know what a mean, variance and a histogram are", "sets": {"probability": 0.15, "stats-ml": 0.1}, "goal": null},
+    {"id": "prob-bayes", "label": "I can apply Bayes' rule and work with Gaussian densities, including conditioning a 2-D Gaussian", "sets": {"probability": 0.5, "stats-ml": 0.3}, "goal": null},
+    {"id": "prob-infer", "label": "I've derived a maximum-likelihood or EM update, or run MCMC to sample a posterior", "sets": {"probability": 0.75, "stats-ml": 0.55, "optimization": 0.35}, "goal": null},
+    {"id": "prob-theory", "label": "I'm comfortable with measure-theoretic probability, information theory (entropy, KL) and asymptotic statistics", "sets": {"probability": 0.9, "stats-ml": 0.65, "theory": 0.4}, "goal": null}
+   ]
+  },
+  {
+   "id": "bg-ml",
+   "prompt": "Which of these have you done yourself? (choose all that apply)",
+   "type": "multi",
+   "options": [
+    {"id": "ml-sklearn", "label": "Fit a linear or logistic regression and checked it on a held-out test set (e.g. scikit-learn)", "sets": {"stats-ml": 0.45, "optimization": 0.2}, "goal": null},
+    {"id": "ml-torch", "label": "Trained a neural net in PyTorch or JAX, writing the training loop myself", "sets": {"deep-learning": 0.5, "optimization": 0.4, "stats-ml": 0.35}, "goal": null},
+    {"id": "ml-transformer", "label": "Trained or fine-tuned a transformer or language model", "sets": {"deep-learning": 0.7, "optimization": 0.45}, "goal": null},
+    {"id": "ml-generative", "label": "Implemented a VAE, diffusion or flow-matching model", "sets": {"generative-models": 0.6, "deep-learning": 0.65, "probability": 0.5}, "goal": null},
+    {"id": "ml-theory", "label": "Read papers on NTK, singular learning theory or learning dynamics closely enough to follow the derivations", "sets": {"theory": 0.55, "deep-learning": 0.5}, "goal": null},
+    {"id": "ml-none", "label": "None of these yet", "sets": {}, "goal": null}
+   ]
+  },
+  {
+   "id": "bg-control",
+   "prompt": "Which of these control, estimation or decision-making tasks have you done? (choose all that apply)",
+   "type": "multi",
+   "options": [
+    {"id": "ctl-pid", "label": "Tuned a PID loop or read a Bode plot to check gain and phase margins", "sets": {"control": 0.4, "signals-estimation": 0.3}, "goal": null},
+    {"id": "ctl-filter", "label": "Designed a digital filter or computed a spectrum with an FFT", "sets": {"signals-estimation": 0.45, "calculus-odes": 0.3}, "goal": null},
+    {"id": "ctl-kalman", "label": "Implemented a Kalman filter (or EKF/particle filter) for tracking or sensor fusion", "sets": {"signals-estimation": 0.65, "probability": 0.5, "control": 0.3}, "goal": null},
+    {"id": "ctl-optimal", "label": "Designed an LQR, LQG or MPC controller", "sets": {"control": 0.7, "optimization": 0.5, "linear-algebra": 0.5}, "goal": null},
+    {"id": "ctl-lyap", "label": "Proved stability with a Lyapunov function or analyzed a system's phase portrait and bifurcations", "sets": {"dynamical-systems": 0.6, "control": 0.4, "calculus-odes": 0.55}, "goal": null},
+    {"id": "ctl-rl", "label": "Trained an RL agent (e.g. Q-learning, DQN or PPO) on an environment", "sets": {"rl": 0.5, "deep-learning": 0.35}, "goal": null},
+    {"id": "ctl-none", "label": "None of these yet", "sets": {}, "goal": null}
+   ]
+  },
+  {
+   "id": "bg-practical",
+   "prompt": "What is your hands-on programming and experimentation experience?",
+   "type": "single",
+   "options": [
+    {"id": "prac-read", "label": "I mostly read; I rarely write code", "sets": {}, "goal": null},
+    {"id": "prac-numpy", "label": "I can write NumPy code to do a least-squares fit or compute an FFT", "sets": {"linear-algebra": 0.35, "stats-ml": 0.25, "signals-estimation": 0.2}, "goal": null},
+    {"id": "prac-sim", "label": "I've written simulation code for ODEs or physical systems (e.g. with scipy.integrate or a custom integrator)", "sets": {"calculus-odes": 0.55, "dynamical-systems": 0.45}, "goal": null},
+    {"id": "prac-gpu", "label": "I've run multi-hour GPU training jobs and debugged diverging loss curves", "sets": {"deep-learning": 0.6, "optimization": 0.5}, "goal": null}
+   ]
+  },
+  {
+   "id": "bg-goal",
+   "prompt": "What do you most want to get out of the atlas first?",
+   "type": "single",
+   "options": [
+    {"id": "goal-foundations", "label": "Solid foundations: regression, kernels and how they lead to neural nets", "sets": {}, "goal": "regression-to-gps"},
+    {"id": "goal-signals", "label": "Understand signals, filters and why CNNs look the way they do", "sets": {}, "goal": "signals-to-convnets"},
+    {"id": "goal-control", "label": "Learn state estimation and optimal control (Kalman filter, LQR/LQG, MPC)", "sets": {}, "goal": "estimation-to-control"},
+    {"id": "goal-pgm", "label": "Learn probabilistic graphical models and how they underlie world models", "sets": {}, "goal": "graphical-models-to-belief-states"},
+    {"id": "goal-sequence", "label": "Understand modern sequence architectures: RNNs, S4/Mamba, attention", "sets": {}, "goal": "sequence-models-rnn-to-ssm"},
+    {"id": "goal-physics", "label": "Use ML for physical systems: equation discovery, PINNs, neural operators", "sets": {}, "goal": "physics-informed-learning"},
+    {"id": "goal-mbrl", "label": "Build agents that plan with learned models and act safely", "sets": {}, "goal": "model-based-rl-and-safe-action"},
+    {"id": "goal-generative", "label": "Understand diffusion, flow matching and Schrödinger bridges", "sets": {}, "goal": "generative-transport"},
+    {"id": "goal-dynamics", "label": "Understand how deep networks learn during training (NTK, SLT, developmental stages)", "sets": {}, "goal": "how-deep-nets-learn"},
+    {"id": "goal-capable", "label": "Understand LLMs, VLMs and robot VLAs as engineered systems", "sets": {}, "goal": "capable-systems-llm-to-vla"},
+    {"id": "goal-geometry", "label": "See the synthesis: where system-theoretic and statistical-learning quantities connect", "sets": {}, "goal": "capstone-learning-geometry-meets-control"},
+    {"id": "goal-alignment", "label": "Study alignment: reward misspecification, preferences and correctable agents", "sets": {}, "goal": "capstone-alignment-belief-state"}
+   ]
+  }
+ ]
+}
