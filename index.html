@@ -42,7 +42,8 @@
     <div id="results" class="glass" role="listbox" hidden></div>
   </div>
   <div class="spacer"></div>
-  <div class="tools glass" role="group" aria-label="View options">
+  <button id="t-more" class="glass" aria-expanded="false" aria-controls="view-tools" aria-label="View options"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+  <div class="tools glass" id="view-tools" role="group" aria-label="View options">
     <button class="tool" id="t-hyp" aria-pressed="false" title="Show untested hypothesis connections"><span class="sw"></span><span class="txt">Hypotheses</span></button>
     <button class="tool" id="t-drift" aria-pressed="true" title="Slow automatic rotation"><span class="sw"></span><span class="txt">Drift</span></button>
     <button class="tool" id="t-overview" title="Return to the full view"><span class="txt">Overview</span><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/></svg></button>
@@ -61,6 +62,7 @@
   </ul>
   <span class="eyebrow">Start somewhere</span>
   <div class="chips" id="starts" style="margin-top:8px"></div>
+  <button class="btn primary welcome-go" data-welcome-dismiss>Start exploring</button>
   <div class="legend" aria-label="Connection evidence legend">
     <span><i class="exact"></i>Exact, conditional</span>
     <span><i class="established"></i>Established</span>
