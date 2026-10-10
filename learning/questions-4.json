@@ -1,0 +1,517 @@
+{
+ "version": 1,
+ "items": [
+  {
+   "id": "q4-wbic-1",
+   "node": "wbic",
+   "skill": "theory",
+   "difficulty": 1,
+   "prompt": "Watanabe's WBIC is the posterior average of n·L_n(w) taken at which inverse temperature β?",
+   "choices": [
+    "β = 1",
+    "β = 1/n",
+    "β = 1/log n",
+    "β = log n / n"
+   ],
+   "answer": 2,
+   "explain": "WBIC averages n·L_n over the tempered posterior at β = 1/log n. At that single temperature the average shares the Bayes free energy's leading terms nL_n(w₀) + λ log n.",
+   "source": "https://www.jmlr.org/papers/v14/watanabe13a.html"
+  },
+  {
+   "id": "q4-wbic-2",
+   "node": "wbic",
+   "skill": "theory",
+   "difficulty": 2,
+   "prompt": "For a regular model (unique optimum, positive-definite Fisher information), WBIC agrees up to o_p(1) with which classical criterion?",
+   "choices": [
+    "BIC",
+    "WAIC",
+    "DIC",
+    "AIC"
+   ],
+   "answer": 0,
+   "explain": "In the regular case λ = d/2 and m = 1, so WBIC = nL_n(ŵ) + (d/2) log n + o_p(1), which is BIC. Singular models break this reduction, which is why WBIC is needed.",
+   "source": "https://www.jmlr.org/papers/v14/watanabe13a.html"
+  },
+  {
+   "id": "q4-wbic-3",
+   "node": "wbic",
+   "skill": "probability",
+   "difficulty": 3,
+   "prompt": "The Bayes free energy expands as F_n = nL_n(w₀) + λ log n − (m−1) log log n + O_p(1). How closely does WBIC track F_n?",
+   "choices": [
+    "Up to O_p(1), including the log log n term",
+    "Its first two terms; the gap is O_p(√log n)",
+    "Only the nL_n(w₀) term; λ log n must be added",
+    "Exactly at every finite n, even for singular models"
+   ],
+   "answer": 1,
+   "explain": "Watanabe's Theorem 4 gives WBIC = nL_n(w₀) + λ log n + U_n√(λ log n/2) + O_p(1). So WBIC captures the first two terms but not the log log n or constant terms.",
+   "source": "https://www.jmlr.org/papers/v14/watanabe13a.html"
+  },
+  {
+   "id": "q4-llcsgld-1",
+   "node": "llcsgld",
+   "skill": "probability",
+   "difficulty": 1,
+   "prompt": "How does the SGLD-based estimator compute λ̂ at a trained parameter w*?",
+   "choices": [
+    "Half the rank of the Hessian at w*",
+    "The mean sampled loss minus L_n(w*), times nβ*",
+    "The squared gradient norm at w*, averaged over minibatches",
+    "The count of weights above a magnitude threshold"
+   ],
+   "answer": 1,
+   "explain": "λ̂(w*) = nβ*(E[L_n(w)] − L_n(w*)), where the expectation is over a tempered posterior localized at w* with β* = 1/log n and sampled by SGLD. This is the localized WBIC rearranged.",
+   "source": "https://arxiv.org/abs/2308.12108"
+  },
+  {
+   "id": "q4-llcsgld-2",
+   "node": "llcsgld",
+   "skill": "probability",
+   "difficulty": 2,
+   "prompt": "Why does the LLC sampler add (γ/2)‖w − w*‖² to the exponent of the tempered posterior?",
+   "choices": [
+    "To keep the chain near w*, so the estimate reflects local geometry",
+    "To make the posterior Gaussian, so λ̂ can be read from its covariance",
+    "To cancel the injected noise, so SGLD becomes plain gradient descent",
+    "To act as weight decay, so λ̂ equals the global learning coefficient"
+   ],
+   "answer": 0,
+   "explain": "The localizing term tethers samples to a neighborhood of w*, so the estimate describes the geometry around that one solution rather than the whole landscape. The posterior is not Gaussian and the noise is still present.",
+   "source": "https://arxiv.org/abs/2308.12108"
+  },
+  {
+   "id": "q4-llcsgld-3",
+   "node": "llcsgld",
+   "skill": "theory",
+   "difficulty": 3,
+   "prompt": "What is the theoretical status of the claim that the localized, SGLD-sampled quantity equals the true local learning coefficient λ(w*)?",
+   "choices": [
+    "Proved for every γ > 0, once the SGLD chain reaches stationarity",
+    "Proved only as γ → ∞, where the posterior collapses onto w*",
+    "Conjectured under conditions on γ; checked on models with known λ",
+    "Disproved for deep linear networks, where it doubles λ"
+   ],
+   "answer": 2,
+   "explain": "Lau et al. conjecture the equality for suitable γ and validate the estimator on deep linear networks, whose coefficients are known. Step size, γ and chain length still change the estimate, so they belong in every receipt.",
+   "source": "https://arxiv.org/abs/2308.12108"
+  },
+  {
+   "id": "q4-degeneracy-1",
+   "node": "degeneracy",
+   "skill": "theory",
+   "difficulty": 1,
+   "prompt": "At a regular (non-degenerate) minimum of a model with d parameters, what is the learning coefficient λ?",
+   "choices": [
+    "d",
+    "log d",
+    "d/2",
+    "2d"
+   ],
+   "answer": 2,
+   "explain": "A regular basin has low-loss volume V(ε) ≈ cε^(d/2), so λ = d/2 and the free energy recovers BIC's (d/2) log n. Degenerate minima have λ < d/2.",
+   "source": "https://arxiv.org/abs/2010.11560"
+  },
+  {
+   "id": "q4-degeneracy-2",
+   "node": "degeneracy",
+   "skill": "linear-algebra",
+   "difficulty": 2,
+   "prompt": "At a minimum of a network with d parameters, the Hessian has rank r < d. What does this fact alone tell you about λ?",
+   "choices": [
+    "λ = r/2, because flat directions contribute nothing",
+    "λ = d/2, because Hessian rank never enters the volume exponent",
+    "Rank alone does not fix λ; higher-order loss terms decide it",
+    "λ is zero, because a singular Hessian means no curvature"
+   ],
+   "answer": 2,
+   "explain": "Flat Hessian directions can still be curved at higher order, so λ depends on more than rank. Kurumadani's formula λ = (d₁ − r + rm)/(2m) at non-singular realizable points shows the order m entering alongside the Fisher rank.",
+   "source": "https://arxiv.org/abs/2408.13030"
+  },
+  {
+   "id": "q4-degeneracy-3",
+   "node": "degeneracy",
+   "skill": "theory",
+   "difficulty": 3,
+   "prompt": "Near a minimum, the low-loss volume scales as V(ε) = cε^λ(−log ε)^(m−1). Networks A and B reach equally low loss, and A has the smaller λ. What follows?",
+   "choices": [
+    "A's low-loss region shrinks more slowly, so A is more degenerate",
+    "A's low-loss region shrinks faster, so A is less degenerate",
+    "A has more parameters than B, since λ counts effective dimensions",
+    "A has a larger Hessian determinant, so its basin is sharper"
+   ],
+   "answer": 0,
+   "explain": "For ε < 1 a smaller exponent gives a larger volume, so more nearby parameter space stays low-loss: A is more degenerate. λ is a local geometric quantity, not a parameter count.",
+   "source": "https://arxiv.org/abs/2308.12108"
+  },
+  {
+   "id": "q4-stagewise-1",
+   "node": "stagewise",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "In Hoogland et al.'s study of two small transformers, how were developmental stage boundaries located?",
+   "choices": [
+    "From jumps in validation accuracy on a held-out benchmark suite",
+    "From spikes in gradient norm during learning-rate warmup",
+    "From changes in the number of heads surviving pruning",
+    "From plateaus in the estimated LLC over log training time"
+   ],
+   "answer": 3,
+   "explain": "The authors track λ̂ over training and place stage boundaries where the LLC curve plateaus (critical points of λ̂ over log time). They then check that stages coincide with behavioral and structural changes.",
+   "source": "https://arxiv.org/abs/2402.02364"
+  },
+  {
+   "id": "q4-stagewise-2",
+   "node": "stagewise",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "What did Hoogland et al. report about the direction of LLC change across the stages they found?",
+   "choices": [
+    "λ̂ rose monotonically through every stage of both models",
+    "λ̂ fell in several stages, such as LM3, LR3 and LR4",
+    "λ̂ fell monotonically from initialization onward",
+    "λ̂ was flat within stages and jumped only at boundaries"
+   ],
+   "answer": 1,
+   "explain": "Most stages increase λ̂, but some decrease it (LM3 in the language model, LR3 and LR4 in in-context regression). Those stages are read as the model simplifying, so development does not only add complexity.",
+   "source": "https://arxiv.org/abs/2402.02364"
+  },
+  {
+   "id": "q4-stagewise-3",
+   "node": "stagewise",
+   "skill": "theory",
+   "difficulty": 3,
+   "prompt": "Which conclusion does the stagewise-development evidence support?",
+   "choices": [
+    "LLC changes cause the behavioral transitions, shown by intervening on λ̂",
+    "The same five stages occur in every transformer, whatever the task",
+    "LLC stages coincide with behavior changes in two small transformers",
+    "Mid-training λ̂ values are exact, since each checkpoint is a minimum"
+   ],
+   "answer": 2,
+   "explain": "The evidence is an association in two small transformers; no causal intervention on λ̂ was made. The LLC is defined at local minima but estimated at mid-training checkpoints, a practical rather than theoretical justification.",
+   "source": "https://arxiv.org/abs/2402.02364"
+  },
+  {
+   "id": "q4-rllc-1",
+   "node": "rllc",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What does a weight-refined LLC measure?",
+   "choices": [
+    "The full network's LLC, evaluated on a different data distribution instead",
+    "The LLC from sampling one component's weights, the rest held fixed",
+    "The share of the network's total LLC owed to one component",
+    "The LLC after retraining the network with one component removed"
+   ],
+   "answer": 1,
+   "explain": "The weight-refined LLC samples only the chosen weights V and freezes the rest. Evaluating on another distribution instead gives the data-refined LLC; neither is an additive share of the total.",
+   "source": "https://arxiv.org/abs/2410.02984"
+  },
+  {
+   "id": "q4-rllc-2",
+   "node": "rllc",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "In a two-layer attention-only transformer, what did clustering the per-head weight-refined LLC curves over training recover?",
+   "choices": [
+    "The order in which the random seed initialized the heads",
+    "Which heads had the largest weight norms at the end of training",
+    "Each head's layer index, with no functional distinction",
+    "Functional head types: previous-token, induction and multigram"
+   ],
+   "answer": 3,
+   "explain": "Wang et al. found that per-head λ̂(t) curves cluster by functional type, a partition they confirmed with ablations. The analysis also surfaced a previously unknown multigram circuit.",
+   "source": "https://arxiv.org/abs/2410.02984"
+  },
+  {
+   "id": "q4-rllc-3",
+   "node": "rllc",
+   "skill": "theory",
+   "difficulty": 3,
+   "prompt": "Head A's weight-refined LLC is 30 and head B's is 10, in a model whose full LLC is 100. Which inference is valid?",
+   "choices": [
+    "Each is a restricted sub-model's λ; they need not sum to 100",
+    "A and B together account for 40% of the model's complexity",
+    "The other components must account for exactly 60",
+    "The full LLC must be at least 300, since refined values bound it"
+   ],
+   "answer": 0,
+   "explain": "A weight-refined coefficient is the volume exponent of a sub-model with the other weights frozen. It is a different model's λ, not an additive share of the network's, so no sum rule applies.",
+   "source": "https://arxiv.org/abs/2410.02984"
+  },
+  {
+   "id": "q4-bayesphase-1",
+   "node": "bayesphase",
+   "skill": "theory",
+   "difficulty": 1,
+   "prompt": "Under the free energy F_n ≈ nL + λ log n, how does the posterior's preferred phase tend to shift as sample size n grows?",
+   "choices": [
+    "From low-loss, high-λ phases to high-loss, low-λ phases",
+    "From high-loss, low-λ phases to low-loss, high-λ phases",
+    "Not at all, since λ log n comes to dominate nL at large n",
+    "Back and forth between phases at each doubling of n"
+   ],
+   "answer": 1,
+   "explain": "The loss term grows like n and the complexity term like log n, so at small n a simpler (low-λ) phase can win despite higher loss, and at large n lower loss wins. Chen et al. describe this as sequential learning.",
+   "source": "https://arxiv.org/abs/2310.06301"
+  },
+  {
+   "id": "q4-bayesphase-2",
+   "node": "bayesphase",
+   "skill": "theory",
+   "difficulty": 2,
+   "prompt": "Phases α and β have loss gap ΔL = L_β − L_α and coefficient gap Δλ = λ_β − λ_α. Ignoring constant terms, at what n does the posterior switch from α to β?",
+   "choices": [
+    "Where ΔL = Δλ",
+    "Where nΔλ + ΔL log n = 0",
+    "Where ΔL · Δλ = log n / n",
+    "Where nΔL + Δλ log n = 0"
+   ],
+   "answer": 3,
+   "explain": "Each phase's local free energy is about nL_α + λ_α log n + c_α. The transition sits where these cross, nΔL + Δλ log n + Δc = 0; with constants dropped this is the stated condition.",
+   "source": "https://arxiv.org/abs/2310.06301"
+  },
+  {
+   "id": "q4-bayesphase-3",
+   "node": "bayesphase",
+   "skill": "deep-learning",
+   "difficulty": 3,
+   "prompt": "What did Chen et al. find when comparing Bayesian phase transitions with SGD trajectories in a toy model of superposition?",
+   "choices": [
+    "Every Bayesian transition appeared in SGD at the matching sample size n",
+    "SGD moved in the opposite order, from low-loss phases to high-loss ones",
+    "Similar loss–complexity order, but some transitions had no SGD analogue",
+    "SGD never visited the k-gon critical points that the posterior favored"
+   ],
+   "answer": 2,
+   "explain": "SGD passed through the k-gon critical points from high loss and low λ̂ to low loss and high λ̂, like the posterior. But some Bayesian transitions, such as 5→6-gon, had no observed SGD counterpart.",
+   "source": "https://arxiv.org/abs/2310.06301"
+  },
+  {
+   "id": "q4-transientridge-1",
+   "node": "transientridge",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "In in-context linear-regression transformers trained at intermediate task diversity, what is the transient ridge phenomenon?",
+   "choices": [
+    "It first behaves like ridge regression, then specializes to the training tasks",
+    "The model first memorizes the training tasks, then generalizes to ridge regression",
+    "Ridge regularization added to training is temporarily undone by the optimizer",
+    "The model mimics ridge regression only in the first few positions of each context"
+   ],
+   "answer": 0,
+   "explain": "Carroll et al. find the model first approximates ridge regression, a general solution, then moves toward the task-specialized dMMSE predictor. Above a task-diversity threshold it stays near ridge.",
+   "source": "https://arxiv.org/abs/2501.17745"
+  },
+  {
+   "id": "q4-transientridge-2",
+   "node": "transientridge",
+   "skill": "theory",
+   "difficulty": 2,
+   "prompt": "At intermediate task counts, why does the lower-loss specialized solution (dMMSE) lose out to ridge early in training, per Carroll et al.?",
+   "choices": [
+    "Ridge has lower training loss, so gradient descent reaches it first",
+    "Ridge has lower LLC, which outweighs its loss gap at first",
+    "dMMSE needs more attention heads than the model has early on",
+    "Ridge has higher LLC, and complex solutions are learned first"
+   ],
+   "answer": 1,
+   "explain": "Ridge has higher loss but lower LLC than dMMSE there. In the log-odds nΔℓ + Δλ log n the complexity term favors ridge early and the loss term favors dMMSE later.",
+   "source": "https://arxiv.org/abs/2501.17745"
+  },
+  {
+   "id": "q4-transientridge-3",
+   "node": "transientridge",
+   "skill": "theory",
+   "difficulty": 3,
+   "prompt": "Which limitation do the authors acknowledge for their Bayesian internal-model-selection account of transience?",
+   "choices": [
+    "It holds only for transformers trained without weight decay",
+    "It assumes a regular, non-singular loss landscape for both solutions",
+    "It carries a sample-size argument over to training time by analogy",
+    "It requires the number of training tasks M to be infinite"
+   ],
+   "answer": 2,
+   "explain": "Networks are trained by SGD, not Bayesian inference, so moving from sample size to training time is a motivating analogy. They also assume lower-order free-energy terms cancel, and they leave open why transience ends at high M.",
+   "source": "https://arxiv.org/abs/2501.17745"
+  },
+  {
+   "id": "q4-susceptibility-1",
+   "node": "susceptibility",
+   "skill": "probability",
+   "difficulty": 1,
+   "prompt": "In the structural-inference framework, what is a susceptibility?",
+   "choices": [
+    "How a component's posterior-mean observable responds to a data shift",
+    "How the final training loss responds to a small change in the learning rate",
+    "How the test loss responds to perturbing one token's input embedding",
+    "How often a component's weights change sign over the course of training"
+   ],
+   "answer": 0,
+   "explain": "Baker et al. shift the data distribution slightly (for example toward code) and measure the change in the posterior expectation of an observable tied to a component. They estimate it with local SGLD sampling.",
+   "source": "https://arxiv.org/abs/2504.18274"
+  },
+  {
+   "id": "q4-susceptibility-2",
+   "node": "susceptibility",
+   "skill": "probability",
+   "difficulty": 2,
+   "prompt": "By the fluctuation–response identity, the susceptibility χ = (1/nβ)∂⟨φ⟩/∂h at h = 0 equals which quantity?",
+   "choices": [
+    "The Hessian of the loss evaluated along φ",
+    "Var_β[φ] divided by the learning coefficient λ",
+    "−Cov_β[φ, ΔL] under the tempered posterior",
+    "The gradient ∇φ(w*) projected onto ∇ΔL(w*)"
+   ],
+   "answer": 2,
+   "explain": "Differentiating the posterior expectation with respect to the perturbation strength gives a covariance between the observable and the loss change. That turns the response into something sampling can estimate.",
+   "source": "https://arxiv.org/abs/2504.18274"
+  },
+  {
+   "id": "q4-susceptibility-3",
+   "node": "susceptibility",
+   "skill": "deep-learning",
+   "difficulty": 3,
+   "prompt": "How did Baker et al. use susceptibilities to find functional modules in a 3M-parameter transformer?",
+   "choices": [
+    "They pruned each head in turn and ranked heads by the resulting loss increase",
+    "They trained a linear probe on each head to predict next-token labels",
+    "They clustered heads by the norms of their query–key weight matrices",
+    "Low-rank structure in a component-by-data response matrix split head types"
+   ],
+   "answer": 3,
+   "explain": "Per-token susceptibilities are assembled into a response matrix; its low-rank structure (via PCA) separates induction heads from multigram heads. No retraining or ablation is needed for the readout.",
+   "source": "https://arxiv.org/abs/2504.18274"
+  },
+  {
+   "id": "q4-bif-1",
+   "node": "bif",
+   "skill": "stats-ml",
+   "difficulty": 1,
+   "prompt": "In the Bayesian influence function, what takes the place of the inverse Hessian used by classical influence functions?",
+   "choices": [
+    "A diagonal Fisher approximation, inverted entrywise",
+    "A posterior covariance between per-sample loss and the observable",
+    "The identity matrix, giving plain gradient dot products",
+    "A Kronecker-factored (EK-FAC) approximation to the inverse Hessian"
+   ],
+   "answer": 1,
+   "explain": "The BIF is −Cov(ℓ_i(w), φ(w)) over a localized posterior sampled by SGMCMC. No Hessian is formed or inverted, which matters because deep-network Hessians are often singular.",
+   "source": "https://arxiv.org/abs/2509.26544"
+  },
+  {
+   "id": "q4-bif-2",
+   "node": "bif",
+   "skill": "stats-ml",
+   "difficulty": 2,
+   "prompt": "In which regime does the BIF's leading term reduce to the classical influence −∇φᵀH⁻¹∇ℓ_i?",
+   "choices": [
+    "A singular regime, where H has many zero eigenvalues",
+    "Any regime, provided the sampler runs long enough",
+    "The infinite-temperature limit, where posterior equals prior",
+    "A non-singular regime with a Gaussian (Laplace) posterior"
+   ],
+   "answer": 3,
+   "explain": "Under a Laplace approximation the posterior covariance is H⁻¹ up to scaling, recovering the classical formula. The authors note this approximation does not hold for deep networks, which is why the BIF differs there.",
+   "source": "https://arxiv.org/abs/2509.26544"
+  },
+  {
+   "id": "q4-bif-3",
+   "node": "bif",
+   "skill": "deep-learning",
+   "difficulty": 3,
+   "prompt": "Lee et al. computed Bayesian influence at successive training checkpoints. What did they report?",
+   "choices": [
+    "Influence could flip sign and peak at developmental transitions",
+    "A sample's influence settled within the first few percent of training",
+    "Every sample's influence grew steadily in magnitude throughout training",
+    "Influence matched EK-FAC estimates exactly at every checkpoint"
+   ],
+   "answer": 0,
+   "explain": "Their stagewise attribution framework predicts, and they observe, non-monotone influence with sign flips and sharp peaks at developmental transitions. In language models, token-level shifts aligned with known stages.",
+   "source": "https://arxiv.org/abs/2510.12071"
+  },
+  {
+   "id": "q4-grokkingslt-1",
+   "node": "grokkingslt",
+   "skill": "theory",
+   "difficulty": 1,
+   "prompt": "In the basin-selection view of grokking, why does the generalizing basin come to dominate the posterior?",
+   "choices": [
+    "It has far lower training loss than the memorizing basin",
+    "At nearly equal loss it has lower LLC, so lower free energy",
+    "It uses more active parameters, giving a larger prior mass",
+    "SGD reaches it first, and the posterior follows the optimizer"
+   ],
+   "answer": 1,
+   "explain": "With F ≈ nL + λ log n and near-equal loss, the lower-λ basin has lower free energy and so more posterior mass. Cullen et al. cast grokking as moving from a higher-LLC memorizing basin to a lower-LLC generalizing one.",
+   "source": "https://arxiv.org/abs/2603.01192"
+  },
+  {
+   "id": "q4-grokkingslt-2",
+   "node": "grokkingslt",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "In Cullen et al.'s account, what determines when the grokking transition happens during training?",
+   "choices": [
+    "Optimization dynamics; the LLC ranks basins but not timing",
+    "The LLC gap alone, through where the free energies cross",
+    "The training-set size alone, independent of which optimizer is used",
+    "The initial weight norm alone, independent of the data"
+   ],
+   "answer": 0,
+   "explain": "The LLC says which basin the posterior prefers, but the authors attribute the timing of the move to optimization dynamics. Empirically, estimated LLC trajectories track the onset of generalization.",
+   "source": "https://arxiv.org/abs/2603.01192"
+  },
+  {
+   "id": "q4-pacbayes-1",
+   "node": "pacbayes",
+   "skill": "theory",
+   "difficulty": 1,
+   "prompt": "In a PAC-Bayes bound for a randomized predictor ρ with prior π, which term plays the role of complexity?",
+   "choices": [
+    "The VC dimension of the hypothesis class",
+    "The Rademacher complexity of the loss class",
+    "The number of parameters in the model",
+    "The divergence KL(ρ‖π) to the prior"
+   ],
+   "answer": 3,
+   "explain": "PAC-Bayes bounds trade empirical risk under ρ against KL(ρ‖π). Complexity is measured relative to the prior, not by counting parameters or capacity of the class.",
+   "source": "https://arxiv.org/abs/2110.11216"
+  },
+  {
+   "id": "q4-pacbayes-2",
+   "node": "pacbayes",
+   "skill": "probability",
+   "difficulty": 2,
+   "prompt": "Which distribution ρ minimizes β·E_ρ[r(θ)] + KL(ρ‖π), where r is empirical risk and β > 0 an inverse temperature?",
+   "choices": [
+    "The prior π itself",
+    "The Gibbs posterior ρ ∝ e^(−βr(θ))π",
+    "A point mass at the empirical risk minimizer",
+    "A Gaussian at the minimizer with covariance H⁻¹"
+   ],
+   "answer": 1,
+   "explain": "By the Donsker–Varadhan variational formula, the minimum equals −log E_π e^(−βr) and is attained at the Gibbs measure. This is why bound-minimizing PAC-Bayes posteriors are the tempered posteriors that SLT studies.",
+   "source": "https://arxiv.org/abs/2110.11216"
+  },
+  {
+   "id": "q4-pacbayes-3",
+   "node": "pacbayes",
+   "skill": "theory",
+   "difficulty": 3,
+   "prompt": "A PAC-Bayes bound is evaluated for a Gibbs posterior around a trained network. What does it guarantee for the single SGD endpoint?",
+   "choices": [
+    "The same bound, since the endpoint is the posterior's mode",
+    "A tighter bound, since a point mass has zero KL to the prior",
+    "Nothing directly; it covers draws from the randomized posterior",
+    "The same bound, provided the Hessian at the endpoint is invertible"
+   ],
+   "answer": 2,
+   "explain": "PAC-Bayes bounds control the risk of predictors drawn from ρ, not of a particular point. A point mass has infinite KL to a continuous prior, so it does not inherit a tighter bound.",
+   "source": "https://arxiv.org/abs/2110.11216"
+  }
+ ]
+}
