@@ -1,181 +1,181 @@
 {
- "version": 1,
- "items": [
-  {
-   "id": "q3-mcmc-1",
-   "node": "mcmc",
-   "skill": "probability",
-   "difficulty": 1,
-   "prompt": "Why can Metropolis–Hastings sample from a posterior known only up to its normalizing constant?",
-   "choices": [
-    "The proposal absorbs the constant once burn-in has finished",
-    "The constant is estimated from the fraction of accepted moves",
-    "The constant cancels in the ratio p(x′)q(x|x′) / p(x)q(x′|x)",
-    "Detailed balance forces the constant to equal one for any target"
-   ],
-   "answer": 2,
-   "explain": "The acceptance probability depends on the target only through the ratio p(x′)/p(x), so any normalizing constant cancels. This is why MH works with unnormalized posteriors and Gibbs distributions.",
-   "source": "https://www.cs.ubc.ca/~arnaud/andrieu_defreitas_doucet_jordan_intromontecarlomachinelearning.pdf"
-  },
-  {
-   "id": "q3-mcmc-2",
-   "node": "mcmc",
-   "skill": "stats-ml",
-   "difficulty": 2,
-   "prompt": "A sampler's transition kernel is proven to leave the posterior invariant. Which claim still needs separate evidence?",
-   "choices": [
-    "That the posterior is a stationary distribution of the chain",
-    "That a chain started at the posterior stays distributed as the posterior",
-    "That cycling it with another posterior-invariant kernel keeps the posterior invariant",
-    "That a finite run has mixed well enough for accurate posterior averages"
-   ],
-   "answer": 3,
-   "explain": "Invariance, and invariance of cycles of invariant kernels, follow from the proof. How fast a finite run approaches and explores the target is a separate mixing question that needs diagnostics.",
-   "source": "https://www.cs.ubc.ca/~arnaud/andrieu_defreitas_doucet_jordan_intromontecarlomachinelearning.pdf"
-  },
-  {
-   "id": "q3-mcmc-3",
-   "node": "mcmc",
-   "skill": "probability",
-   "difficulty": 3,
-   "prompt": "Stochastic gradient Langevin dynamics omits the Metropolis–Hastings accept/reject step. What do Welling and Teh offer as justification, and what is the cost?",
-   "choices": [
-    "Gradient noise exactly cancels the rejection step, so samples stay unbiased at any step size",
-    "Rejection probability goes to zero as steps shrink; finite steps leave discretization bias",
-    "Langevin proposals are full conditionals, so acceptance is always 1 as in Gibbs",
-    "Unbiased minibatch likelihoods make the acceptance ratio equal to 1 on average"
-   ],
-   "answer": 1,
-   "explain": "They argue that as step sizes decrease, discretization error and hence the MH rejection probability vanish, so the step can be ignored. At a fixed finite step size the uncorrected chain is biased.",
-   "source": "https://www.stats.ox.ac.uk/~teh/research/compstats/WelTeh2011a.pdf"
-  },
-  {
-   "id": "q3-gibbs-1",
-   "node": "gibbssampling",
-   "skill": "probability",
-   "difficulty": 1,
-   "prompt": "What does a single Gibbs sampling update do?",
-   "choices": [
-    "Draws one variable from its conditional given the current values of all others",
-    "Moves all variables along the log-posterior gradient plus Gaussian noise",
-    "Proposes a random perturbation of every variable and accepts it with probability min(1, ratio)",
-    "Sets one variable to the value that maximizes its conditional distribution"
-   ],
-   "answer": 0,
-   "explain": "Gibbs sampling replaces one variable (or block) by a draw from its full conditional; the paper's site-replacement step uses the local characteristics given the neighbors. Taking the conditional maximum instead would be iterated conditional modes, an optimizer.",
-   "source": "https://cs.uwaterloo.ca/~mannr/cs886-w10/GemanandGeman84.pdf"
-  },
-  {
-   "id": "q3-gibbs-2",
-   "node": "gibbssampling",
-   "skill": "probability",
-   "difficulty": 2,
-   "prompt": "In a Bayesian network, which variables must be known to sample node X from its full conditional?",
-   "choices": [
-    "Only its parents, since the DAG factorizes into p(x | parents) terms",
-    "Its parents and children, but not the children's other parents",
-    "Its parents, its children, and its children's other parents",
-    "All ancestors of X, since the probability tables chain through them"
-   ],
-   "answer": 2,
-   "explain": "The full conditional is proportional to p(x | parents) times the factors of its children, and those factors also involve the children's other parents. That set is the Markov blanket.",
-   "source": "https://www.cs.ubc.ca/~arnaud/andrieu_defreitas_doucet_jordan_intromontecarlomachinelearning.pdf"
-  },
-  {
-   "id": "q3-gibbs-3",
-   "node": "gibbssampling",
-   "skill": "probability",
-   "difficulty": 3,
-   "prompt": "Mean-field CAVI sets qⱼ(zⱼ) ∝ exp E₋ⱼ[log p(zⱼ | z₋ⱼ, x)]. How does this relate to a Gibbs update of zⱼ?",
-   "choices": [
-    "It equals the Gibbs update exactly once the sampler has reached its stationary distribution",
-    "It draws zⱼ from p(zⱼ | x) after integrating z₋ⱼ out exactly",
-    "It uses the prior p(zⱼ), since mean field assumes independence from data",
-    "It uses the same complete conditional but averages its log instead of drawing"
-   ],
-   "answer": 3,
-   "explain": "Blei, Kucukelbir and McAuliffe note that CAVI uses the same complete conditional as the Gibbs sampler, takes its expected log under the other factors, and sets a variational factor rather than drawing a sample.",
-   "source": "https://arxiv.org/pdf/1601.00670"
-  },
-  {
-   "id": "q3-blocked-1",
-   "node": "blockedgibbs",
-   "skill": "stats-ml",
-   "difficulty": 1,
-   "prompt": "What is the main motivation for blocked Gibbs sampling?",
-   "choices": [
-    "Making each update cheaper by splitting variables into smaller pieces",
-    "Updating strongly dependent variables jointly so each sweep moves farther",
-    "Removing the need to know any of the conditional distributions in closed form",
-    "Guaranteeing independent samples after one sweep through the blocks"
-   ],
-   "answer": 1,
-   "explain": "One-at-a-time updates mix slowly when components are highly correlated; sampling correlated variables together lets the chain take larger effective steps. Blocks need their own joint conditional draws, which may cost more.",
-   "source": "https://www.cs.ubc.ca/~arnaud/andrieu_defreitas_doucet_jordan_intromontecarlomachinelearning.pdf"
-  },
-  {
-   "id": "q3-blocked-2",
-   "node": "blockedgibbs",
-   "skill": "signals-estimation",
-   "difficulty": 2,
-   "prompt": "In a Gibbs sampler for a linear-Gaussian state-space model with known parameters, what does forward-filtering backward-sampling provide?",
-   "choices": [
-    "One exact draw of the entire state path from p(x₁:T | y₁:T)",
-    "The smoothed posterior mean path, used in place of a random draw",
-    "An approximate path whose error shrinks as more particles are used",
-    "Independent draws of each state from its filter p(xₜ | y₁:ₜ)"
-   ],
-   "answer": 0,
-   "explain": "Kalman filtering forward and then sampling backwards from Gaussian conditionals draws the whole path exactly from its joint posterior. Exact path sampling of this kind is available for linear-Gaussian and finite-state models.",
-   "source": "https://www.stats.ox.ac.uk/~doucet/andrieu_doucet_holenstein_PMCMC.pdf"
-  },
-  {
-   "id": "q3-blocked-3",
-   "node": "blockedgibbs",
-   "skill": "theory",
-   "difficulty": 3,
-   "prompt": "Liu (1994) proves ‖F_collapsed‖ ≤ ‖F_grouped‖ ≤ ‖F_standard‖ for a specific nested comparison. Which practical claim goes beyond the theorem?",
-   "choices": [
-    "Integrating x_d out yields a norm no larger than grouping it with x_(d−1)",
-    "Grouping x_d with x_(d−1) yields a norm no larger than the standard sweep",
-    "Any blocking of any variables will reduce wall-clock time to convergence",
-    "The operator norms equal maximal correlations between successive states"
-   ],
-   "answer": 2,
-   "explain": "The theorem compares three specific schemes by operator norm and leaves the cost of each sweep to the user. It does not cover arbitrary blockings or compute-adjusted efficiency.",
-   "source": "https://www.cs.columbia.edu/~blei/fogm/2023F/readings/Liu1994.pdf"
-  },
-  {
-   "id": "q3-pg-1",
-   "node": "particlegibbs",
-   "skill": "signals-estimation",
-   "difficulty": 1,
-   "prompt": "What distinguishes the conditional SMC update in particle Gibbs from an ordinary particle filter?",
-   "choices": [
-    "Particles are never resampled, so all their weights stay unbiased",
-    "Each particle runs its own Metropolis–Hastings chain between resampling steps",
-    "The proposal is always the exact optimal importance density",
-    "A fixed reference path is kept alive through every resampling step"
-   ],
-   "answer": 3,
-   "explain": "Conditional SMC forces a prespecified path to survive all resampling steps while the other N − 1 particles are generated as usual. This is what makes the particle Gibbs kernel leave the exact posterior invariant.",
-   "source": "https://www.stats.ox.ac.uk/~doucet/andrieu_doucet_holenstein_PMCMC.pdf"
-  },
-  {
-   "id": "q3-pg-2",
-   "node": "particlegibbs",
-   "skill": "probability",
-   "difficulty": 3,
-   "prompt": "Particle Gibbs with N = 5 particles is run on a long nonlinear time series. Which statement is correct?",
-   "choices": [
-    "Its draws are biased toward the filter estimate until N → ∞",
-    "Its invariant law is still the exact posterior, but it may mix very slowly",
-    "It is exact only for linear-Gaussian models and approximate otherwise",
-    "It mixes faster than with more particles because each sweep is cheaper to compute"
-   ],
-   "answer": 1,
-   "explain": "Andrieu, Doucet and Holenstein show the particle Gibbs kernel has the exact posterior as invariant marginal for any finite N. Too few particles for the series length cause path degeneracy and slow mixing, not bias in the target.",
-   "source": "https://www.stats.ox.ac.uk/~doucet/andrieu_doucet_holenstein_PMCMC.pdf"
-  }
- ]
+  "version": 1,
+  "items": [
+    {
+      "id": "q3-mcmc-1",
+      "node": "mcmc",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "Why can Metropolis–Hastings sample from a posterior known only up to its normalizing constant?",
+      "choices": [
+        "The proposal absorbs the constant once burn-in has finished",
+        "The constant is estimated from the fraction of accepted moves",
+        "The constant cancels in the ratio p(x′)q(x|x′) / p(x)q(x′|x)",
+        "Detailed balance forces the constant to equal one for any target"
+      ],
+      "answer": 2,
+      "explain": "The acceptance probability depends on the target only through the ratio p(x′)/p(x), so any normalizing constant cancels. This is why MH works with unnormalized posteriors and Gibbs distributions.",
+      "source": "https://www.cs.ubc.ca/~arnaud/andrieu_defreitas_doucet_jordan_intromontecarlomachinelearning.pdf"
+    },
+    {
+      "id": "q3-mcmc-2",
+      "node": "mcmc",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "A sampler's transition kernel is proven to leave the posterior invariant. Which claim still needs separate evidence?",
+      "choices": [
+        "That the posterior is a stationary distribution of the chain",
+        "That a chain started at the posterior stays distributed as the posterior",
+        "That cycling it with another posterior-invariant kernel keeps the posterior invariant",
+        "That a finite run has mixed well enough for accurate posterior averages"
+      ],
+      "answer": 3,
+      "explain": "Invariance, and invariance of cycles of invariant kernels, follow from the proof. How fast a finite run approaches and explores the target is a separate mixing question that needs diagnostics.",
+      "source": "https://www.cs.ubc.ca/~arnaud/andrieu_defreitas_doucet_jordan_intromontecarlomachinelearning.pdf"
+    },
+    {
+      "id": "q3-mcmc-3",
+      "node": "mcmc",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Stochastic gradient Langevin dynamics omits the Metropolis–Hastings accept/reject step. What do Welling and Teh offer as justification, and what caveat applies at a fixed step size?",
+      "choices": [
+        "Gradient noise exactly cancels the rejection step, so samples stay unbiased at any step size",
+        "Rejection probability goes to zero as steps shrink; finite steps leave discretization bias",
+        "Langevin proposals are full conditionals, so acceptance is always 1 as in Gibbs",
+        "Unbiased minibatch likelihoods make the acceptance ratio equal to 1 on average"
+      ],
+      "answer": 1,
+      "explain": "They argue that as step sizes decrease, discretization error and hence the MH rejection probability vanish, so the step can be ignored. At a fixed finite step size the uncorrected chain is biased.",
+      "source": "https://www.stats.ox.ac.uk/~teh/research/compstats/WelTeh2011a.pdf"
+    },
+    {
+      "id": "q3-gibbs-1",
+      "node": "gibbssampling",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "What does a single Gibbs sampling update do?",
+      "choices": [
+        "Draws one variable from its conditional given the current values of all others",
+        "Moves all variables along the log-posterior gradient plus Gaussian noise",
+        "Proposes a random perturbation of every variable and accepts it with probability min(1, ratio)",
+        "Sets one variable to the value that maximizes its conditional distribution"
+      ],
+      "answer": 0,
+      "explain": "Gibbs sampling replaces one variable (or block) by a draw from its full conditional; the paper's site-replacement step uses the local characteristics given the neighbors. Taking the conditional maximum instead would be iterated conditional modes, an optimizer.",
+      "source": "https://cs.uwaterloo.ca/~mannr/cs886-w10/GemanandGeman84.pdf"
+    },
+    {
+      "id": "q3-gibbs-2",
+      "node": "gibbssampling",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "In a Bayesian network, which variables must be known to sample node X from its full conditional?",
+      "choices": [
+        "Only its parents, since the DAG factorizes into p(x | parents) terms",
+        "Its parents and children, but not the children's other parents",
+        "Its parents, its children, and its children's other parents",
+        "All ancestors of X, since the probability tables chain through them"
+      ],
+      "answer": 2,
+      "explain": "The full conditional is proportional to p(x | parents) times the factors of its children, and those factors also involve the children's other parents. That set is the Markov blanket.",
+      "source": "https://www.cs.ubc.ca/~arnaud/andrieu_defreitas_doucet_jordan_intromontecarlomachinelearning.pdf"
+    },
+    {
+      "id": "q3-gibbs-3",
+      "node": "gibbssampling",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Mean-field CAVI sets qⱼ(zⱼ) ∝ exp E₋ⱼ[log p(zⱼ | z₋ⱼ, x)]. How does this relate to a Gibbs update of zⱼ?",
+      "choices": [
+        "It equals the Gibbs update exactly once the sampler has reached its stationary distribution",
+        "It draws zⱼ from p(zⱼ | x) after integrating z₋ⱼ out exactly",
+        "It uses the prior p(zⱼ), since mean field assumes independence from data",
+        "It uses the same complete conditional but averages its log instead of drawing"
+      ],
+      "answer": 3,
+      "explain": "Blei, Kucukelbir and McAuliffe note that CAVI uses the same complete conditional as the Gibbs sampler, takes its expected log under the other factors, and sets a variational factor rather than drawing a sample.",
+      "source": "https://arxiv.org/pdf/1601.00670"
+    },
+    {
+      "id": "q3-blocked-1",
+      "node": "blockedgibbs",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What is the main motivation for blocked Gibbs sampling?",
+      "choices": [
+        "Making each update cheaper by splitting variables into smaller pieces",
+        "Updating strongly dependent variables jointly so each sweep moves farther",
+        "Removing the need to know any of the conditional distributions in closed form",
+        "Guaranteeing independent samples after one sweep through the blocks"
+      ],
+      "answer": 1,
+      "explain": "One-at-a-time updates mix slowly when components are highly correlated; sampling correlated variables together lets the chain take larger effective steps. Blocks need their own joint conditional draws, which may cost more.",
+      "source": "https://www.cs.ubc.ca/~arnaud/andrieu_defreitas_doucet_jordan_intromontecarlomachinelearning.pdf"
+    },
+    {
+      "id": "q3-blocked-2",
+      "node": "blockedgibbs",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "In a Gibbs sampler for a linear-Gaussian state-space model with known parameters, what does forward-filtering backward-sampling provide?",
+      "choices": [
+        "One exact draw of the entire state path from p(x₁:T | y₁:T)",
+        "The smoothed posterior mean path, used in place of a random draw",
+        "An approximate path whose error shrinks as more particles are used",
+        "Independent draws of each state from its filter p(xₜ | y₁:ₜ)"
+      ],
+      "answer": 0,
+      "explain": "Kalman filtering forward and then sampling backwards from Gaussian conditionals draws the whole path exactly from its joint posterior. Exact path sampling of this kind is available for linear-Gaussian and finite-state models.",
+      "source": "https://www.stats.ox.ac.uk/~doucet/andrieu_doucet_holenstein_PMCMC.pdf"
+    },
+    {
+      "id": "q3-blocked-3",
+      "node": "blockedgibbs",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "Liu (1994) proves ‖F_collapsed‖ ≤ ‖F_grouped‖ ≤ ‖F_standard‖ for a specific nested comparison. Which claim does the paper not establish?",
+      "choices": [
+        "Integrating x_d out yields a norm no larger than grouping it with x_(d−1)",
+        "Grouping x_d with x_(d−1) yields a norm no larger than the standard sweep",
+        "Any blocking of any variables will reduce wall-clock time to convergence",
+        "The operator norms equal maximal correlations between successive states"
+      ],
+      "answer": 2,
+      "explain": "The theorem compares three specific schemes by operator norm, and a lemma identifies each norm with the maximal correlation of successive states. It leaves per-sweep cost to the user and does not cover arbitrary blockings or compute-adjusted efficiency.",
+      "source": "https://www.cs.columbia.edu/~blei/fogm/2023F/readings/Liu1994.pdf"
+    },
+    {
+      "id": "q3-pg-1",
+      "node": "particlegibbs",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "What distinguishes the conditional SMC update in particle Gibbs from an ordinary particle filter?",
+      "choices": [
+        "Particles are never resampled, so all their weights stay unbiased",
+        "Each particle runs its own Metropolis–Hastings chain between resampling steps",
+        "The proposal is always the exact optimal importance density",
+        "A fixed reference path is kept alive through every resampling step"
+      ],
+      "answer": 3,
+      "explain": "Conditional SMC forces a prespecified path to survive all resampling steps while the other N − 1 particles are generated as usual. This is what makes the particle Gibbs kernel leave the exact posterior invariant.",
+      "source": "https://www.stats.ox.ac.uk/~doucet/andrieu_doucet_holenstein_PMCMC.pdf"
+    },
+    {
+      "id": "q3-pg-2",
+      "node": "particlegibbs",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Particle Gibbs with N = 5 particles is run on a long nonlinear time series. Which statement is correct?",
+      "choices": [
+        "Its draws are biased toward the filter estimate until N → ∞",
+        "Its invariant law is still the exact posterior, but it may mix very slowly",
+        "It is exact only for linear-Gaussian models and approximate otherwise",
+        "It mixes faster than with more particles because each sweep is cheaper to compute"
+      ],
+      "answer": 1,
+      "explain": "Andrieu, Doucet and Holenstein show the particle Gibbs kernel has the exact posterior as invariant marginal for any finite N. Too few particles for the series length cause path degeneracy and slow mixing, not bias in the target.",
+      "source": "https://www.stats.ox.ac.uk/~doucet/andrieu_doucet_holenstein_PMCMC.pdf"
+    }
+  ]
 }
