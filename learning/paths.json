@@ -826,44 +826,44 @@
     },
     {
      "node": "gibbssampling",
-     "objective": "Derive the full conditional of one Ising site given its neighbors, implement a single-site Gibbs sweep, and check on the 3×3 grid that empirical state frequencies approach the exact Gibbs probabilities from step 1; then measure how the autocorrelation of the mean spin grows as T is lowered.",
-     "why": "The atlas edge is exact (Geman and Geman, Theorem A): at fixed temperature on a finite MRF, site-wise conditional replacement converges to the Gibbs distribution from any start if every site is visited infinitely often, and Z is never computed. The node's boundary, slow mixing under strong coupling or low temperature, is what the next step addresses.",
+     "objective": "Derive the full conditional of one Ising site given its neighbors, implement a single-site Gibbs sweep, and check on the 3×3 grid that empirical state frequencies approach the exact Gibbs probabilities computed by enumeration in steps 1–2 at the same T; then measure how the autocorrelation of the mean spin grows as T is lowered.",
+     "why": "The atlas edge is exact (Geman and Geman, Theorem A): at fixed temperature on a finite MRF, site-wise conditional replacement converges to the Gibbs distribution from any start if every site is visited infinitely often, and Z is never computed. That theorem justifies the sampler on its own; step 6 recasts it as Metropolis–Hastings with acceptance 1. The node's boundary, slow mixing under strong coupling or low temperature, is what the next step addresses.",
      "via": "rel-d56fcda1"
     },
     {
      "node": "blockedgibbs",
-     "objective": "Implement forward-filtering backward-sampling for a 2-state HMM with known parameters (forward filter p(xₜ | y₁:ₜ), then draw x_T from p(x_T | y₁:T) and each earlier xₜ from p(xₜ | xₜ₊₁, y₁:ₜ)), verify the path frequencies against exact enumeration for T = 5, and compare integrated autocorrelation time per unit compute with single-site Gibbs on the same posterior.",
-     "why": "The atlas edge is exact (Liu's three-schemes theorem): grouping or collapsing coordinates in a systematic-scan sampler cannot raise the forward-operator norm, the maximal correlation of successive states. It covers specific nested schemes and does not show that every blocking pays for its cost, so the per-compute comparison is part of the objective.",
+     "objective": "Implement forward-filtering backward-sampling for a 2-state HMM (forward filter p(xₜ | y₁:ₜ), then draw x_T from p(x_T | y₁:T) and each earlier xₜ from p(xₜ | xₜ₊₁, y₁:ₜ)) and, at fixed parameters, verify its path frequencies against exact enumeration for T = 5; then make the transition matrix unknown with Dirichlet priors on its rows, alternate the FFBS path block with the conjugate Dirichlet update, and compare integrated autocorrelation time per unit compute with a sampler that redraws one xₜ at a time.",
+     "why": "The atlas edge is exact (Liu's three-schemes theorem): in a systematic-scan sampler at stationarity, grouping the last two components, or integrating the last one out, cannot raise the forward-operator norm, the maximal correlation of successive states. It covers these specific nested schemes, orders norms rather than spectral radii, and does not show that every blocking pays for its cost, so the per-compute comparison is part of the objective.",
      "via": "rel-3e1e6339"
     },
     {
      "node": "particlegibbs",
-     "objective": "Implement conditional SMC for a nonlinear state-space model, keeping one reference path alive through resampling, alternate it with a parameter update to sample p(θ, x₁:T | y₁:T), and show path degeneracy by tracking how often early states change as T grows with the particle count N fixed.",
-     "why": "The atlas edge (established): exact FFBS path draws exist only for linear-Gaussian and finite-state models; elsewhere a conditional SMC block stands in for FFBS. Keeping the reference path makes the invariant law exact for any N; too few particles hurts mixing, not the target.",
+     "objective": "Implement conditional SMC for a nonlinear state-space model, keeping one reference path alive through resampling, alternate it with a conjugate parameter update (for example an inverse-gamma draw of a noise variance given the path) to sample p(θ, x₁:T | y₁:T), and show path degeneracy by tracking how often early states change as T grows with the particle count N fixed.",
+     "why": "The atlas edge (established): exact FFBS path draws exist essentially only for finite-state and linear-Gaussian models; elsewhere a conditional SMC block stands in for FFBS. Keeping the reference path makes the invariant law exact for any N (Andrieu, Doucet and Holenstein, Theorem 5a; convergence needs N ≥ 2); too few particles hurts mixing, not the target.",
      "via": "rel-fae8eb2d"
     },
     {
      "node": "mcmc",
-     "objective": "State the Metropolis–Hastings acceptance probability min{1, p(x′)q(x|x′) / p(x)q(x′|x)}, derive that the full-conditional proposal q(x′|x) = p(x′ⱼ | x₋ⱼ) makes the ratio exactly 1, and explain why particle marginal MH, which puts an SMC likelihood estimate in the ratio, still targets the exact posterior for every N ≥ 1.",
-     "why": "The atlas edge is exact (Andrieu, Doucet and Holenstein, Theorem 4a): particle marginal MH is an exact MH update on an extended space, so N affects mixing, not the target. MH is the common frame for the samplers so far: Gibbs is MH with acceptance ≡ 1, and cycles or mixtures of valid kernels stay valid.",
+     "objective": "State the Metropolis–Hastings acceptance probability min{1, p(x′)q(x|x′) / p(x)q(x′|x)}, derive that the full-conditional proposal q(x′|x) = p(x′ⱼ | x₋ⱼ) with x′₋ⱼ = x₋ⱼ makes the ratio exactly 1, and explain why particle marginal MH, which puts a non-negative unbiased SMC likelihood estimate in the ratio, still leaves the exact posterior invariant for every N ≥ 1.",
+     "why": "The atlas edge is exact (Andrieu, Doucet and Holenstein, Theorem 4a): particle marginal MH is an exact MH update on an extended space, so N affects mixing, not the target. MH is the common frame for the samplers so far, each of which was justified by its own theorem: Gibbs is MH with acceptance ≡ 1, and cycles or mixtures of valid kernels stay valid. MH comes here, rather than first, because the next step builds a gradient-based MH proposal and then drops its reject step.",
      "via": "rel-c6b2ff1e"
     },
     {
      "node": "langevin",
-     "objective": "Implement Langevin-proposal MH (proposal mean x + (ε/2)∇log p(x), variance ε) and its unadjusted variant on a 2-D correlated Gaussian, plot the rejection rate against ε, and measure the covariance bias of the unadjusted chain at a fixed finite ε; then write the minibatch SGLD update with its N/n gradient rescaling.",
-     "why": "The atlas edge (established): Welling and Teh argue the MH rejection probability vanishes as step sizes shrink, so SGLD omits the reject step; at a fixed finite step size discretization bias remains. Gradients replace full conditionals when the target is continuous and high-dimensional.",
+     "objective": "Implement Langevin-proposal MH (proposal mean x + (ε/2)∇log p(x), covariance εI, with this asymmetric proposal density kept in the acceptance ratio) and its unadjusted variant on a 2-D correlated Gaussian, plot the rejection rate against ε, and measure the covariance bias of the unadjusted chain at a fixed finite ε; then write the minibatch SGLD update, in which only the likelihood-gradient sum over n of N data points is rescaled by N/n and step sizes decrease with Σεₜ = ∞, Σεₜ² < ∞.",
+     "why": "The atlas edge (established): Welling and Teh argue the MH rejection probability vanishes as step sizes shrink, so SGLD omits the reject step. That argument needs decreasing steps; at a fixed finite step size the unadjusted chain keeps a discretization bias, which the objective measures. Gradients replace full conditionals when the target is continuous and high-dimensional.",
      "via": "rel-9ef5f6e5"
     },
     {
      "node": "llcsgld",
-     "objective": "Add the restoring force γ(w* − w) and inverse temperature β* = 1/log n to the SGLD update, sample the localized posterior around a trained deep linear network, compute λ̂(w*) = nβ*(E[L_n(w)] − L_n(w*)), and report step size, γ, chain length, burn-in and between-chain spread with the estimate.",
-     "why": "The atlas edge (established): the LLC estimator samples with minibatch SGLD at β* = 1/log n plus a restoring force toward w*, so the finite-step bias and mixing issues of the previous step enter the estimate. That the localized quantity equals λ(w*) is conjectured, not proved.",
+     "objective": "Add the restoring force γ(w* − w) and inverse temperature β* = 1/log n to the SGLD update, Δw = (ε/2)(β*(n/m)Σ∇log p + γ(w* − w)) + N(0, εI) over minibatches of size m, sample the localized posterior around a trained deep linear network, compute λ̂(w*) = nβ*(E[L_n(w)] − L_n(w*)), and report step size, γ, chain length, burn-in and between-chain spread with the estimate.",
+     "why": "The atlas edge (established): the LLC estimator samples with minibatch SGLD at β* = 1/log n plus a restoring force toward w*, so the finite-step bias and mixing issues of the previous step enter the estimate. That the localized quantity equals λ(w*) is conjectured, not proved. The next step shows where the formula for λ̂ comes from.",
      "via": "rel-2294db5b"
     },
     {
      "node": "wbic",
-     "objective": "Show that −d/dβ log Z_β = E_β[nL_n] for the tempered posterior ∝ exp(−nβL_n)φ, so that F_n = ∫₀¹ E_β[nL_n] dβ; show that λ̂(w*) = (WBIC(w*) − nL_n(w*)) / log n at β* = 1/log n; and state which terms of F_n WBIC does not match.",
-     "why": "The atlas edge is exact algebra: the LLC estimator is a localized WBIC rearranged. The tempered posterior is itself a Gibbs distribution in β, which closes the loop with step 2: the energy and partition function are what a posterior sample measures. WBIC matches F_n only to O_p(√log n), not the log log n or constant terms.",
+     "objective": "Show that −d/dβ log Z_β = E_β[nL_n] for the tempered posterior ∝ exp(−nβL_n)φ, so that with a normalized prior (Z₀ = 1) F_n = ∫₀¹ E_β[nL_n] dβ; show that λ̂(w*) = (WBIC(w*) − nL_n(w*)) / log n at β* = 1/log n; and state which terms of F_n WBIC does not match.",
+     "why": "The atlas edge is exact algebra: the LLC estimator is a localized WBIC rearranged. The tempered posterior is itself a Gibbs distribution in β, which closes the loop with step 2: the energy and partition function are what a posterior sample measures. WBIC = nL_n(w₀) + λ log n + Uₙ√(λ log n / 2) + O_p(1) matches the first two terms of F_n but differs by O_p(√log n), so the −(m − 1) log log n and constant terms are not matched (Watanabe 2013, Theorems 2 and 4).",
      "via": "rel-9b213f0e"
     }
    ]
