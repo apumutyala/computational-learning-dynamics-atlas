@@ -136,7 +136,7 @@
       "difficulty": 3,
       "prompt": "Which statement about wide neural networks and Gaussian processes is correct?",
       "choices": [
-        "At initialization an infinitely wide net is a GP; its gradient-descent training follows the neural tangent kernel, generally a different kernel",
+        "An infinitely wide net is a GP at initialization; gradient-descent training follows the NTK, generally a different kernel",
         "A trained network of finite width is exactly a GP with a squared-exponential kernel, whatever its architecture",
         "The NTK is defined as the GP prior covariance at initialization, so the two kernels always coincide",
         "Infinite-width networks cannot be trained at all, so the GP correspondence applies only before training"
@@ -750,8 +750,8 @@
         "αₜ resets to the nominal level α"
       ],
       "answer": 2,
-      "explain": "After a miss the update adds γ(α − 1) < 0. A smaller αₜ means a higher score quantile 1 − αₜ, hence a wider prediction set.",
-      "source": "https://www.jmlr.org/papers/v25/22-1218.html"
+      "explain": "After a miss the update adds γ(α − 1) < 0. A smaller αₜ means a higher score quantile 1 − αₜ, hence a wider prediction set. This is the adaptive conformal inference update of Gibbs and Candès (2021).",
+      "source": "https://arxiv.org/abs/2106.00170"
     },
     {
       "id": "q1-pgm-1",
@@ -952,13 +952,13 @@
       "difficulty": 3,
       "prompt": "Why can picking the most probable state at each time (from forward–backward marginals) differ from the Viterbi path?",
       "choices": [
-        "Per-time maxima ignore joint consistency; the sequence can even contain impossible transitions",
+        "Per-time maxima ignore joint consistency across time steps",
         "They always coincide, since both maximize the same posterior quantity",
         "Forward–backward ignores the observations, so its states are less accurate",
         "Viterbi uses only the forward pass, so its path is only approximate"
       ],
       "answer": 0,
-      "explain": "Viterbi maximizes the probability of the whole state sequence, while marginal decoding maximizes each time slice separately. They answer different questions.",
+      "explain": "Viterbi maximizes the probability of the whole state sequence, while marginal decoding maximizes each time slice separately, so its sequence can even contain impossible transitions. They answer different questions.",
       "source": "https://www.cs.ubc.ca/~murphyk/Thesis/thesis_double.pdf"
     },
     {
@@ -1243,7 +1243,7 @@
         "The least-squares fit to the most recent observation",
         "The LMS stochastic-gradient iterate after t updates",
         "A smoothed estimate that also uses later observations",
-        "The Bayesian linear-regression (ridge) solution on all t observations"
+        "The ridge solution fitted to all t observations"
       ],
       "answer": 3,
       "explain": "With a static state, sequential Gaussian updates give the same posterior as a batch fit, so the mean is the ridge solution with λ = σ²/τ². This recursion is recursive least squares, the atlas's regression-weights-as-state link.",
@@ -1918,7 +1918,7 @@
         "No gates: a single tanh layer updates the state"
       ],
       "answer": 1,
-      "explain": "Forget and input gates control what the cell keeps and writes, and the output gate controls what is exposed. Reset and update gates describe the GRU.",
+      "explain": "Forget and input gates control what the cell keeps and writes, and the output gate controls what is exposed; the forget gate was added to the original 1997 design by Gers et al. (2000). Reset and update gates describe the GRU.",
       "source": "https://mlanthology.org/neco/1997/hochreiter1997neco-long/"
     },
     {
@@ -2105,7 +2105,7 @@
       "prompt": "What does Mamba-2's state-space duality (SSD) show?",
       "choices": [
         "Every Transformer is exactly equivalent to some state-space model",
-        "A structured SSM class and a masked linear attention compute the same transformation",
+        "A structured SSM class equals a form of masked linear attention",
         "Softmax attention can always be computed exactly as a recurrence",
         "State-space models are a special case of convolutional networks"
       ],
@@ -2266,7 +2266,7 @@
       "choices": [
         "A neural controller with guaranteed closed-loop stability",
         "A discrete RNN that requires regularly sampled inputs",
-        "A hidden state driven by dz = f_θ(z) dX(t) along a path built from the data",
+        "A hidden state driven by dz = f_θ(z) dX(t), X a data path",
         "A neural ODE that sees the inputs only at the initial time"
       ],
       "answer": 2,
@@ -2446,8 +2446,8 @@
         "One model is trained with and without the condition; sampling extrapolates between the two predictions"
       ],
       "answer": 3,
-      "explain": "Training randomly drops the condition, and sampling uses ε̃ = (1 + w)ε(x, c) − w·ε(x), where w sets conditioning strength. Adding a classifier's gradient is the earlier 'classifier guidance' method.",
-      "source": "https://arxiv.org/abs/2006.11239"
+      "explain": "Training randomly drops the condition, and sampling uses ε̃ = (1 + w)ε(x, c) − w·ε(x), where w sets conditioning strength (Ho and Salimans). Adding a classifier's gradient is the earlier 'classifier guidance' method.",
+      "source": "https://arxiv.org/abs/2207.12598"
     },
     {
       "id": "q1-score-1",
@@ -2648,13 +2648,13 @@
       "difficulty": 3,
       "prompt": "A Koopman autoencoder learns k observables that evolve linearly. When is this finite linear model exact?",
       "choices": [
-        "Always, since the Koopman operator is linear",
-        "Whenever training loss reaches zero",
-        "Whenever k exceeds the state dimension",
+        "Always, since the Koopman operator is itself linear",
+        "Whenever loss on the training trajectories reaches zero",
+        "Whenever k exceeds the dimension of the state",
         "Only if the observables span a Koopman-invariant subspace"
       ],
       "answer": 3,
-      "explain": "Linearity of the infinite-dimensional operator does not guarantee exact finite closure; for example, a system with several isolated fixed points has no finite-dimensional Koopman-invariant subspace that includes the state itself. Closure error should be measured before relying on the model.",
+      "explain": "Linearity of the infinite-dimensional operator does not guarantee exact finite closure; Brunton et al. (2016) argue, for example, that a system with several isolated fixed points has no finite-dimensional Koopman-invariant subspace that includes the state with continuous observables. Closure error should be measured before relying on the model.",
       "source": "https://www.lri.fr/~gcharpia/deeppractice/2022/chap_5_biblio/Koopman/KoopmanAE.pdf"
     },
     {

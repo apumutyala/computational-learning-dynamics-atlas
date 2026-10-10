@@ -35,7 +35,7 @@
     {
      "node": "gp",
      "objective": "Compute a GP posterior mean and variance for a small 1-D dataset with a squared-exponential kernel, and show that with a linear kernel the posterior mean equals the ridge prediction.",
-     "why": "The atlas edge describes a shared kernel regularization framework with different loss functions and uncertainty interpretation; the GP adds calibrated predictive variance that the SVM lacks (and the ridge↔GP edge is an exact conditional identity).",
+     "why": "The atlas edge describes a shared kernel regularization framework with different loss functions and uncertainty interpretation; the GP adds a model-based predictive variance that the SVM lacks (and the ridge↔GP edge is an exact conditional identity).",
      "via": "rel-5197de90"
     },
     {
@@ -118,7 +118,7 @@
     },
     {
      "node": "kalman",
-     "objective": "Implement the Kalman predict/update equations for a constant-velocity tracker, and explain the gain as a ratio of prior to measurement uncertainty.",
+     "objective": "Implement the Kalman predict/update equations for a constant-velocity tracker, and explain the gain as the ratio of prior uncertainty to total (prior plus measurement) uncertainty.",
      "why": "The atlas edge: regression weights can be treated as a state for sequential Gaussian inference — recursive least squares is a Kalman filter with a static state.",
      "via": "rel-ed344378"
     },
@@ -143,7 +143,7 @@
     {
      "node": "lqr",
      "objective": "Solve the discrete algebraic Riccati equation (e.g. with scipy.linalg.solve_discrete_are) to obtain the LQR gain K, and show how changing Q and R trades state error against control effort.",
-     "why": "The atlas edge: state feedback requires the appropriate reachable or stabilizable structure. LQR is the optimal state feedback once reachability holds.",
+     "why": "The atlas edge: state feedback requires the appropriate reachable or stabilizable structure. LQR is the optimal state feedback once (A, B) is stabilizable (reachability suffices) and the state cost satisfies a detectability condition.",
      "via": "rel-33d0eb58"
     },
     {
@@ -154,7 +154,7 @@
     },
     {
      "node": "mpc",
-     "objective": "Formulate a finite-horizon constrained quadratic program for a linear plant, apply only the first input each step (receding horizon), and explain when unconstrained MPC with an LQR terminal cost reproduces LQR.",
+     "objective": "Formulate a finite-horizon constrained quadratic program for a linear plant, apply only the first input each step (receding horizon), and show that MPC reproduces the LQR law when no constraints are active, the stage cost is LQR's quadratic cost, and the terminal cost is xᵀPx with P the infinite-horizon Riccati solution.",
      "why": "MPC keeps the quadratic cost of LQR/LQG but handles input and state constraints by re-solving online. The atlas has no direct LQG–MPC edge; the step is a pedagogical generalization.",
      "via": null
     },
@@ -256,7 +256,7 @@
     },
     {
      "node": "rnn",
-     "objective": "Show that causal linear attention is an RNN with a matrix-valued state Sₜ = Sₜ₋₁ + φ(kₜ)vₜᵀ, then write a standard RNN hₜ = σ(W hₜ₋₁ + U xₜ) and explain vanishing/exploding gradients via the eigenvalues of W.",
+     "objective": "Show that causal linear attention is an RNN with a matrix-valued state Sₜ = Sₜ₋₁ + φ(kₜ)vₜᵀ, then write a standard RNN hₜ = σ(W hₜ₋₁ + U xₜ) and explain vanishing/exploding gradients via the largest singular value of W.",
      "why": "The atlas edge is a conditional identity: the specified kernelized causal attention admits recurrent accumulation of summaries.",
      "via": "rel-2d53673"
     },
@@ -592,7 +592,7 @@
     },
     {
      "node": "balanced",
-     "objective": "Perform balanced truncation on a stable LTI system and check the H∞ error bound ‖G − Gᵣ‖∞ ≤ 2 Σ (discarded Hankel singular values).",
+     "objective": "Perform balanced truncation on a stable LTI system and check the H∞ error bound ‖G − Gᵣ‖∞ ≤ 2 Σ (distinct discarded Hankel singular values).",
      "why": "The atlas edge: balanced truncation retains directions associated with larger Hankel singular values.",
      "via": "rel-97371398"
     },
