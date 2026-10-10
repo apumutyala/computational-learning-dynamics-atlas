@@ -8,14 +8,14 @@ An interactive 3D map of research topics in learning, signals, physics, control 
 
 ## What it is
 
-The atlas has 150 topics in 8 clusters, joined by 287 recorded connections. The clusters are statistical learning; signals and estimation; neural architectures; physical and generative models; actions and control; theory and learning dynamics; construction and assurance; and capable and grounded systems. Each topic window gives a short description, a primary source and notes on what the topic does and does not establish. Each connection is labelled with one of four evidence levels:
+The atlas has 161 topics in 8 clusters, joined by 323 recorded connections. The clusters are statistical learning; signals and estimation; neural architectures; physical and generative models; actions and control; theory and learning dynamics; construction and assurance; and capable and grounded systems. Each topic window gives a short description, a primary source and notes on what the topic does and does not establish. Each connection is labelled with one of four evidence levels:
 
 | Label | Count | Meaning |
 |---|---|---|
-| Exact, conditional | 18 | A mathematical identity that holds under stated assumptions (e.g. ridge regression and the Gaussian-process posterior mean under matched noise and prior). |
-| Established | 186 | A well-supported result in the published literature. |
-| Empirical | 29 | Observed in experiments, without a general guarantee. |
-| Hypothesis | 54 | An untested proposal. Hidden by default. |
+| Exact, conditional | 28 | A mathematical identity that holds under stated assumptions (e.g. ridge regression and the Gaussian-process posterior mean under matched noise and prior). |
+| Established | 194 | A well-supported result in the published literature. |
+| Empirical | 41 | Observed in experiments, without a general guarantee. |
+| Hypothesis | 60 | An untested proposal. Hidden by default. |
 
 Positions group topics by cluster to make them easier to find. **Distance is not evidence.** Two points sitting close together are not thereby related. Only a drawn, labelled connection records a relationship.
 
@@ -27,7 +27,7 @@ Positions group topics by cluster to make them easier to find. **Distance is not
 2. **Quick check:** an adaptive set of about 8–12 multiple-choice questions. It picks each question from what it has learned about you so far and stops early once it is confident. "I don't know" is always an option.
 3. **Results:** estimated mastery per skill, plus recommended paths with a suggested starting step.
 
-There are 12 curated paths, such as *From regression to Gaussian processes*. A path opens as a step-by-step view on the 3D map. Each step has an objective, a reason it follows the previous step, the connection that links them, a short checkpoint quiz and a "Mark done" toggle. **Paths** in the top bar lists every path whether or not you took the assessment.
+There are 14 curated paths, such as *From regression to Gaussian processes*. A path opens as a step-by-step view on the 3D map. Each step has an objective, a reason it follows the previous step, the connection that links them, a short checkpoint quiz and a "Mark done" toggle. **Paths** in the top bar lists every path whether or not you took the assessment.
 
 Everything runs in your browser. There is no account and no server, and nothing is sent anywhere. Progress is stored in `localStorage` (key `atlas.learn.v1`). **Reset progress** clears it.
 
@@ -99,7 +99,7 @@ To **add a question bank**:
 2. Add the filename to the `questions` list in `learning/index.json`. The site loads only the banks listed there.
 3. Run the validator.
 
-The current banks hold 358 items (178 + 180).
+The current banks hold 390 items (178 + 180 + 32).
 
 ## Optional AI chat backend
 
