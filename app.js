@@ -645,7 +645,7 @@ function setHyp(on) {
 $('#t-hyp').onclick = () => setHyp(!S.showHyp);
 $('#t-drift').onclick = () => { S.drift = !S.drift; $('#t-drift').setAttribute('aria-pressed', String(S.drift)); controls.autoRotate = S.drift && !S.current; };
 function hideWelcome() { $('#welcome').classList.add('hide'); updateOffset(); }
-$('#welcome-close').onclick = hideWelcome;
+const wc = $('#welcome-close'); if (wc) wc.onclick = hideWelcome;
 // Overview resets the view; it reopens the welcome window only if it is closed, and closes it if it is open.
 $('#t-overview').onclick = e => { e.currentTarget.blur(); const w = $('#welcome'), wasOpen = !w.classList.contains('hide') && panel.hidden && !S.cluster; if (!panel.hidden) closePanel(); S.cluster = null; renderDock(); computeTargets(); flyHome(); w.classList.toggle('hide', wasOpen); updateOffset(); };
 $('#t-drift').setAttribute('aria-pressed', String(S.drift));
