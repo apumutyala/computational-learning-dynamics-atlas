@@ -718,7 +718,7 @@
     },
     {
      "node": "proper",
-     "objective": "Score Gaussian predictive distributions from the backtest with the log score and the CRPS, explain what makes a scoring rule proper (the true distribution maximizes expected score), and note that the CRPS reduces to absolute error for a point forecast.",
+     "objective": "Score Gaussian predictive distributions from the backtest with the log score and the CRPS, explain what makes a scoring rule proper (the true distribution optimizes expected score: maximizes it in Gneiting and Raftery's positive orientation, minimizes it when CRPS is reported as a loss), and note that the CRPS reduces to absolute error for a point forecast.",
      "why": "There is no direct atlas edge from backtesting; this step changes what is scored, from point error to the whole predictive distribution. The node's boundary applies: a proper score evaluates forecasts, it does not certify that a model is calibrated.",
      "via": null
     },
@@ -757,7 +757,7 @@
    "steps": [
     {
      "node": "slt",
-     "objective": "Explain why neural networks are singular models (non-identifiable parameters, Fisher information not positive definite), and why the learning coefficient λ, not d/2, sets how Bayesian evidence grows with n.",
+     "objective": "Explain why neural networks are singular models (non-identifiable parameters, Fisher information not positive definite), and why the learning coefficient λ, not d/2, sets the log n growth of the Bayes free energy (negative log evidence).",
      "why": "Every measurement on this path estimates a quantity this theory defines; its boundary (Bayesian asymptotics, not SGD trajectories) is the caveat that recurs at every later step.",
      "via": null
     },
@@ -793,7 +793,7 @@
     },
     {
      "node": "patterning",
-     "objective": "Explain how patterning inverts estimated susceptibilities to choose a data reweighting and then retrains, summarize the parentheses result (mean out-of-distribution accuracy .310 → .497 in the favorable condition), and state its limits: estimating language-model susceptibilities costs about 500× model training by forward-pass accounting, and uniform training still reaches the lowest loss.",
+     "objective": "Explain how patterning inverts estimated susceptibilities to choose a data reweighting and then retrains, summarize the parentheses result (mean out-of-distribution accuracy .310 → .497 in the favorable condition), and state its limits: the susceptibilities behind the language-model induction-patterning experiment cost about 500× model training by forward-pass accounting (about 3× for one checkpoint), and uniform training still reaches the lowest loss.",
      "why": "The atlas edge: structural inference reads χ, patterning inverts it to choose data. The posterior response is not an exact model of optimizer trajectories, so the retrained outcome is the measurement that counts.",
      "via": "rel-a5c11398"
     }
