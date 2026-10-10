@@ -1,0 +1,1013 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "q5-logistic-1",
+      "node": "logistic",
+      "skill": "optimization",
+      "difficulty": 1,
+      "prompt": "Why can gradient-based fitting of (unregularized) logistic regression not get stuck in a spurious local minimum?",
+      "choices": [
+        "The negative log-likelihood is a convex function of the weights",
+        "The sigmoid makes the model a linear function of the weights",
+        "The loss has a closed-form minimizer, as least squares does",
+        "Gradient descent finds a global minimum of any smooth loss function"
+      ],
+      "answer": 0,
+      "explain": "The logistic negative log-likelihood is convex in w (its Hessian XᵀSX, with S = diag(pᵢ(1 − pᵢ)), is positive semidefinite), so every local minimum is global. There is no closed form; it is solved iteratively, e.g. by Newton/IRLS.",
+      "source": null
+    },
+    {
+      "id": "q5-svm-1",
+      "node": "svm",
+      "skill": "optimization",
+      "difficulty": 1,
+      "prompt": "In the dual of a soft-margin SVM, which training points receive nonzero dual coefficients αᵢ?",
+      "choices": [
+        "Every training point, with equal weight",
+        "Points on the margin, inside it, or misclassified",
+        "Only the misclassified training points",
+        "The points farthest from the decision boundary on each side"
+      ],
+      "answer": 1,
+      "explain": "By complementary slackness, αᵢ > 0 only where the margin constraint is active or violated; these are the support vectors. Points safely outside the margin have αᵢ = 0 and do not affect the solution.",
+      "source": null
+    },
+    {
+      "id": "q5-svm-2",
+      "node": "svm",
+      "skill": "optimization",
+      "difficulty": 1,
+      "prompt": "For an inequality constraint g(x) ≤ 0 with Lagrange multiplier μ, what do the KKT conditions require of μ at an optimum?",
+      "choices": [
+        "μ ≥ 0 and μ·g(x) = 0",
+        "μ = 0 whenever g(x) = 0",
+        "μ ≤ 0 and μ·g(x) ≥ 0",
+        "μ > 0 for every constraint"
+      ],
+      "answer": 0,
+      "explain": "Dual feasibility requires μ ≥ 0 and complementary slackness requires μ·g(x) = 0: a constraint that is slack (g < 0) has zero multiplier, and only active constraints can have μ > 0.",
+      "source": null
+    },
+    {
+      "id": "q5-mpc-1",
+      "node": "mpc",
+      "skill": "optimization",
+      "difficulty": 1,
+      "prompt": "Linear MPC with a quadratic cost, linear dynamics and linear (polyhedral) state and input constraints solves which kind of problem at each step?",
+      "choices": [
+        "A mixed-integer linear program",
+        "A nonconvex nonlinear program",
+        "An unconstrained least-squares fit",
+        "A convex quadratic program"
+      ],
+      "answer": 3,
+      "explain": "Stacking the predicted states as linear functions of the input sequence turns the cost into a convex quadratic and the constraints into linear inequalities: a QP, solvable reliably in real time.",
+      "source": null
+    },
+    {
+      "id": "q5-ridge-1",
+      "node": "ridge",
+      "skill": "optimization",
+      "difficulty": 1,
+      "prompt": "Gradient descent minimizes a quadratic whose Hessian has eigenvalues between μ > 0 and L. What most directly makes convergence slow?",
+      "choices": [
+        "A large smallest eigenvalue μ",
+        "A large number of data points",
+        "A Hessian that is positive definite",
+        "A large condition number κ = L/μ"
+      ],
+      "answer": 3,
+      "explain": "With the best fixed step, the error contracts per step by about (κ − 1)/(κ + 1), so ill-conditioning (κ ≫ 1) makes progress along the flat directions very slow. Ridge's λ raises μ and so improves κ.",
+      "source": null
+    },
+    {
+      "id": "q5-deeplinear-1",
+      "node": "deeplinear",
+      "skill": "optimization",
+      "difficulty": 1,
+      "prompt": "Under gradient flow dθ/dt = −∇L(θ), how does the loss change along a trajectory?",
+      "choices": [
+        "dL/dt = −‖∇L(θ)‖², so it never increases",
+        "dL/dt = −L(θ), so it decays exponentially",
+        "dL/dt = −‖θ‖², so it shrinks with the weights",
+        "It may rise or fall, depending on curvature"
+      ],
+      "answer": 0,
+      "explain": "By the chain rule dL/dt = ∇L·dθ/dt = −‖∇L‖² ≤ 0. Gradient flow is monotone; non-monotone loss curves come from finite step sizes or noise, not from the flow itself.",
+      "source": null
+    },
+    {
+      "id": "q5-trainingdynamics-1",
+      "node": "trainingdynamics",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "Gradient descent with step size η on f(w) = ½·a·w² with a = 4. For which η does wₖ converge to 0?",
+      "choices": [
+        "0 < η < 0.25",
+        "0 < η < 0.5",
+        "0 < η < 2",
+        "0 < η < 4"
+      ],
+      "answer": 1,
+      "explain": "The update is wₖ₊₁ = (1 − 4η)wₖ, which converges iff |1 − 4η| < 1, i.e. 0 < η < 2/a = 0.5. The value 0.25 = 1/a is the fastest (one-step) choice, not the stability limit.",
+      "source": null
+    },
+    {
+      "id": "q5-lasso-1",
+      "node": "lasso",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "Proximal gradient methods for the lasso apply the proximal operator of λ|w| coordinatewise. What does it map a value v to?",
+      "choices": [
+        "v / (1 + λ)",
+        "sign(v)·max(|v| − λ, 0)",
+        "v when |v| > λ, and 0 otherwise",
+        "max(v − λ, 0)"
+      ],
+      "answer": 1,
+      "explain": "The L1 prox is soft-thresholding: it shrinks v toward zero by λ and sets it exactly to zero when |v| ≤ λ, which is what produces sparsity. v/(1 + λ) is the prox of the ridge penalty (λ/2)w², and the keep-or-kill rule is hard thresholding.",
+      "source": null
+    },
+    {
+      "id": "q5-svm-3",
+      "node": "svm",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "Why is the SVM dual problem the natural place to apply the kernel trick?",
+      "choices": [
+        "The dual has fewer variables than features in every problem",
+        "The dual objective is linear, so any kernel keeps it easy to solve",
+        "The dual removes the box constraints 0 ≤ αᵢ ≤ C on the multipliers",
+        "Data enter only via inner products xᵢᵀxⱼ, replaceable by k(xᵢ, xⱼ)"
+      ],
+      "answer": 3,
+      "explain": "In the dual, both the objective and the decision function depend on the data only through inner products, so swapping in a positive-definite kernel fits a linear separator in feature space without forming features. The dual is a QP with one variable per training point and keeps its box constraints.",
+      "source": null
+    },
+    {
+      "id": "q5-lqr-1",
+      "node": "lqr",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "How is discrete-time, finite-horizon LQR solved exactly?",
+      "choices": [
+        "A backward Riccati recursion (dynamic programming) with time-varying gains",
+        "Gradient descent on one constant gain matrix, iterated forward in time from the initial state",
+        "A single linear program over the entire input sequence and horizon",
+        "Pole placement repeated independently at every step of the horizon"
+      ],
+      "answer": 0,
+      "explain": "The value function stays quadratic, Vₖ(x) = xᵀPₖx, so Bellman's recursion reduces to a backward Riccati difference equation for Pₖ; the optimal input is uₖ = −Kₖxₖ with gains that vary over the horizon.",
+      "source": null
+    },
+    {
+      "id": "q5-logistic-2",
+      "node": "logistic",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "With pᵢ = σ(wᵀxᵢ) and labels yᵢ ∈ {0, 1}, what is the gradient of the logistic negative log-likelihood?",
+      "choices": [
+        "Σᵢ (yᵢ − pᵢ) pᵢ xᵢ",
+        "Σᵢ pᵢ(1 − pᵢ) xᵢ",
+        "Σᵢ (pᵢ − yᵢ) xᵢ",
+        "Σᵢ (pᵢ − yᵢ)² xᵢ"
+      ],
+      "answer": 2,
+      "explain": "The sigmoid's derivative cancels against the log, leaving residual times input, ∇ = Σ(pᵢ − yᵢ)xᵢ, the same form as least squares. The term pᵢ(1 − pᵢ) appears in the Hessian, not the gradient.",
+      "source": null
+    },
+    {
+      "id": "q5-adaptive-1",
+      "node": "adaptive",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "LMS is stochastic gradient descent on mean-squared error with input autocorrelation matrix R. For convergence of the mean weights, the step size μ must satisfy what?",
+      "choices": [
+        "0 < μ < 2/λmax(R)",
+        "0 < μ < 2/λmin(R)",
+        "0 < μ < 1/trace(R)²",
+        "0 < μ < λmax(R)/2"
+      ],
+      "answer": 0,
+      "explain": "The mean weight error evolves as (I − μR)ᵏ, which shrinks iff |1 − μλᵢ| < 1 for every eigenvalue, i.e. μ < 2/λmax. The bound is set by the largest eigenvalue; the smallest one sets how slowly the slowest mode converges.",
+      "source": null
+    },
+    {
+      "id": "q5-deeplinear-2",
+      "node": "deeplinear",
+      "skill": "optimization",
+      "difficulty": 3,
+      "prompt": "The squared loss of a deep linear network W_L⋯W₁ is nonconvex in its weights. Which statement is true of its critical points (Kawaguchi, 2016)?",
+      "choices": [
+        "The loss is convex, since the end-to-end map is linear",
+        "Spurious local minima exist, one per subset of singular modes",
+        "The only critical points are global minima, so no saddles exist",
+        "Every local minimum is global; other critical points are saddles"
+      ],
+      "answer": 3,
+      "explain": "Kawaguchi proved that for deep linear networks every local minimum is a global minimum and every other critical point is a saddle (some, for depth > 3, without negative curvature). For example W = 0 is a saddle, which is why small initialization produces plateaus.",
+      "source": "https://arxiv.org/abs/1605.07110"
+    },
+    {
+      "id": "q5-ntk-1",
+      "node": "ntk",
+      "skill": "optimization",
+      "difficulty": 3,
+      "prompt": "In the NTK regime, gradient flow on squared loss evolves the training residual as dr/dt = −ηΘr with a fixed Gram matrix Θ. Which part of the residual is fit slowest?",
+      "choices": [
+        "The component along Θ's largest-eigenvalue eigenvectors",
+        "The component along Θ's smallest-eigenvalue eigenvectors",
+        "All components equally, at a rate set by η alone",
+        "The component along the target vector y itself"
+      ],
+      "answer": 1,
+      "explain": "In Θ's eigenbasis each component decays as exp(−ηλᵢt), so small-eigenvalue directions are learned slowest. Jacot et al. note that convergence is fastest along the top kernel principal components, which motivates early stopping.",
+      "source": "https://arxiv.org/abs/1806.07572"
+    },
+    {
+      "id": "q5-mpc-2",
+      "node": "mpc",
+      "skill": "optimization",
+      "difficulty": 3,
+      "prompt": "For linear MPC with quadratic cost and polyhedral constraints, what form does the optimal first input u*(x) take as a function of the current state (explicit MPC)?",
+      "choices": [
+        "Linear everywhere, equal to the unconstrained LQR gain",
+        "Continuous and piecewise affine over a polyhedral partition",
+        "Piecewise constant and discontinuous across regions",
+        "A smooth, infinitely differentiable nonlinear map"
+      ],
+      "answer": 1,
+      "explain": "The QP is a multiparametric program in x. Within each region where the set of active constraints is fixed, the KKT system is linear, so u*(x) is affine there, and the pieces join continuously. In the region where no constraint is active it is a single linear gain (the LQR gain when the terminal cost is the Riccati solution).",
+      "source": null
+    },
+    {
+      "id": "q5-logistic-3",
+      "node": "logistic",
+      "skill": "optimization",
+      "difficulty": 3,
+      "prompt": "Unregularized logistic regression is trained by gradient descent on linearly separable data. What happens to the weights w?",
+      "choices": [
+        "w converges to a finite maximum-likelihood estimate that separates the data",
+        "‖w‖ → ∞ while w/‖w‖ tends to the max-margin (hard-SVM) direction",
+        "w converges to the least-squares solution on the 0/1 labels",
+        "‖w‖ stays bounded while its direction keeps oscillating among separators"
+      ],
+      "answer": 1,
+      "explain": "On separable data the loss can be driven toward zero only by scaling w up, so no finite minimizer exists. Soudry et al. show that the direction converges, slowly (logarithmically), to the L2 max-margin separator: an implicit bias of gradient descent.",
+      "source": "https://arxiv.org/abs/1710.10345"
+    },
+    {
+      "id": "q5-lqr-2",
+      "node": "lqr",
+      "skill": "optimization",
+      "difficulty": 3,
+      "prompt": "The LQR cost J(K) of a static gain u = −Kx is nonconvex in K, yet policy gradient converges globally to the optimal gain (Fazel et al., 2018). What makes this possible?",
+      "choices": [
+        "J(K) is in fact convex over the set of stabilizing gains",
+        "The set of stabilizing gains is convex, so projected gradient steps suffice",
+        "Every local minimum of J stabilizes, so any of them is acceptable",
+        "J obeys gradient domination: J(K) − J* ≤ c‖∇J(K)‖² on stabilizing K"
+      ],
+      "answer": 3,
+      "explain": "Fazel et al. show a Polyak–Łojasiewicz-type gradient-domination inequality: every stationary point in the stabilizing set is globally optimal and suboptimality is bounded by the gradient norm. Neither J nor the stabilizing set is convex in general.",
+      "source": "https://arxiv.org/abs/1801.05039"
+    },
+    {
+      "id": "q5-trainingdynamics-2",
+      "node": "trainingdynamics",
+      "skill": "optimization",
+      "difficulty": 3,
+      "prompt": "Cohen et al. (2021) trained neural networks with full-batch gradient descent at step size η. What did the sharpness (top Hessian eigenvalue) typically do?",
+      "choices": [
+        "It stayed safely below 2/η throughout, as classical step-size analysis requires",
+        "It rose past 2/η and training diverged soon afterward",
+        "It rose to about 2/η and hovered there while loss still fell over time",
+        "It fell steadily toward zero as training progressed"
+      ],
+      "answer": 2,
+      "explain": "They call this the Edge of Stability: sharpness increases (progressive sharpening) until it reaches about 2/η, then hovers just above it; the loss is non-monotone over short spans but keeps decreasing over long ones, contrary to the quadratic picture in which λ > 2/η means divergence.",
+      "source": "https://arxiv.org/abs/2103.00065"
+    },
+    {
+      "id": "q5-flow-1",
+      "node": "flow",
+      "skill": "calculus-odes",
+      "difficulty": 1,
+      "prompt": "A density pₜ(x) is transported by a velocity field vₜ(x) with no mass created or destroyed. Which equation does it satisfy?",
+      "choices": [
+        "∂p/∂t + v·∇p = 0",
+        "∂p/∂t + ∇·(p v) = Δp",
+        "∂p/∂t + ∇·(p v) = 0",
+        "∂p/∂t = −p ∇·v"
+      ],
+      "answer": 2,
+      "explain": "Conservation of mass gives the continuity equation ∂p/∂t + ∇·(pv) = 0. It expands to v·∇p + p∇·v, so dropping either term is only right for divergence-free or spatially uniform cases. A Δp term would add diffusion, which pure transport does not have.",
+      "source": null
+    },
+    {
+      "id": "q5-node-1",
+      "node": "node",
+      "skill": "calculus-odes",
+      "difficulty": 1,
+      "prompt": "What is one explicit Euler step of size Δt for dh/dt = f(h, t)?",
+      "choices": [
+        "h(t + Δt) ≈ h(t) + Δt·f(h(t), t)",
+        "h(t + Δt) ≈ h(t) + f(h(t), t)/Δt",
+        "h(t + Δt) ≈ h(t) + Δt·f(h(t + Δt), t + Δt)",
+        "h(t + Δt) ≈ Δt·h(t) + f(h(t), t)"
+      ],
+      "answer": 0,
+      "explain": "Explicit Euler follows the current slope for one step. Evaluating f at the new point is implicit (backward) Euler, which needs a solve; a residual block h + f(h) is an Euler step with Δt = 1.",
+      "source": null
+    },
+    {
+      "id": "q5-hnn-1",
+      "node": "hnn",
+      "skill": "calculus-odes",
+      "difficulty": 1,
+      "prompt": "Besides the energy H, which quantity does every exact Hamiltonian flow preserve?",
+      "choices": [
+        "The kinetic energy and the potential energy separately",
+        "The distance between any two trajectories",
+        "Phase-space volume (Liouville's theorem)",
+        "Each momentum coordinate pᵢ individually"
+      ],
+      "answer": 2,
+      "explain": "Hamiltonian vector fields are divergence-free in (q, p), so they preserve phase-space volume (indeed the symplectic form). Kinetic and potential energy trade off, nearby trajectories can separate, and momenta change under forces.",
+      "source": null
+    },
+    {
+      "id": "q5-lyapunov-1",
+      "node": "lyapunov",
+      "skill": "calculus-odes",
+      "difficulty": 1,
+      "prompt": "At an equilibrium x* of ẋ = f(x), which condition on the Jacobian Df(x*) guarantees local asymptotic stability?",
+      "choices": [
+        "All eigenvalues have magnitude less than 1",
+        "All eigenvalues are real numbers",
+        "The determinant of Df(x*) is negative",
+        "All eigenvalues have negative real parts"
+      ],
+      "answer": 3,
+      "explain": "If Df(x*) is Hurwitz, the linearization decays and so does the nonlinear system near x*. Magnitude below 1 is the discrete-time (map) condition; complex eigenvalues with negative real part give stable spirals.",
+      "source": null
+    },
+    {
+      "id": "q5-pinn-1",
+      "node": "pinn",
+      "skill": "calculus-odes",
+      "difficulty": 1,
+      "prompt": "A PINN u_θ(x, t) is trained on the heat equation u_t = u_xx. What is the residual penalized at a collocation point?",
+      "choices": [
+        "∂u_θ/∂t − ∂²u_θ/∂x², obtained by automatic differentiation",
+        "u_θ(x, t) minus a measured temperature at that collocation point",
+        "∂u_θ/∂t + ∂²u_θ/∂x², from finite differences on a grid",
+        "∂²u_θ/∂t² − ∂u_θ/∂x, from automatic differentiation"
+      ],
+      "answer": 0,
+      "explain": "The PDE residual is the equation moved to one side, u_t − u_xx, evaluated by differentiating the network itself; no labels or grid are needed at collocation points. Data misfit terms are separate (initial, boundary or observation losses).",
+      "source": null
+    },
+    {
+      "id": "q5-fourier-1",
+      "node": "fourier",
+      "skill": "calculus-odes",
+      "difficulty": 1,
+      "prompt": "Under the Fourier transform (convention e^(−iωt)), what does time differentiation d/dt become?",
+      "choices": [
+        "Multiplication by 1/(iω)",
+        "Convolution with iω",
+        "Multiplication by iω",
+        "Multiplication by −ω²"
+      ],
+      "answer": 2,
+      "explain": "Differentiating e^(iωt) multiplies it by iω, so d/dt becomes multiplication by iω and linear constant-coefficient ODEs become algebraic. −ω² is the factor for the second derivative and 1/(iω) corresponds to integration.",
+      "source": null
+    },
+    {
+      "id": "q5-node-2",
+      "node": "node",
+      "skill": "calculus-odes",
+      "difficulty": 2,
+      "prompt": "For a continuous normalizing flow dh/dt = f(h, t), how does the log-density of a sample evolve along its trajectory?",
+      "choices": [
+        "d log p(h(t))/dt = −tr(∂f/∂h)",
+        "d log p(h(t))/dt = +tr(∂f/∂h)",
+        "d log p(h(t))/dt = −log|det(∂f/∂h)|",
+        "d log p(h(t))/dt = −‖f(h, t)‖²"
+      ],
+      "answer": 0,
+      "explain": "The instantaneous change-of-variables formula replaces the log-determinant of a discrete flow with the trace of the Jacobian. Expanding flow (positive divergence) spreads mass, so log-density decreases.",
+      "source": "https://arxiv.org/abs/1806.07366"
+    },
+    {
+      "id": "q5-node-3",
+      "node": "node",
+      "skill": "calculus-odes",
+      "difficulty": 2,
+      "prompt": "Explicit Euler with step h is applied to the stiff test equation ẋ = −λx with λ = 1000. For which h does the numerical solution decay to zero?",
+      "choices": [
+        "h < 0.001",
+        "h < 0.02",
+        "Any h > 0",
+        "h < 0.002"
+      ],
+      "answer": 3,
+      "explain": "Each step multiplies x by (1 − hλ), which decays iff |1 − hλ| < 1, i.e. 0 < h < 2/λ = 0.002. Fast decaying modes force tiny steps on explicit solvers, which is why stiff neural ODEs use implicit or adaptive solvers.",
+      "source": null
+    },
+    {
+      "id": "q5-score-1",
+      "node": "score",
+      "skill": "calculus-odes",
+      "difficulty": 2,
+      "prompt": "The Ornstein–Uhlenbeck SDE dx = −θx dt + σ dW (θ > 0) underlies the variance-preserving diffusion. What is its stationary variance?",
+      "choices": [
+        "σ²/(2θ)",
+        "σ²/(2θ²)",
+        "σ²",
+        "σ/(2θ)"
+      ],
+      "answer": 0,
+      "explain": "Variance obeys dv/dt = −2θv + σ², whose fixed point is σ²/(2θ). With θ = 1 and σ = √2 this gives unit variance, which is why such forward processes end at N(0, I).",
+      "source": null
+    },
+    {
+      "id": "q5-chaos-1",
+      "node": "chaos",
+      "skill": "calculus-odes",
+      "difficulty": 2,
+      "prompt": "What do the trajectories of ẋ = Ax with A = [[0, 1], [−1, 0]] look like?",
+      "choices": [
+        "Spirals that decay into the origin over time",
+        "Spirals that grow outward without bound",
+        "Circles around the origin (eigenvalues ±i)",
+        "Straight lines in and out of a saddle point"
+      ],
+      "answer": 2,
+      "explain": "The eigenvalues are ±i, purely imaginary, so solutions are rotations x(t) = (r cos(t + φ), −r sin(t + φ)) and d(x₁² + x₂²)/dt = 0. A center like this is the borderline case where linearization alone cannot settle stability for nonlinear systems.",
+      "source": null
+    },
+    {
+      "id": "q5-node-4",
+      "node": "node",
+      "skill": "calculus-odes",
+      "difficulty": 3,
+      "prompt": "In the adjoint method for neural ODEs, the adjoint a(t) = ∂L/∂h(t) is integrated backward in time. Which ODE does it satisfy?",
+      "choices": [
+        "da/dt = +a(t)ᵀ ∂f/∂h",
+        "da/dt = −a(t)ᵀ ∂f/∂h",
+        "da/dt = −a(t)ᵀ ∂f/∂θ",
+        "da/dt = −f(h(t), t)"
+      ],
+      "answer": 1,
+      "explain": "Differentiating through the flow gives da/dt = −aᵀ∂f/∂h, solved from a(T) = ∂L/∂h(T) backward. The term aᵀ∂f/∂θ is the integrand that accumulates the parameter gradient, not the adjoint's own dynamics.",
+      "source": "https://arxiv.org/abs/1806.07366"
+    },
+    {
+      "id": "q5-score-2",
+      "node": "score",
+      "skill": "calculus-odes",
+      "difficulty": 3,
+      "prompt": "For the forward SDE dx = f(x, t) dt + g(t) dW, what is the drift of the probability-flow ODE that shares its marginals pₜ?",
+      "choices": [
+        "dx/dt = f(x, t) − g(t)² ∇ₓ log pₜ(x)",
+        "dx/dt = f(x, t) + ½ g(t)² ∇ₓ log pₜ(x)",
+        "dx/dt = f(x, t) − ½ g(t) ∇ₓ log pₜ(x)",
+        "dx/dt = f(x, t) − ½ g(t)² ∇ₓ log pₜ(x)"
+      ],
+      "answer": 3,
+      "explain": "Writing the Fokker–Planck diffusion term as a transport term yields the drift f − ½g²∇log p. The full g² version is the drift of the reverse-time SDE, which also adds noise; both rely only on the score.",
+      "source": "https://arxiv.org/abs/2011.13456"
+    },
+    {
+      "id": "q5-hnn-2",
+      "node": "hnn",
+      "skill": "calculus-odes",
+      "difficulty": 3,
+      "prompt": "Over very long simulations, a symplectic integrator such as leapfrog keeps energy error bounded instead of drifting. Why?",
+      "choices": [
+        "It conserves the true H exactly at every single step",
+        "It exactly conserves a nearby modified Hamiltonian",
+        "It adapts its step size to cancel energy drift",
+        "Its local error is of higher order than RK4's"
+      ],
+      "answer": 1,
+      "explain": "Backward error analysis shows a symplectic map is, to high accuracy, the exact flow of a modified Hamiltonian H̃ = H + O(hᵖ), so H stays within O(hᵖ) of its start for exponentially long times. Leapfrog is only second order, and generic Runge–Kutta methods have no such conserved quantity.",
+      "source": null
+    },
+    {
+      "id": "q5-node-5",
+      "node": "node",
+      "skill": "calculus-odes",
+      "difficulty": 3,
+      "prompt": "Why can no neural ODE dh/dt = f(h) with Lipschitz f (no augmented dimensions) map every 1-D input x to −x at t = 1?",
+      "choices": [
+        "Trajectories can't cross, so the flow preserves order on the line",
+        "The ODE solver's discretization error grows too large to flip a sign",
+        "Lipschitz vector fields can only produce contractions of the line",
+        "The adjoint method cannot compute gradients for this target map"
+      ],
+      "answer": 0,
+      "explain": "Uniqueness of solutions means two trajectories in ℝ¹ can never pass each other, so the time-1 flow is an increasing homeomorphism, while x ↦ −x reverses order. Dupont et al. show neural ODEs preserve input topology and lift the limit by augmenting the state.",
+      "source": "https://arxiv.org/abs/1904.01681"
+    },
+    {
+      "id": "q5-lyapunov-2",
+      "node": "lyapunov",
+      "skill": "calculus-odes",
+      "difficulty": 3,
+      "prompt": "For ẋ = −x³, linearization at 0 gives eigenvalue 0. What does V(x) = x² show?",
+      "choices": [
+        "V̇ = −2x² < 0 for x ≠ 0, so 0 is exponentially stable",
+        "V̇ = 0 everywhere, so 0 is stable but not attractive",
+        "V̇ = −3x² < 0, so stability follows from the linearization",
+        "V̇ = −2x⁴ < 0 for x ≠ 0, so 0 is asymptotically stable"
+      ],
+      "answer": 3,
+      "explain": "V̇ = 2x·ẋ = −2x⁴, negative definite, so the origin is asymptotically stable. It is not exponentially stable: solutions decay like 1/√(2t), which is why the zero eigenvalue made linearization inconclusive.",
+      "source": null
+    },
+    {
+      "id": "q5-pca-1",
+      "node": "pca",
+      "skill": "linear-algebra",
+      "difficulty": 1,
+      "prompt": "A centered data matrix X (rows = samples) has SVD X = UΣVᵀ. Where are the principal directions?",
+      "choices": [
+        "The columns of U",
+        "The columns of V",
+        "The diagonal entries of Σ",
+        "The rows of U"
+      ],
+      "answer": 1,
+      "explain": "XᵀX = VΣ²Vᵀ, so V's columns are eigenvectors of the (scaled) covariance, i.e. the principal directions. UΣ gives the sample scores, and σᵢ²/(n − 1) gives the variances.",
+      "source": null
+    },
+    {
+      "id": "q5-attention-1",
+      "node": "attention",
+      "skill": "linear-algebra",
+      "difficulty": 1,
+      "prompt": "In self-attention, Q and K are both n×d (n tokens, head dimension d). What is the shape of QKᵀ?",
+      "choices": [
+        "d × d",
+        "n × d",
+        "n × n",
+        "d × n"
+      ],
+      "answer": 2,
+      "explain": "An (n×d)(d×n) product is n×n: one score for every pair of tokens. That n×n matrix is the source of attention's quadratic cost in sequence length.",
+      "source": null
+    },
+    {
+      "id": "q5-kalman-1",
+      "node": "kalman",
+      "skill": "linear-algebra",
+      "difficulty": 1,
+      "prompt": "Which property does every valid covariance matrix P (such as the Kalman filter's) have?",
+      "choices": [
+        "Symmetric with all entries nonnegative",
+        "Symmetric positive semidefinite",
+        "Orthogonal, so that PᵀP = I",
+        "Diagonal in the state coordinates"
+      ],
+      "answer": 1,
+      "explain": "P = E[(x − m)(x − m)ᵀ] is symmetric, and vᵀPv = Var(vᵀx) ≥ 0. Off-diagonal entries can be negative (negative correlation), and correlated states make P non-diagonal.",
+      "source": null
+    },
+    {
+      "id": "q5-hankel-1",
+      "node": "hankel",
+      "skill": "linear-algebra",
+      "difficulty": 1,
+      "prompt": "In a Hankel matrix H, what does the entry H(i, j) depend on?",
+      "choices": [
+        "Only the sum i + j",
+        "Only the difference i − j",
+        "Only the product i·j",
+        "Only the larger of i and j"
+      ],
+      "answer": 0,
+      "explain": "Hankel matrices are constant along anti-diagonals, H(i, j) = h(i + j), e.g. stacked Markov parameters CAⁱ⁺ʲB. Constant diagonals, depending on i − j, define a Toeplitz matrix instead.",
+      "source": null
+    },
+    {
+      "id": "q5-deeplinear-3",
+      "node": "deeplinear",
+      "skill": "linear-algebra",
+      "difficulty": 1,
+      "prompt": "A linear network computes W₂W₁x with W₁ of size h×n and W₂ of size m×h, where h < min(m, n). What is the largest possible rank of W₂W₁?",
+      "choices": [
+        "min(m, n)",
+        "m + n − h",
+        "h",
+        "m·n/h"
+      ],
+      "answer": 2,
+      "explain": "rank(AB) ≤ min(rank A, rank B) ≤ h, so the hidden width is a bottleneck: the network can represent only rank-h linear maps, and gradient descent learns the leading singular modes first.",
+      "source": null
+    },
+    {
+      "id": "q5-lowrank-1",
+      "node": "lowrank",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "Let J = m nᵀ/N with nonzero m, n ∈ ℝᴺ. What are its rank and its only possibly nonzero eigenvalue?",
+      "choices": [
+        "Rank 1; eigenvalue nᵀm/N, with eigenvector m",
+        "Rank 1; eigenvalue ‖m‖‖n‖/N, with eigenvector n",
+        "Rank N; eigenvalues are mᵢnᵢ/N",
+        "Rank 2; eigenvalues ±‖m‖‖n‖/N"
+      ],
+      "answer": 0,
+      "explain": "Every column of J is a multiple of m, so rank is 1, and J m = m (nᵀm)/N. The overlap nᵀm, not the product of norms, sets the eigenvalue, which governs the stability of the collective mode in low-rank RNNs.",
+      "source": null
+    },
+    {
+      "id": "q5-linearattention-1",
+      "node": "linearattention",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "Which algebraic fact lets (non-causal) linear attention φ(Q)φ(K)ᵀV avoid forming an n×n matrix?",
+      "choices": [
+        "Commutativity: φ(Q)φ(K)ᵀ equals φ(K)ᵀφ(Q), a d×d matrix",
+        "Orthogonality: φ(K) has orthonormal columns, so φ(K)ᵀφ(K) is the identity",
+        "Associativity: compute φ(K)ᵀV (d×d_v) first, then multiply by φ(Q)",
+        "Symmetry: φ(Q)φ(K)ᵀ is symmetric, so only half must be stored"
+      ],
+      "answer": 2,
+      "explain": "(φ(Q)φ(K)ᵀ)V = φ(Q)(φ(K)ᵀV), and the right grouping costs O(n·d·d_v), linear in n. Softmax applies a row-wise nonlinearity to QKᵀ, which blocks this regrouping.",
+      "source": null
+    },
+    {
+      "id": "q5-hankel-2",
+      "node": "hankel",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "A minimal n-state discrete LTI system has Markov parameters hₖ = CAᵏ⁻¹B. What is the rank of a large enough Hankel matrix built from them?",
+      "choices": [
+        "1",
+        "The number of rows of the Hankel matrix",
+        "n",
+        "n²"
+      ],
+      "answer": 2,
+      "explain": "The Hankel matrix factors as (observability matrix)·(reachability matrix), both of rank n for a minimal system, so its rank is n. ERA reads the model order from this rank and builds A, B, C from the factors.",
+      "source": null
+    },
+    {
+      "id": "q5-koopman-1",
+      "node": "koopman",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "Dynamic mode decomposition fits x_{k+1} ≈ A xₖ from snapshot matrices X = [x₁ … x_{m−1}] and X′ = [x₂ … x_m]. Which A does it compute?",
+      "choices": [
+        "A = X′X⁺, where X⁺ is the pseudoinverse of X",
+        "A = X⁺X′, where X⁺ is the pseudoinverse of X",
+        "A = XᵀX′, the cross-covariance of the snapshots",
+        "A = X X′⁺, where X′⁺ is the pseudoinverse of X′"
+      ],
+      "answer": 0,
+      "explain": "DMD solves the least-squares problem min ‖X′ − AX‖_F, whose minimum-norm solution is X′X⁺ (computed in practice through a truncated SVD of X). Its eigenvalues and eigenvectors approximate Koopman eigenvalues and modes.",
+      "source": null
+    },
+    {
+      "id": "q5-conv-1",
+      "node": "conv",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "A circular convolution of length N is multiplication by a circulant matrix C. What diagonalizes C?",
+      "choices": [
+        "The identity, since C is already diagonal",
+        "A Householder reflection built from C's first column",
+        "The discrete Fourier transform matrix",
+        "Its own Cholesky factor"
+      ],
+      "answer": 2,
+      "explain": "Every circulant matrix has the Fourier vectors as eigenvectors, C = F⁻¹ diag(F c) F, with eigenvalues equal to the DFT of its first column c. This is the matrix form of the convolution theorem.",
+      "source": null
+    },
+    {
+      "id": "q5-pca-2",
+      "node": "pca",
+      "skill": "linear-algebra",
+      "difficulty": 3,
+      "prompt": "X has singular values σ₁ ≥ σ₂ ≥ …. What is the best rank-k approximation in Frobenius norm, and its squared error?",
+      "choices": [
+        "Truncated SVD; squared error σₖ₊₁²",
+        "The top-k rows of X; error Σᵢ₌ₖ₊₁ σᵢ",
+        "Truncated SVD; squared error Σᵢ₌ₖ₊₁ σᵢ²",
+        "Any rank-k projection; error σ₁ − σₖ"
+      ],
+      "answer": 2,
+      "explain": "By Eckart–Young, keeping the top k singular triplets is optimal and leaves the remaining energy Σᵢ>ₖ σᵢ² in the Frobenius norm. σₖ₊₁² is the squared error in the spectral (operator) norm, a different measure.",
+      "source": null
+    },
+    {
+      "id": "q5-kalman-2",
+      "node": "kalman",
+      "skill": "linear-algebra",
+      "difficulty": 3,
+      "prompt": "Why do robust Kalman implementations use the Joseph form P⁺ = (I − KH)P⁻(I − KH)ᵀ + KRKᵀ instead of P⁺ = (I − KH)P⁻?",
+      "choices": [
+        "It needs fewer multiplications than the short form",
+        "It gives a more accurate posterior mean than the short form",
+        "It is required whenever the measurement matrix H is square",
+        "It stays symmetric PSD under rounding and for any gain K"
+      ],
+      "answer": 3,
+      "explain": "Both forms agree for the optimal gain in exact arithmetic, but the short form subtracts and can lose symmetry or positive semidefiniteness numerically. The Joseph form is a sum of PSD terms and is valid for any K, at extra cost.",
+      "source": null
+    },
+    {
+      "id": "q5-reachability-1",
+      "node": "reachability",
+      "skill": "linear-algebra",
+      "difficulty": 3,
+      "prompt": "By the PBH test, when is the LTI pair (A, B) uncontrollable?",
+      "choices": [
+        "When A has an eigenvalue equal to zero",
+        "When B has fewer columns than A has rows",
+        "When at least one column of B is the zero vector",
+        "When some left eigenvector w of A has wᵀB = 0"
+      ],
+      "answer": 3,
+      "explain": "rank [A − λI, B] < n for some eigenvalue λ means a mode w with wᵀA = λwᵀ that the input never excites (wᵀB = 0). A single input can control many states, and a singular A is irrelevant.",
+      "source": null
+    },
+    {
+      "id": "q5-gramian-1",
+      "node": "gramian",
+      "skill": "linear-algebra",
+      "difficulty": 3,
+      "prompt": "Under a state change x̃ = Tx, the Gramians transform as Wc → T Wc Tᵀ and Wo → T⁻ᵀ Wo T⁻¹. Which quantity is invariant?",
+      "choices": [
+        "The eigenvalues of Wc alone",
+        "The trace of Wo alone",
+        "The eigenvalues of Wc·Wo",
+        "The matrix Wc itself"
+      ],
+      "answer": 2,
+      "explain": "Wc·Wo maps to T(Wc Wo)T⁻¹, a similarity transform, so its eigenvalues (squared Hankel singular values) are coordinate-free. Each Gramian alone can be rescaled arbitrarily, which is why balancing makes them equal and diagonal before truncating.",
+      "source": null
+    },
+    {
+      "id": "q5-diffusion-1",
+      "node": "diffusion",
+      "skill": "generative-models",
+      "difficulty": 1,
+      "prompt": "What is the widely used simplified DDPM training loss?",
+      "choices": [
+        "An adversarial loss against a discriminator on real versus generated images",
+        "Exact log-likelihood computed through an invertible change of variables",
+        "Encoder–decoder reconstruction error plus a KL penalty to a Gaussian prior",
+        "Mean squared error between the added noise ε and the predicted ε_θ(xₜ, t)"
+      ],
+      "answer": 3,
+      "explain": "Ho et al. found that a reweighted variational bound, ‖ε − ε_θ(√ᾱₜx₀ + √(1 − ᾱₜ)ε, t)‖², trains best; it is equivalent to denoising score matching. The other options describe GANs, normalizing flows and VAEs.",
+      "source": "https://arxiv.org/abs/2006.11239"
+    },
+    {
+      "id": "q5-diffusion-2",
+      "node": "diffusion",
+      "skill": "generative-models",
+      "difficulty": 1,
+      "prompt": "Why is sampling from a standard diffusion model slower than sampling from a GAN of similar size?",
+      "choices": [
+        "Its network has far more parameters to evaluate",
+        "It must train a discriminator at sampling time",
+        "It needs many sequential network evaluations",
+        "It must invert a large Jacobian at every step"
+      ],
+      "answer": 2,
+      "explain": "Generation integrates a reverse process over tens to hundreds of denoising steps, each a full network pass, while a GAN generator maps noise to a sample in one pass. Faster samplers (DDIM, distillation, straighter flows) attack exactly this step count.",
+      "source": null
+    },
+    {
+      "id": "q5-dit-1",
+      "node": "dit",
+      "skill": "generative-models",
+      "difficulty": 1,
+      "prompt": "Peebles and Xie scaled diffusion transformers (DiTs). What relationship did they report between model compute and sample quality?",
+      "choices": [
+        "FID improved with parameters but not with more input tokens",
+        "Larger DiTs overfit, so FID worsened beyond a moderate model size",
+        "FID depended on the patch size alone, not on depth or width",
+        "More forward-pass Gflops gave consistently lower (better) FID"
+      ],
+      "answer": 3,
+      "explain": "The DiT paper found FID falls consistently as forward-pass Gflops grow, whether from depth, width or more tokens (smaller patches). DiT-XL/2 reached FID 2.27 on class-conditional ImageNet 256×256.",
+      "source": "https://arxiv.org/abs/2212.09748"
+    },
+    {
+      "id": "q5-score-3",
+      "node": "score",
+      "skill": "generative-models",
+      "difficulty": 2,
+      "prompt": "Denoising score matching perturbs data as x̃ = x + σε with ε ~ N(0, I). What target does the network s_θ(x̃) regress onto?",
+      "choices": [
+        "ε/σ",
+        "−ε/σ",
+        "−σε",
+        "x − x̃"
+      ],
+      "answer": 1,
+      "explain": "The perturbation kernel's score is ∇ log N(x̃; x, σ²I) = −(x̃ − x)/σ² = −ε/σ, and regressing onto it recovers the score of the noised marginal. The sign matters: the score points back toward the clean data.",
+      "source": null
+    },
+    {
+      "id": "q5-diffusion-3",
+      "node": "diffusion",
+      "skill": "generative-models",
+      "difficulty": 2,
+      "prompt": "How do DDIM samplers relate to DDPM?",
+      "choices": [
+        "A new training objective that has to be learned from scratch",
+        "Same training objective; a non-Markovian sampler that allows far fewer steps",
+        "Same sampler, but with a learned variance schedule replacing a fixed one",
+        "A GAN-style discriminator added to sharpen samples in fewer denoising steps"
+      ],
+      "answer": 1,
+      "explain": "Song, Meng and Ermon build non-Markovian forward processes with the same marginals, hence the same training loss, so a pretrained DDPM can be sampled 10–50× faster; with zero added noise the sampler is deterministic.",
+      "source": "https://arxiv.org/abs/2010.02502"
+    },
+    {
+      "id": "q5-flow-2",
+      "node": "flow",
+      "skill": "generative-models",
+      "difficulty": 2,
+      "prompt": "Why does making the learned ODE paths straighter (as in rectified flow) speed up sampling?",
+      "choices": [
+        "Straight paths make the training loss convex in the neural network weights",
+        "A straight path can be followed accurately with very few Euler steps",
+        "Straight paths remove the need for a source noise distribution",
+        "Straight paths let the sampler skip evaluating the vector field"
+      ],
+      "answer": 1,
+      "explain": "Discretization error comes from curvature: on an exactly straight path a single Euler step lands on the endpoint. Liu et al. use repeated rectification to straighten paths, reaching good samples with one or a few steps.",
+      "source": "https://arxiv.org/abs/2209.03003"
+    },
+    {
+      "id": "q5-bridge-1",
+      "node": "bridge",
+      "skill": "generative-models",
+      "difficulty": 2,
+      "prompt": "Entropy-regularized optimal transport between discrete marginals a and b, with cost C and regularization ε, has a solution of what form?",
+      "choices": [
+        "A permutation matrix that pairs each source point with one target",
+        "π = diag(u)·K·diag(v) with K = exp(−C/ε), u and v scaled to fit a and b",
+        "π = a bᵀ, the independent coupling, for every ε > 0",
+        "π = exp(−C/ε) normalized to sum to 1, with no marginal constraints fitted"
+      ],
+      "answer": 1,
+      "explain": "The entropic term makes the optimal plan a diagonal scaling of the Gibbs kernel, and Sinkhorn alternately rescales u and v to match the marginals, far cheaper than a transport LP. As ε → 0 it approaches unregularized OT; as ε → ∞, a bᵀ.",
+      "source": "https://arxiv.org/abs/1306.0895"
+    },
+    {
+      "id": "q5-diffusion-4",
+      "node": "diffusion",
+      "skill": "generative-models",
+      "difficulty": 3,
+      "prompt": "For a variance-preserving diffusion xₜ = √ᾱₜ x₀ + √(1 − ᾱₜ) ε, how is the score of pₜ obtained from a trained noise predictor ε_θ?",
+      "choices": [
+        "∇ log pₜ(xₜ) ≈ −ε_θ(xₜ, t)·√(1 − ᾱₜ)",
+        "∇ log pₜ(xₜ) ≈ −ε_θ(xₜ, t)/√(1 − ᾱₜ)",
+        "∇ log pₜ(xₜ) ≈ −ε_θ(xₜ, t)/√ᾱₜ",
+        "∇ log pₜ(xₜ) ≈ +ε_θ(xₜ, t)/(1 − ᾱₜ)"
+      ],
+      "answer": 1,
+      "explain": "The conditional score is −(xₜ − √ᾱₜx₀)/(1 − ᾱₜ) = −ε/√(1 − ᾱₜ), and the noise predictor's optimum is E[ε | xₜ], so the score is −ε_θ/√(1 − ᾱₜ). This is the bridge between DDPM and score-SDE sampling.",
+      "source": null
+    },
+    {
+      "id": "q5-flow-3",
+      "node": "flow",
+      "skill": "generative-models",
+      "difficulty": 3,
+      "prompt": "Flow matching regresses onto conditional velocities uₜ(x | x₁) even though the target is the intractable marginal field uₜ(x). Why is that valid?",
+      "choices": [
+        "Both losses have the same gradient in θ; they differ by a constant",
+        "The conditional velocity equals the marginal velocity at every x",
+        "Each data point x₁ gets its own model, later averaged together",
+        "Conditional paths are deterministic, so the loss has zero variance"
+      ],
+      "answer": 0,
+      "explain": "Lipman et al. show the conditional flow matching loss equals the marginal one up to a θ-independent constant, so their gradients coincide and the minimizer is the marginal field, a conditional average of uₜ(x | x₁). Pointwise the two fields differ.",
+      "source": "https://arxiv.org/abs/2210.02747"
+    },
+    {
+      "id": "q5-score-4",
+      "node": "score",
+      "skill": "generative-models",
+      "difficulty": 3,
+      "prompt": "Score-based models are trained on noise-perturbed data at many noise levels rather than on clean data alone. What problem does this solve?",
+      "choices": [
+        "Clean data have no score, because their density is uniform",
+        "Scores are poorly estimated in low-density regions where sampling starts",
+        "Without noise the score-matching loss has no unique minimizer in the parameters θ",
+        "Noise turns the score into a linear function of x that networks fit easily"
+      ],
+      "answer": 1,
+      "explain": "Data concentrate near a low-dimensional set, so scores learned from clean data are inaccurate or undefined in the empty regions where sampling begins. Large noise fills space with accurate scores, and annealing down the noise levels guides samples to the data.",
+      "source": "https://arxiv.org/abs/1907.05600"
+    },
+    {
+      "id": "q5-lasso-2",
+      "node": "lasso",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "At a lasso solution of ½‖y − Xw‖² + λ‖w‖₁, which condition holds for every feature j with wⱼ = 0?",
+      "choices": [
+        "|xⱼᵀ(y − Xw)| ≤ λ",
+        "xⱼᵀ(y − Xw) = 0",
+        "|xⱼᵀ(y − Xw)| ≥ λ",
+        "|xⱼᵀ y| ≤ λ"
+      ],
+      "answer": 0,
+      "explain": "The subgradient of |wⱼ| at 0 is [−1, 1], so stationarity requires the feature's correlation with the residual to lie in [−λ, λ]. Active features instead satisfy xⱼᵀ(y − Xw) = λ·sign(wⱼ); the last option uses y instead of the residual.",
+      "source": null
+    },
+    {
+      "id": "q5-ridge-2",
+      "node": "ridge",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "Ridge regression with penalty λ and X having singular values dⱼ. What are its effective degrees of freedom?",
+      "choices": [
+        "Σⱼ λ/(dⱼ² + λ)",
+        "The number of columns of X, for every λ",
+        "Σⱼ dⱼ²/(dⱼ² + λ)",
+        "Σⱼ dⱼ/(dⱼ + λ)"
+      ],
+      "answer": 2,
+      "explain": "Ridge's hat matrix X(XᵀX + λI)⁻¹Xᵀ has eigenvalues dⱼ²/(dⱼ² + λ), and degrees of freedom is its trace. It falls from p (λ = 0) toward 0 as λ grows, shrinking weak singular directions most.",
+      "source": null
+    },
+    {
+      "id": "q5-pca-3",
+      "node": "pca",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "PCA is run on raw features measured in very different units (e.g. metres and millimetres). What goes wrong, and what is the usual fix?",
+      "choices": [
+        "Nothing: principal directions are invariant to rescaling any individual feature's units",
+        "The covariance matrix becomes non-symmetric; symmetrize it before decomposing",
+        "Features with large numeric variance dominate; standardize or use the correlation matrix",
+        "Eigenvalues turn negative; take absolute values before ranking components"
+      ],
+      "answer": 2,
+      "explain": "Covariance eigenvectors are not invariant to per-feature scaling, so the feature with the largest numeric variance captures the first component. Standardizing (equivalently, PCA on the correlation matrix) puts features on equal footing.",
+      "source": null
+    },
+    {
+      "id": "q5-koopman-2",
+      "node": "koopman",
+      "skill": "dynamical-systems",
+      "difficulty": 2,
+      "prompt": "For the linear map x_{k+1} = Ax, let w be a left eigenvector (wᵀA = λwᵀ) and g(x) = wᵀx. What does the Koopman operator K do to g?",
+      "choices": [
+        "Kg = λ²g",
+        "Kg = g/λ",
+        "Kg = g for every left eigenvector",
+        "Kg = λg"
+      ],
+      "answer": 3,
+      "explain": "Kg(x) = g(Ax) = wᵀAx = λwᵀx = λg(x), so g is a Koopman eigenfunction with eigenvalue λ. For linear systems the Koopman eigenfunctions of linear observables come from the left eigenvectors of A.",
+      "source": null
+    },
+    {
+      "id": "q5-chaos-2",
+      "node": "chaos",
+      "skill": "dynamical-systems",
+      "difficulty": 2,
+      "prompt": "A system's largest Lyapunov exponent is 0.5 per unit time. Roughly how long until an initial error of 10⁻⁶ grows to order 1?",
+      "choices": [
+        "About 28 time units",
+        "About 2 time units",
+        "About 12 time units",
+        "About 500,000 time units"
+      ],
+      "answer": 0,
+      "explain": "Errors grow like e^(λt), so t ≈ ln(10⁶)/0.5 ≈ 13.8/0.5 ≈ 28. Predictability horizons grow only logarithmically with measurement precision, so each 10× better initial accuracy buys just ln 10/λ ≈ 4.6 extra time units.",
+      "source": null
+    },
+    {
+      "id": "q5-td-1",
+      "node": "td",
+      "skill": "rl",
+      "difficulty": 3,
+      "prompt": "Sutton and Barto call a combination of three ingredients the 'deadly triad', because together they can make value estimates diverge. Which three?",
+      "choices": [
+        "Function approximation, exploration, and discounting",
+        "Bootstrapping, on-policy sampling, and a tabular value representation",
+        "Off-policy training, Monte Carlo returns, and exploration",
+        "Function approximation, bootstrapping, and off-policy training"
+      ],
+      "answer": 3,
+      "explain": "Any two are safe, but with all three, as in Q-learning with linear or neural approximators, semi-gradient TD can diverge (Baird's counterexample). Monte Carlo returns avoid bootstrapping, and tabular methods avoid approximation.",
+      "source": null
+    }
+  ]
+}
