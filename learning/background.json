@@ -77,7 +77,9 @@
     {"id": "goal-dynamics", "label": "Understand how deep networks learn during training (NTK, SLT, developmental stages)", "sets": {}, "goal": "how-deep-nets-learn"},
     {"id": "goal-capable", "label": "Understand LLMs, VLMs and robot VLAs as engineered systems", "sets": {}, "goal": "capable-systems-llm-to-vla"},
     {"id": "goal-geometry", "label": "See the synthesis: where system-theoretic and statistical-learning quantities connect", "sets": {}, "goal": "capstone-learning-geometry-meets-control"},
-    {"id": "goal-alignment", "label": "Study alignment: reward misspecification, preferences and correctable agents", "sets": {}, "goal": "capstone-alignment-belief-state"}
+    {"id": "goal-alignment", "label": "Study alignment: reward misspecification, preferences and correctable agents", "sets": {}, "goal": "capstone-alignment-belief-state"},
+    {"id": "goal-forecasting", "label": "Forecast time series and quantify uncertainty: ARIMA/ETS, backtesting, scoring rules, conformal intervals", "sets": {}, "goal": "forecasting-evaluation-uncertainty"},
+    {"id": "goal-slt", "label": "Run singular learning theory measurements: WBIC, LLC estimation with SGLD, susceptibilities, data interventions", "sets": {}, "goal": "slt-in-practice"}
    ]
   }
  ]

@@ -684,6 +684,120 @@
      "via": "thesis-f3b46f83"
     }
    ]
+  },
+  {
+   "id": "forecasting-evaluation-uncertainty",
+   "title": "Forecasting: baselines, backtests and calibrated uncertainty",
+   "summary": "Build classical time-series baselines, evaluate them honestly by forecast origin and horizon, score full predictive distributions, wrap them in coverage-calibrated intervals that adapt under shift, and see where learned world-model uncertainty still needs those checks.",
+   "audience": "Learners who can fit a regression and hold out a test set, and want to forecast time series and quantify how wrong the forecasts may be.",
+   "level": "intermediate",
+   "skills": [
+    "stats-ml",
+    "signals-estimation",
+    "probability"
+   ],
+   "estHours": 13,
+   "steps": [
+    {
+     "node": "arima",
+     "objective": "Fit an ARIMA(p, d, q) model: difference the series until it looks stationary, choose p and q, check that the residuals look like white noise, and state the stationarity (AR) and invertibility (MA) conditions on the lag polynomials.",
+     "why": "Autoregressive models are the transparent baseline every other forecaster on this path is compared against; their residual diagnostics make model misfit visible.",
+     "via": null
+    },
+    {
+     "node": "ets",
+     "objective": "Write the simple exponential smoothing model in innovations state-space form (an observation equation and a level equation driven by the same error), produce point forecasts and prediction intervals from it, and explain why two models with equal point forecasts can still imply different uncertainty.",
+     "why": "The atlas edge: classical forecasting uses ARIMA and ETS as distinct model families, and matching point forecasts does not equate their noise models. ETS gives a second, structurally different baseline.",
+     "via": "thesis-d8c9c9dd"
+    },
+    {
+     "node": "forecastcv",
+     "objective": "Run time-series cross-validation with an expanding training window, forecasting h = 1…H steps from each origin using only data available there, and report error separately for each horizon for both an ARIMA and an ETS model.",
+     "why": "The atlas edge: the cited procedure evaluates ETS forecasts using expanding training windows (and a sibling edge does the same for ARIMA by horizon). A random train/test split would leak the future into training.",
+     "via": "thesis-e50b4dcc"
+    },
+    {
+     "node": "proper",
+     "objective": "Score Gaussian predictive distributions from the backtest with the log score and the CRPS, explain what makes a scoring rule proper (the true distribution maximizes expected score), and note that the CRPS reduces to absolute error for a point forecast.",
+     "why": "There is no direct atlas edge from backtesting; this step changes what is scored, from point error to the whole predictive distribution. The node's boundary applies: a proper score evaluates forecasts, it does not certify that a model is calibrated.",
+     "via": null
+    },
+    {
+     "node": "conformal",
+     "objective": "Build split-conformal prediction intervals from calibration residuals, state the finite-sample marginal coverage guarantee and its exchangeability assumption, and explain why serial dependence in a time series puts that assumption in question.",
+     "why": "The atlas edge is a hypothesis-typed proposal: measure coverage and proper forecast score separately, since neither metric alone certifies useful decisions. Conformal intervals supply the coverage half of that proposed evaluation.",
+     "via": "thesis-917e4004"
+    },
+    {
+     "node": "onlinecal",
+     "objective": "Implement the adaptive conformal update α_{t+1} = α_t + γ(α − err_t) on a rolling forecast, show the running miss rate tracking the target through a level shift, and explain why long-run error control does not guarantee that any single next interval is safe.",
+     "why": "The atlas edge: adaptive conformal procedures extend prediction-set evaluation to online distribution change, under different guarantees from the exchangeable case.",
+     "via": "thesis-9bf260d1"
+    },
+    {
+     "node": "horizonuncert",
+     "objective": "Describe how the HAUWM world model pretrains a probabilistic ensemble over varying forecast horizons, and design the check that would test whether its horizon-dependent disagreement is calibrated: proper scores and empirical coverage per horizon.",
+     "why": "There is no direct atlas edge from online calibration. The atlas links this node to proper scoring only by a hypothesis-typed proposal (check horizon-dependent disagreement against proper scores and coverage); growing ensemble variance is not itself calibration, so the tools from this path are what such a test would need.",
+     "via": null
+    }
+   ]
+  },
+  {
+   "id": "slt-in-practice",
+   "title": "Singular learning theory in practice",
+   "summary": "Go from Watanabe's free-energy asymptotics to a working estimator of the local learning coefficient, then use it, its refined variants and posterior susceptibilities to read developmental stages and choose data interventions in small transformers.",
+   "audience": "Learners comfortable with Bayesian inference and Langevin-style sampling who have trained networks and want to run SLT measurements themselves.",
+   "level": "advanced",
+   "skills": [
+    "theory",
+    "probability",
+    "deep-learning"
+   ],
+   "estHours": 20,
+   "steps": [
+    {
+     "node": "slt",
+     "objective": "Explain why neural networks are singular models (non-identifiable parameters, Fisher information not positive definite), and why the learning coefficient λ, not d/2, sets how Bayesian evidence grows with n.",
+     "why": "Every measurement on this path estimates a quantity this theory defines; its boundary (Bayesian asymptotics, not SGD trajectories) is the caveat that recurs at every later step.",
+     "via": null
+    },
+    {
+     "node": "wbic",
+     "objective": "State F_n = nL_n(w₀) + λ log n − (m−1) log log n + O_p(1), compute WBIC = E_β[nL_n] at β = 1/log n, explain why it matches the first two terms but not the log log n term, and show that for a regular model it reduces to BIC with λ = d/2.",
+     "why": "The atlas edge is exact under Watanabe's conditions: F_n = WBIC + O_p(√log n), with both equal to nL_n(w₀) + λ log n to leading order. WBIC turns the asymptotic into something you can compute from one tempered posterior.",
+     "via": "rel-d6559346"
+    },
+    {
+     "node": "llcsgld",
+     "objective": "Compute λ̂(w*) = nβ*(E[L_n(w)] − L_n(w*)) from minibatch SGLD samples of the posterior localized at w* (∝ exp(−nβL_n(w) − (γ/2)‖w − w*‖²)), explain β* = 1/log n via WBIC, and show how γ, step size and chain length change the estimate on a deep linear network with a known coefficient.",
+     "why": "The atlas edge is exact algebra: λ̂(w*) = (WBIC(w*) − nL_n(w*)) / log n at β* = 1/log n, so the LLC estimator is a localized WBIC. That the localized quantity equals λ(w*) for suitable γ is conjectured, not proved.",
+     "via": "rel-9b213f0e"
+    },
+    {
+     "node": "stagewise",
+     "objective": "Estimate λ̂ at checkpoints across training, locate stage boundaries as plateaus of λ̂(t) over log t, interpret the stages in which λ̂ decreases, and explain why estimating λ̂ away from a local minimum calls for a strong localization γ.",
+     "why": "The atlas edge (empirical): λ̂ is applied at non-minimal checkpoints along training, which the authors justify practically by stable estimates under strong γ rather than by theory. The resulting stages are associations in two small transformers, not causation.",
+     "via": "rel-03075a98"
+    },
+    {
+     "node": "rllc",
+     "objective": "Define the refined coefficient λ(w*; V, q′) by sampling only the weights V and scoring loss on q′, compute weight-refined curves per attention head, and explain why a head's refined coefficient is not an additive share of the network's λ.",
+     "why": "The atlas edge (empirical): head-level refined-LLC curves split the network-level LM1–LM5 stages into differentiation of individual heads, which ablations then confirm.",
+     "via": "rel-ea9b4791"
+    },
+    {
+     "node": "susceptibility",
+     "objective": "Derive χ = (1/nβ)∂⟨φ⟩/∂h at h = 0 = −Cov_β[φ, ΔL] for a data-mixture perturbation (ΔL = L_q′ − L_q), estimate it from the same localized SGLD samples, and read principal components of the response matrix as functional modules.",
+     "why": "The atlas edge (empirical): in the same 3M-parameter model, a response principal component separates the induction-circuit heads found by refined LLCs from the multigram heads — a coarser two-way split reached from data perturbations rather than weight restriction.",
+     "via": "rel-55f8ec68"
+    },
+    {
+     "node": "patterning",
+     "objective": "Explain how patterning inverts estimated susceptibilities to choose a data reweighting and then retrains, summarize the parentheses result (mean out-of-distribution accuracy .310 → .497 in the favorable condition), and state its limits: estimating language-model susceptibilities costs about 500× model training by forward-pass accounting, and uniform training still reaches the lowest loss.",
+     "why": "The atlas edge: structural inference reads χ, patterning inverts it to choose data. The posterior response is not an exact model of optimizer trajectories, so the retrained outcome is the measurement that counts.",
+     "via": "rel-a5c11398"
+    }
+   ]
   }
  ]
 }
