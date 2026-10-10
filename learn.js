@@ -21,13 +21,17 @@ const save = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(st)); } c
 /* ---------------- data ---------------- */
 // Real files in learning/ win; learning/fixtures/ is used only for a file that is missing.
 async function getJSON(name) {
-  for (const base of ['learning/', 'learning/fixtures/']) {
-    try { const r = await fetch(base + name); if (r.ok) return { json: await r.json(), fixture: base !== 'learning/' }; } catch { /* try next */ }
-  }
-  return { json: null, fixture: true };
+  try { const r = await fetch(name); if (r.ok) return { json: await r.json(), fixture: name.includes('/fixtures/') }; } catch { /* missing or malformed */ }
+  return { json: null, fixture: false };
 }
+const FILES = ['nodes.json', 'paths.json', 'background.json', 'questions-1.json', 'questions-2.json'];
 function loadData() {
-  return dataP ||= Promise.all(['nodes.json', 'paths.json', 'background.json', 'questions-1.json', 'questions-2.json'].map(getJSON)).then(([n, p, b, q1, q2]) => {
+  return dataP ||= Promise.all(FILES.map(f => getJSON('learning/' + f))).then(async real => {
+    // Fixtures stand in for a missing real file. Question files are a set: once any real bank exists,
+    // a missing questions-N.json is just empty (no sample items mixed into real content).
+    const anyRealQ = real[3].json || real[4].json;
+    return Promise.all(real.map((r, i) => r.json || (i >= 3 && anyRealQ) ? r : getJSON('learning/fixtures/' + FILES[i])));
+  }).then(([n, p, b, q1, q2]) => {
     const seen = new Set(), items = [...(q1.json?.items || []), ...(q2.json?.items || [])].filter(it =>
       it && !seen.has(it.id) && seen.add(it.id) && A.byId.has(it.node) && SKILLS[it.skill] && Array.isArray(it.choices) && it.answer >= 0 && it.answer < it.choices.length);
     const meta = n.json?.nodes || {};
@@ -232,15 +236,15 @@ function openSide(v) {
   if (side().hidden) welcomeBack = !$('#welcome').classList.contains('hide');
   if (v.kind === 'path') welcomeBack = false;
   view = v; side().hidden = false; document.body.classList.add('learn-open');
-  $('#welcome').classList.add('hide'); $('#paths-btn').setAttribute('aria-expanded', 'true');
+  $('#welcome').classList.add('hide'); $('#paths-btn')?.setAttribute('aria-expanded', 'true');
   renderSide(); A.updateOffset();
 }
 function closeSide() {
   if (side().hidden) return;
-  side().hidden = true; document.body.classList.remove('learn-open'); $('#paths-btn').setAttribute('aria-expanded', 'false');
+  side().hidden = true; document.body.classList.remove('learn-open'); $('#paths-btn')?.setAttribute('aria-expanded', 'false');
   if (view?.kind === 'path') A.clearRoute();
   if (welcomeBack && $('#panel').hidden && !A.S.current) $('#welcome').classList.remove('hide');
-  welcomeBack = false; view = null; $('#learn-pill').hidden = true; A.updateOffset();
+  welcomeBack = false; view = null; if ($('#learn-pill')) $('#learn-pill').hidden = true; A.updateOffset();
 }
 const sideHead = (eyebrow) => `<div class="panel-head"><span class="eyebrow">${eyebrow}</span><button class="icon-btn" data-l="side-close" aria-label="Close learning paths">${X}</button></div>`;
 function renderSide(focusSel) {
@@ -400,7 +404,7 @@ function onKey(e) {
     closeSide();
   }
 }
-function syncPill() { $('#learn-pill').hidden = !(view?.kind === 'path' && !$('#panel').hidden); }
+function syncPill() { const pl = $('#learn-pill'); if (pl) pl.hidden = !(view?.kind === 'path' && !$('#panel').hidden); }
 function renderWelcome() {
   const c = $('#learn-continue'); if (!c) return;
   const id = st.active || st.rec?.path, p = id && D?.pathById.get(id);
@@ -410,15 +414,17 @@ function renderWelcome() {
 
 export async function init(api) {
   A = api; esc = api.esc; st = load();
-  modal().addEventListener('click', ev => { if (ev.target.matches('.l-backdrop')) return closeModal(); onClick(ev); });
+  // A stale cached index.html may lack the harness markup: do nothing rather than crash the atlas.
+  if (!modal() || !dlg() || !side()) return console.warn('Learning paths: page markup missing; skipped.');
+  const on = (sel, ev, fn) => $(sel)?.addEventListener(ev, fn);  modal().addEventListener('click', ev => { if (ev.target.matches('.l-backdrop')) return closeModal(); onClick(ev); });
   dlg().addEventListener('change', ev => { const l = ev.target.closest('.l-opt'); if (!l) return; l.closest('.l-opts').querySelectorAll('.l-opt').forEach(o => o.classList.toggle('on', o.querySelector('input').checked)); });
   side().addEventListener('click', onClick);
   document.addEventListener('keydown', onKey, true);
-  $('#personalize-btn').onclick = () => openOnboarding();
-  $('#paths-btn').onclick = async () => { if (!side().hidden && view?.kind === 'browse') return closeSide(); await loadData(); if (view?.kind === 'path') A.clearRoute(); openSide({ kind: 'browse' }); renderSide('.l-h'); };
-  $('#learn-continue').onclick = async e => { await loadData(); openPath(e.currentTarget.dataset.path); };
-  $('#learn-pill').onclick = () => { A.closePanel(); syncPill(); side().querySelector('.l-step[aria-expanded="true"]')?.focus(); };
-  $('#t-overview').addEventListener('click', () => { closeSide(); });
+  on('#personalize-btn', 'click', () => openOnboarding());
+  on('#paths-btn', 'click', async () => { if (!side().hidden && view?.kind === 'browse') return closeSide(); await loadData(); if (view?.kind === 'path') A.clearRoute(); openSide({ kind: 'browse' }); renderSide('.l-h'); });
+  on('#learn-continue', 'click', async e => { await loadData(); openPath(e.currentTarget.dataset.path); });
+  on('#learn-pill', 'click', () => { A.closePanel(); syncPill(); side().querySelector('.l-step[aria-expanded="true"]')?.focus(); });
+  on('#t-overview', 'click', () => closeSide());
   // Keep the path lit when the topic window closes or re-renders (closePanel/crossings clear S.route).
   new MutationObserver(() => {
     syncPill();

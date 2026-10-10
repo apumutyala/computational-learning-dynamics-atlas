@@ -188,8 +188,14 @@ function flyEdge(e) {
 }
 function flyHome() { flyTo(new THREE.Vector3(0, 0, 0), HOME.length()); }
 function updateOffset() {
-  const panelOpen = !$('#panel').hidden, chatOpen = S.chatOpen, side = $('#learn-side'), sideOpen = side && !side.hidden;
-  if (isMobile()) { targetOffset = { x: 0, y: panelOpen || chatOpen || sideOpen ? innerHeight * .27 : 0 }; }
+  const panelOpen = !$('#panel').hidden, chatOpen = S.chatOpen, side = $('#learn-side'), sideOpen = !!side && !side.hidden;
+  if (isMobile()) {
+    // Bottom sheet: centre the scene in the visible strip between the top bar and the sheet's top edge.
+    const welcomeEl = $('#welcome'), sheet = chatOpen ? $('#chat') : panelOpen ? $('#panel') : sideOpen ? side : !welcomeEl.classList.contains('hide') ? welcomeEl : null;
+    const top = $('#topbar').getBoundingClientRect().bottom;
+    const sheetTop = sheet ? Math.max(top + 120, sheet.getBoundingClientRect().top) : innerHeight;
+    targetOffset = { x: 0, y: sheet ? Math.max(0, innerHeight / 2 - (top + sheetTop) / 2) : 0 };
+  }
   else {
     const welcome = !$('#welcome').classList.contains('hide') && !panelOpen;
     const pw = panelOpen ? $('#panel').offsetWidth + 16 : 0, cw = chatOpen ? $('#chat').offsetWidth + 16 : sideOpen ? side.offsetWidth + 16 : welcome ? $('#welcome').offsetWidth + 24 : 0;
@@ -248,18 +254,27 @@ function drawLabels() {
 }
 
 /* ---------------- picking ---------------- */
-function pick(x, y) {
+const coarse = matchMedia('(pointer: coarse)');
+function pick(x, y, touch) {
+  const minR = touch || coarse.matches ? 24 : 13; // forgiving tap targets on touch screens
   let best = null, bd = Infinity;
   for (const n of nodes) {
     if (nAlpha[n.i] < .18) continue;
     const p = project(n.v); if (p.behind) continue;
-    const d = Math.hypot(p.x - x, p.y - y), r = Math.max(13, nSize[n.i] * 1.1);
+    const d = Math.hypot(p.x - x, p.y - y), r = Math.max(minR, nSize[n.i] * 1.1);
     if (d < r && d < bd) { bd = d; best = n.id; }
   }
   return best;
 }
 let down = null, interacted = false;
-canvas.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY, t: performance.now() }; stopDrift(); hideHint(); });
+const activePointers = new Set();
+canvas.addEventListener('pointerdown', e => {
+  activePointers.add(e.pointerId);
+  // a second finger turns the gesture into pinch/pan, never a tap
+  down = activePointers.size > 1 ? null : { x: e.clientX, y: e.clientY, t: performance.now() };
+  stopDrift(); hideHint(); closeToolsMenu();
+});
+['pointercancel', 'lostpointercapture'].forEach(t => canvas.addEventListener(t, e => { activePointers.delete(e.pointerId); if (t === 'pointercancel') down = null; }));
 canvas.addEventListener('pointermove', e => {
   if (e.pointerType !== 'mouse') return;
   const id = pick(e.clientX, e.clientY);
@@ -267,11 +282,13 @@ canvas.addEventListener('pointermove', e => {
 });
 canvas.addEventListener('pointerleave', () => { S.hover = null; computeTargets(); });
 canvas.addEventListener('pointerup', e => {
+  activePointers.delete(e.pointerId);
   if (!down) return;
-  const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
+  const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y), touch = e.pointerType !== 'mouse';
+  const held = performance.now() - down.t;
   down = null;
-  if (moved > 6) return;
-  const id = pick(e.clientX, e.clientY);
+  if (moved > (touch ? 12 : 6) || (touch && held > 600)) return;
+  const id = pick(e.clientX, e.clientY, touch);
   if (id) travel(id, 'scene'); else if (!S.current && S.cluster) { S.cluster = null; renderDock(); computeTargets(); } else if (!S.current && !$('#welcome').classList.contains('hide')) hideWelcome();
 });
 canvas.addEventListener('wheel', () => { stopDrift(); hideHint(); }, { passive: true });
@@ -660,10 +677,40 @@ function setHyp(on) {
 }
 $('#t-hyp').onclick = () => setHyp(!S.showHyp);
 $('#t-drift').onclick = () => { S.drift = !S.drift; $('#t-drift').setAttribute('aria-pressed', String(S.drift)); controls.autoRotate = S.drift && !S.current; };
-function hideWelcome() { $('#welcome').classList.add('hide'); updateOffset(); }
-$('#welcome-close').onclick = hideWelcome;
+function hideWelcome() { $('#welcome').classList.add('hide'); updateOffset(); rememberWelcome(); }
+const wc = $('#welcome-close'); if (wc) wc.onclick = hideWelcome;
 // Overview resets the view; it reopens the welcome window only if it is closed, and closes it if it is open.
-$('#t-overview').onclick = e => { e.currentTarget.blur(); const w = $('#welcome'), wasOpen = !w.classList.contains('hide') && panel.hidden && !S.cluster; if (!panel.hidden) closePanel(); S.cluster = null; renderDock(); computeTargets(); flyHome(); w.classList.toggle('hide', wasOpen); updateOffset(); };
+$('#t-overview').onclick = e => { e.currentTarget.blur(); closeToolsMenu(); const w = $('#welcome'), wasOpen = !w.classList.contains('hide') && panel.hidden && !S.cluster; if (!panel.hidden) closePanel(); S.cluster = null; renderDock(); computeTargets(); flyHome(); w.classList.toggle('hide', wasOpen); updateOffset(); rememberWelcome(); };
+
+/* ---------------- phone helpers: welcome card, overflow menu, sheet swipe ---------------- */
+const WELCOME_KEY = 'atlas.welcomeDismissed';
+function welcomeDismissed() { try { return sessionStorage.getItem(WELCOME_KEY) === '1'; } catch { return false; } }
+function rememberWelcome() { const closed = $('#welcome').classList.contains('hide'); try { closed ? sessionStorage.setItem(WELCOME_KEY, '1') : sessionStorage.removeItem(WELCOME_KEY); } catch { /* storage unavailable */ } }
+document.querySelectorAll('[data-welcome-dismiss]').forEach(b => b.addEventListener('click', hideWelcome));
+// The logo doubles as an info button: reopen (or close) the welcome card.
+const brand = $('.brand');
+brand.setAttribute('role', 'button'); brand.tabIndex = 0; brand.title = 'About this atlas';
+brand.addEventListener('click', () => { const w = $('#welcome'); if (w.classList.contains('hide')) { if (S.chatOpen) closeChat(); if (!panel.hidden) closePanel(); w.classList.remove('hide'); updateOffset(); rememberWelcome(); } else hideWelcome(); });
+brand.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); brand.click(); } });
+if (isMobile() && welcomeDismissed()) $('#welcome').classList.add('hide');
+
+const moreBtn = $('#t-more');
+function closeToolsMenu() { document.body.classList.remove('tools-open'); moreBtn?.setAttribute('aria-expanded', 'false'); }
+moreBtn?.addEventListener('click', () => { const open = !document.body.classList.contains('tools-open'); document.body.classList.toggle('tools-open', open); moreBtn.setAttribute('aria-expanded', String(open)); });
+document.addEventListener('pointerdown', e => { if (!e.target.closest('#t-more,.tools')) closeToolsMenu(); });
+$('#t-hyp').addEventListener('click', () => setTimeout(closeToolsMenu, 150));
+$('#t-drift').addEventListener('click', () => setTimeout(closeToolsMenu, 150));
+
+// Swipe the sheet's header down to close it (phones).
+let sheetDrag = null;
+panel.addEventListener('pointerdown', e => { if (isMobile() && e.pointerType !== 'mouse' && e.target.closest('.panel-head') && !e.target.closest('button')) sheetDrag = { y: e.clientY }; });
+panel.addEventListener('pointermove', e => { if (sheetDrag) { const dy = Math.max(0, e.clientY - sheetDrag.y); panel.style.transform = dy ? `translateY(${dy}px)` : ''; } });
+const endSheetDrag = e => {
+  if (!sheetDrag) return;
+  const dy = e.clientY - sheetDrag.y; sheetDrag = null; panel.style.transform = '';
+  if (e.type === 'pointerup' && dy > 70) closePanel();
+};
+panel.addEventListener('pointerup', endSheetDrag); panel.addEventListener('pointercancel', endSheetDrag);
 $('#t-drift').setAttribute('aria-pressed', String(S.drift));
 let toastT;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; t.style.opacity = 1; clearTimeout(toastT); toastT = setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.hidden = true, 300); }, 2200); }
@@ -713,4 +760,4 @@ addEventListener('hashchange', () => { const id = decodeURIComponent(location.ha
 window.__atlas = { S, travel, byId, project, enter };
 // Learning harness (learn.js) gets only this surface; the atlas keeps working if it fails to load.
 const learnAPI = { S, byId, edges, nodes, EV, enter, travel, showRoute, highlightRoute, clearRoute, closePanel, updateOffset, isMobile, esc, clusterColor: id => clusterOf.get(byId.get(id).group).color, edgeById: id => edges.find(e => e.id === id) || null, edgeBetween: (a, b) => adj.get(a)?.find(e => other(e, a) === b) || null };
-import('./learn.js').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
+import('./learn.js?v=20261010a').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
