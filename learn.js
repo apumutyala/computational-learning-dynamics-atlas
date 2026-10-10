@@ -15,7 +15,12 @@ const sig = x => 1 / (1 + Math.exp(-x));
 const pct = x => Math.round(x * 100);
 
 let A, esc, D = null, dataP = null, st = {};
-const load = () => { try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; } catch { return {}; } };
+// Corrupt or hand-edited storage must not crash the atlas: keep only well-formed parts.
+const load = () => { try { const v = JSON.parse(localStorage.getItem(LS_KEY)); if (!v || typeof v !== 'object' || Array.isArray(v)) return {};
+  if (!v.model || typeof v.model.m !== 'object' || typeof v.model.n !== 'object' || typeof v.model.seen !== 'object' || !v.model.m || !v.model.n || !v.model.seen) { delete v.model; delete v.probe; delete v.rec; }
+  if (!Array.isArray(v.probe?.answers)) delete v.probe;
+  v.progress = Object.fromEntries(Object.entries(v.progress && typeof v.progress === 'object' ? v.progress : {}).filter(([, x]) => x && Array.isArray(x.done)));
+  return v; } catch { return {}; } };
 const save = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(st)); } catch { /* storage unavailable: progress lives for this visit only */ } };
 
 /* ---------------- data ---------------- */
@@ -131,7 +136,7 @@ function confident(ob) {
 const modal = () => $('#learn-modal'), dlg = () => $('#learn-dialog');
 let ob = null, opener = null;
 async function openOnboarding() {
-  opener = document.activeElement;
+  if (!dlg().contains(document.activeElement)) opener = document.activeElement; // retake from results keeps the original opener
   await loadData();
   ob = { step: 1, bg: { ...(st.bg || {}) }, asked: [], tops: [], cur: null, fb: null };
   modal().hidden = false; document.body.classList.add('learn-modal-open');
@@ -159,7 +164,7 @@ function renderModal(focusSel) {
     <div class="l-bar" role="progressbar" aria-label="Quick check progress" aria-valuemin="0" aria-valuemax="${MAX_Q}" aria-valuenow="${ob.asked.length}"><i style="width:${pct(ob.asked.length / MAX_Q)}%"></i></div>
     ${quizItem(it, fb)}
     <div class="l-actions">${fb ? `<button class="btn primary" data-l="next">${confident(ob) || !nextItem(ob) ? 'See my results →' : 'Next question →'}</button>` : `<button class="btn" data-l="idk">I don't know</button>`}
-    ${ob.asked.length >= 4 && !fb ? '<button class="text-btn" data-l="finish">Finish early</button>' : ''}</div>`;
+    ${ob.asked.length >= MIN_Q && !fb ? '<button class="text-btn" data-l="finish">Finish early</button>' : ''}</div>`;
   } else renderResults(d);
   const f = focusSel && d.querySelector(focusSel);
   (f || d.querySelector('#learn-title')).focus();
@@ -200,7 +205,7 @@ function finishProbe() {
   st.rec = ranked.length ? { path: ranked[0].p.id, alts: ranked.slice(1, 3).map(r => r.p.id), why: { goal: ranked[0].goal, fit: ranked[0].fit, rel: ranked[0].rel } } : null;
   st.progress ||= {};
   ranked.forEach(({ p }) => { const pr = st.progress[p.id] ||= { done: [], at: 0 }; if (!pr.done.length) pr.at = startStep(p, st.model); });
-  save(); ob.step = 3; renderModal(); renderWelcome();
+  save(); ob.step = 3; renderModal(); renderWelcome(); if (view) renderSide();
 }
 function masteryBars(M, priors) {
   const skills = Object.keys(SKILLS).filter(s => (M.n[s] || 0) > 0 || s in (priors || {})).sort((a, b) => (M.n[b] || 0) - (M.n[a] || 0) || mOf(M, b) - mOf(M, a));
@@ -247,6 +252,7 @@ function openSide(v) {
 }
 function closeSide() {
   if (side().hidden) return;
+  if (side().contains(document.activeElement)) $('#paths-btn')?.focus(); // don't strand keyboard focus on <body>
   side().hidden = true; document.body.classList.remove('learn-open'); $('#paths-btn')?.setAttribute('aria-expanded', 'false');
   if (view?.kind === 'path') A.clearRoute();
   if (welcomeBack && $('#panel').hidden && !A.S.current) $('#welcome').classList.remove('hide');
@@ -366,7 +372,7 @@ function onClick(ev) {
     case 'idk': return answer(-1, true);
     case 'next': return nextQuestion();
     case 'finish': return finishProbe();
-    case 'retake': closeSide(); return openOnboarding();
+    case 'retake': return openOnboarding(); // the side stays open behind the modal, so Esc returns to it
     case 'browse': if (ob) closeModal(); if (view?.kind === 'path') A.clearRoute(); return openSide({ kind: 'browse' }), renderSide('.l-h');
     case 'personalize': return openOnboarding();
     case 'results': return showResults();
@@ -385,7 +391,7 @@ function onClick(ev) {
 async function showResults() {
   await loadData();
   if (!st.model || !st.probe) return openOnboarding();
-  opener = document.activeElement;
+  if (!dlg().contains(document.activeElement)) opener = document.activeElement; // retake from results keeps the original opener
   ob = { step: 3 }; modal().hidden = false; document.body.classList.add('learn-modal-open'); renderModal();
 }
 function onKey(e) {
@@ -422,9 +428,9 @@ export async function init(api) {
   A = api; esc = api.esc; st = load();
   // A stale cached index.html may lack the harness markup: do nothing rather than crash the atlas.
   if (!modal() || !dlg() || !side()) return console.warn('Learning paths: page markup missing; skipped.');
-  const on = (sel, ev, fn) => $(sel)?.addEventListener(ev, fn);  modal().addEventListener('click', ev => { if (ev.target.matches('.l-backdrop')) return closeModal(); onClick(ev); });
+  const on = (sel, ev, fn) => $(sel)?.addEventListener(ev, fn);  modal().addEventListener('click', ev => { if (ev.detail > 1) return; /* 2nd click of a double-click lands on the re-rendered dialog (or the backdrop) */ if (ev.target.matches('.l-backdrop')) return closeModal(); onClick(ev); });
   dlg().addEventListener('change', ev => { const l = ev.target.closest('.l-opt'); if (!l) return; l.closest('.l-opts').querySelectorAll('.l-opt').forEach(o => o.classList.toggle('on', o.querySelector('input').checked)); });
-  side().addEventListener('click', onClick);
+  side().addEventListener('click', ev => ev.detail > 1 || onClick(ev));
   document.addEventListener('keydown', onKey, true);
   on('#personalize-btn', 'click', () => openOnboarding());
   on('#paths-btn', 'click', async () => { if (!side().hidden && view?.kind === 'browse') return closeSide(); await loadData(); if (view?.kind === 'path') A.clearRoute(); openSide({ kind: 'browse' }); renderSide('.l-h'); });

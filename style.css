@@ -326,7 +326,7 @@ li.on.done .l-num{background:var(--accent);color:var(--bg)}
 .l-fb.idk b{color:var(--established)}
 .l-mastery{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:7px}
 .l-mastery li{display:grid;grid-template-columns:minmax(118px,1.1fr) 2fr 40px;gap:4px 10px;align-items:center;font-size:var(--t-sm)}
-.l-mastery small{grid-column:2/4;color:var(--faint);font-size:10.5px;margin-top:-5px}
+.l-mastery small{grid-column:2/4;color:var(--muted);font-size:10.5px;margin-top:-5px}
 .l-meter{height:7px;border-radius:7px;background:rgba(255,255,255,.08);overflow:hidden}
 .l-meter i{display:block;height:100%;border-radius:7px;background:linear-gradient(90deg,var(--established),var(--accent))}
 .l-val{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -354,6 +354,7 @@ li.on.done .l-num{background:var(--accent);color:var(--bg)}
   .l-detail{margin-left:30px}
   .l-detail .btn{height:40px}
   .l-choice{min-height:46px;font-size:var(--t-base)}
+  .l-back{width:40px;height:40px;margin:-8px 2px -8px -8px}
   .l-opt{min-height:42px}
   body.learn-open #dock,body.learn-open #welcome{display:none}
   body.learn-open.panel-open #learn-side{display:none}
