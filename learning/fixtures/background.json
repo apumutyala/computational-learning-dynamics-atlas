@@ -1,0 +1,154 @@
+{
+ "version": 1,
+ "questions": [
+  {
+   "id": "bg-math",
+   "prompt": "Which best describes your math background?",
+   "type": "single",
+   "options": [
+    {
+     "id": "math-rusty",
+     "label": "Rusty — it's been a while",
+     "sets": {
+      "linear-algebra": 0.2,
+      "probability": 0.2,
+      "calculus-odes": 0.2
+     },
+     "goal": null
+    },
+    {
+     "id": "math-ug",
+     "label": "Calculus and some linear algebra",
+     "sets": {
+      "linear-algebra": 0.4,
+      "probability": 0.3,
+      "calculus-odes": 0.5
+     },
+     "goal": null
+    },
+    {
+     "id": "math-solid",
+     "label": "Comfortable with linear algebra, probability and ODEs",
+     "sets": {
+      "linear-algebra": 0.7,
+      "probability": 0.65,
+      "calculus-odes": 0.7,
+      "optimization": 0.5
+     },
+     "goal": null
+    },
+    {
+     "id": "math-grad",
+     "label": "Graduate-level math (analysis, measure theory)",
+     "sets": {
+      "linear-algebra": 0.85,
+      "probability": 0.85,
+      "calculus-odes": 0.8,
+      "optimization": 0.7,
+      "theory": 0.5
+     },
+     "goal": null
+    }
+   ]
+  },
+  {
+   "id": "bg-experience",
+   "prompt": "What have you worked with hands-on? Pick all that apply.",
+   "type": "multi",
+   "options": [
+    {
+     "id": "exp-nn",
+     "label": "Trained neural networks",
+     "sets": {
+      "deep-learning": 0.6,
+      "optimization": 0.5,
+      "stats-ml": 0.5
+     },
+     "goal": null
+    },
+    {
+     "id": "exp-ml",
+     "label": "Classical ML (regression, kernels, trees)",
+     "sets": {
+      "stats-ml": 0.7,
+      "probability": 0.5
+     },
+     "goal": "regression-to-learning-dynamics"
+    },
+    {
+     "id": "exp-sp",
+     "label": "Signal processing or estimation (filters, Kalman)",
+     "sets": {
+      "signals-estimation": 0.7,
+      "linear-algebra": 0.55
+     },
+     "goal": null
+    },
+    {
+     "id": "exp-ctrl",
+     "label": "Control systems or robotics",
+     "sets": {
+      "control": 0.7,
+      "dynamical-systems": 0.55
+     },
+     "goal": null
+    },
+    {
+     "id": "exp-gen",
+     "label": "Generative models (diffusion, flows)",
+     "sets": {
+      "generative-models": 0.65,
+      "deep-learning": 0.6
+     },
+     "goal": null
+    },
+    {
+     "id": "exp-rl",
+     "label": "Reinforcement learning",
+     "sets": {
+      "rl": 0.65,
+      "control": 0.4
+     },
+     "goal": null
+    }
+   ]
+  },
+  {
+   "id": "bg-goal",
+   "prompt": "What do you most want out of the atlas?",
+   "type": "single",
+   "options": [
+    {
+     "id": "goal-theory",
+     "label": "See how regression grows into learning theory",
+     "sets": {},
+     "goal": "regression-to-learning-dynamics"
+    },
+    {
+     "id": "goal-control",
+     "label": "Connect filtering and estimation to control",
+     "sets": {},
+     "goal": "filters-to-control"
+    },
+    {
+     "id": "goal-seq",
+     "label": "Understand modern sequence models (SSMs, attention)",
+     "sets": {},
+     "goal": "signals-to-sequence-models"
+    },
+    {
+     "id": "goal-gen",
+     "label": "Learn the dynamics behind generative models",
+     "sets": {},
+     "goal": "generative-dynamics"
+    },
+    {
+     "id": "goal-none",
+     "label": "Not sure yet — recommend something",
+     "sets": {},
+     "goal": null
+    }
+   ]
+  }
+ ]
+}

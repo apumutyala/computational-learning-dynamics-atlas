@@ -1,0 +1,263 @@
+{
+ "version": 1,
+ "nodes": {
+  "ridge": {
+   "level": 1,
+   "skills": [
+    "stats-ml",
+    "linear-algebra",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "gp": {
+   "level": 2,
+   "skills": [
+    "probability",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "ridge"
+   ]
+  },
+  "ntk": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "theory",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "gp",
+    "mlp"
+   ]
+  },
+  "deeplinear": {
+   "level": 3,
+   "skills": [
+    "theory",
+    "dynamical-systems",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "ridge",
+    "mlp"
+   ]
+  },
+  "trainingdynamics": {
+   "level": 4,
+   "skills": [
+    "optimization",
+    "control",
+    "theory"
+   ],
+   "prereqs": [
+    "deeplinear"
+   ]
+  },
+  "fourier": {
+   "level": 1,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "wiener": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "probability"
+   ],
+   "prereqs": [
+    "fourier"
+   ]
+  },
+  "kalman": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "probability",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "wiener",
+    "ridge"
+   ]
+  },
+  "lqg": {
+   "level": 3,
+   "skills": [
+    "control",
+    "signals-estimation"
+   ],
+   "prereqs": [
+    "kalman"
+   ]
+  },
+  "lqr": {
+   "level": 2,
+   "skills": [
+    "control",
+    "optimization"
+   ],
+   "prereqs": []
+  },
+  "reachability": {
+   "level": 2,
+   "skills": [
+    "control",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "lqr"
+   ]
+  },
+  "observability": {
+   "level": 3,
+   "skills": [
+    "control",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "reachability"
+   ]
+  },
+  "conv": {
+   "level": 1,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "fourier"
+   ]
+  },
+  "mlp": {
+   "level": 1,
+   "skills": [
+    "deep-learning",
+    "optimization"
+   ],
+   "prereqs": []
+  },
+  "rnn": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "dynamical-systems"
+   ],
+   "prereqs": [
+    "mlp"
+   ]
+  },
+  "s4": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "dynamical-systems",
+    "signals-estimation"
+   ],
+   "prereqs": [
+    "conv",
+    "rnn"
+   ]
+  },
+  "mamba": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "dynamical-systems"
+   ],
+   "prereqs": [
+    "s4"
+   ]
+  },
+  "hybrid": {
+   "level": 3,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "mamba",
+    "attention"
+   ]
+  },
+  "attention": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "mlp"
+   ]
+  },
+  "diffusion": {
+   "level": 3,
+   "skills": [
+    "generative-models",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "score": {
+   "level": 3,
+   "skills": [
+    "generative-models",
+    "calculus-odes",
+    "probability"
+   ],
+   "prereqs": [
+    "diffusion"
+   ]
+  },
+  "node": {
+   "level": 2,
+   "skills": [
+    "calculus-odes",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "mlp"
+   ]
+  },
+  "flow": {
+   "level": 3,
+   "skills": [
+    "generative-models",
+    "calculus-odes"
+   ],
+   "prereqs": [
+    "node"
+   ]
+  },
+  "vla": {
+   "level": 4,
+   "skills": [
+    "deep-learning",
+    "control",
+    "generative-models"
+   ],
+   "prereqs": [
+    "flow"
+   ]
+  },
+  "rl": {
+   "level": 2,
+   "skills": [
+    "rl",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "lyapunov": {
+   "level": 2,
+   "skills": [
+    "dynamical-systems",
+    "control"
+   ],
+   "prereqs": []
+  }
+ }
+}

@@ -1,0 +1,203 @@
+{
+ "version": 1,
+ "paths": [
+  {
+   "id": "regression-to-learning-dynamics",
+   "title": "From regression to learning dynamics",
+   "summary": "Start from ridge regression and follow exact and established links into kernels, wide networks and the dynamics of training.",
+   "audience": "Anyone with basic linear algebra who wants the theory thread behind modern deep learning.",
+   "level": "intro",
+   "skills": [
+    "stats-ml",
+    "probability",
+    "theory"
+   ],
+   "estHours": 6,
+   "steps": [
+    {
+     "node": "ridge",
+     "objective": "Derive the ridge solution and explain what the penalty does to the eigenvalues of XᵀX.",
+     "why": "The simplest learner with a closed form; everything later generalizes it.",
+     "via": null
+    },
+    {
+     "node": "gp",
+     "objective": "Explain why a GP posterior mean equals a kernel ridge prediction.",
+     "why": "The same predictor, read as Bayesian inference over functions.",
+     "via": "rel-e6e14020"
+    },
+    {
+     "node": "ntk",
+     "objective": "Describe when a wide network trains like kernel regression with a fixed kernel.",
+     "why": "Infinite-width networks reduce to the kernel view you just learned.",
+     "via": "rel-83a740bb"
+    },
+    {
+     "node": "deeplinear",
+     "objective": "Predict the stage-like loss curve of a deep linear network from its singular values.",
+     "why": "The smallest model where training dynamics, not just the solution, matter.",
+     "via": "rel-647b463b"
+    },
+    {
+     "node": "trainingdynamics",
+     "objective": "Frame a training run as a controlled dynamical system with inputs you can shape.",
+     "why": "Once dynamics are tractable, you can start steering them.",
+     "via": "rel-697e0ede"
+    }
+   ]
+  },
+  {
+   "id": "filters-to-control",
+   "title": "Filters, estimators and optimal control",
+   "summary": "Go from optimal linear filtering to the Kalman filter, then compose it with optimal state feedback and check what the system lets you see and steer.",
+   "audience": "Engineers and ML practitioners who want the estimation–control backbone.",
+   "level": "intermediate",
+   "skills": [
+    "signals-estimation",
+    "control",
+    "linear-algebra"
+   ],
+   "estHours": 8,
+   "steps": [
+    {
+     "node": "wiener",
+     "objective": "State the Wiener filter as the MSE-optimal linear estimator for stationary signals.",
+     "why": "Optimal filtering in its frequency-domain form.",
+     "via": null
+    },
+    {
+     "node": "kalman",
+     "objective": "Run predict/update steps and explain how the gain trades model against measurement.",
+     "why": "The recursive, state-space version of optimal linear estimation.",
+     "via": "rel-59198171"
+    },
+    {
+     "node": "lqg",
+     "objective": "Combine an estimator and a state-feedback controller under Gaussian noise.",
+     "why": "The estimator becomes half of an output-feedback controller.",
+     "via": "rel-28c742ae"
+    },
+    {
+     "node": "lqr",
+     "objective": "Solve the Riccati equation for an LQR gain and interpret the Q/R trade-off.",
+     "why": "Isolates the controller half of LQG.",
+     "via": "rel-5c2bece1"
+    },
+    {
+     "node": "reachability",
+     "objective": "Test controllability with the rank condition and the Gramian.",
+     "why": "LQR only works when the inputs can actually move the state.",
+     "via": "rel-33d0eb58"
+    },
+    {
+     "node": "observability",
+     "objective": "Use duality to test observability and say what it means for estimation.",
+     "why": "The mirror image of reachability closes the loop back to filtering.",
+     "via": "rel-9a824080"
+    }
+   ]
+  },
+  {
+   "id": "signals-to-sequence-models",
+   "title": "From convolution to modern sequence models",
+   "summary": "Trace how classical signal processing reappears inside state-space layers, selective SSMs and attention hybrids.",
+   "audience": "Practitioners who use sequence models and want their signal-processing roots.",
+   "level": "intermediate",
+   "skills": [
+    "signals-estimation",
+    "deep-learning",
+    "dynamical-systems"
+   ],
+   "estHours": 7,
+   "steps": [
+    {
+     "node": "fourier",
+     "objective": "Explain why LTI systems act diagonally on complex exponentials.",
+     "why": "Frequency thinking is the language of every later step.",
+     "via": null
+    },
+    {
+     "node": "conv",
+     "objective": "Relate a convolution to multiplication of spectra.",
+     "why": "Convolution is how an LTI system acts in time.",
+     "via": "rel-dc7fdd0d"
+    },
+    {
+     "node": "rnn",
+     "objective": "Explain why gradients vanish or explode through a long recurrence.",
+     "why": "Recurrence is the other way to process sequences; it has its own failure mode.",
+     "via": null
+    },
+    {
+     "node": "s4",
+     "objective": "Show how one SSM layer is both a recurrence and a long convolution.",
+     "why": "S4 unifies the two views you just saw.",
+     "via": "rel-86b6efea"
+    },
+    {
+     "node": "mamba",
+     "objective": "Say what input-dependent (selective) parameters buy and what they cost.",
+     "why": "Selectivity breaks time-invariance to gain content-awareness.",
+     "via": "rel-abfe7d04"
+    },
+    {
+     "node": "hybrid",
+     "objective": "Argue when to mix SSM and attention layers in one model.",
+     "why": "Practical models combine both families.",
+     "via": "rel-ed4f7c39"
+    },
+    {
+     "node": "attention",
+     "objective": "Compute scaled dot-product attention and its O(L²) cost.",
+     "why": "The other ingredient of the hybrid, studied on its own terms.",
+     "via": "rel-c1bf04d7"
+    }
+   ]
+  },
+  {
+   "id": "generative-dynamics",
+   "title": "The dynamics inside generative models",
+   "summary": "Read diffusion, score SDEs, neural ODEs and flow matching as one family of learned dynamical systems, ending at action generation.",
+   "audience": "People comfortable with probability and ODEs who build or study generative models.",
+   "level": "advanced",
+   "skills": [
+    "generative-models",
+    "calculus-odes",
+    "probability"
+   ],
+   "estHours": 9,
+   "steps": [
+    {
+     "node": "diffusion",
+     "objective": "Describe the forward noising process and what the network learns to reverse.",
+     "why": "The most widely used generative dynamics.",
+     "via": null
+    },
+    {
+     "node": "score",
+     "objective": "Write the probability-flow ODE that shares marginals with the SDE.",
+     "why": "Continuous-time view of diffusion.",
+     "via": "rel-86e1f24"
+    },
+    {
+     "node": "node",
+     "objective": "Treat depth as integration time and train through an ODE solver.",
+     "why": "The probability-flow ODE is a neural ODE.",
+     "via": "rel-974b4736"
+    },
+    {
+     "node": "flow",
+     "objective": "Train a velocity field by regression along a chosen probability path.",
+     "why": "Flow matching trains the ODE directly, without simulating it.",
+     "via": "rel-95cf2629"
+    },
+    {
+     "node": "vla",
+     "objective": "Explain how flow-based action heads generate robot actions.",
+     "why": "Generative dynamics applied to control.",
+     "via": "rel-feac5366"
+    }
+   ]
+  }
+ ]
+}
