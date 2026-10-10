@@ -30,7 +30,7 @@
     "AIC"
    ],
    "answer": 0,
-   "explain": "In the regular case λ = d/2 and m = 1, so WBIC = nL_n(ŵ) + (d/2) log n + o_p(1), which is BIC. Singular models break this reduction, which is why WBIC is needed.",
+   "explain": "Watanabe's Theorem 5: when the truth is regular for the model, WBIC = nL_n(ŵ) + (d/2) log n + o_p(1), which is BIC. Singular models break this reduction, which is why WBIC is needed.",
    "source": "https://www.jmlr.org/papers/v14/watanabe13a.html"
   },
   {
@@ -122,11 +122,11 @@
    "choices": [
     "λ = r/2, because flat directions contribute nothing",
     "λ = d/2, because Hessian rank never enters the volume exponent",
-    "Rank alone does not fix λ; higher-order loss terms decide it",
+    "It bounds λ to [r/2, d/2]; higher-order terms set the value",
     "λ is zero, because a singular Hessian means no curvature"
    ],
    "answer": 2,
-   "explain": "Flat Hessian directions can still be curved at higher order, so λ depends on more than rank. Kurumadani's formula λ = (d₁ − r + rm)/(2m) at non-singular realizable points shows the order m entering alongside the Fisher rank.",
+   "explain": "The r curved directions force λ ≥ r/2 (Hessian rank lower-bounds the LLC, via the splitting lemma), and λ ≤ d/2 at any analytic minimum. Flat Hessian directions can still be curved at higher order, which decides where λ falls; Kurumadani's λ = (d₁ − r + rm)/(2m) shows the order m entering alongside the Fisher rank.",
    "source": "https://arxiv.org/abs/2408.13030"
   },
   {
@@ -169,7 +169,7 @@
    "prompt": "What did Hoogland et al. report about the direction of LLC change across the stages they found?",
    "choices": [
     "λ̂ rose monotonically through every stage of both models",
-    "λ̂ fell in several stages, such as LM3, LR3 and LR4",
+    "λ̂ fell in three stages: LM3, LR3 and LR4",
     "λ̂ fell monotonically from initialization onward",
     "λ̂ was flat within stages and jumped only at boundaries"
    ],
@@ -254,7 +254,7 @@
     "Back and forth between phases at each doubling of n"
    ],
    "answer": 1,
-   "explain": "The loss term grows like n and the complexity term like log n, so at small n a simpler (low-λ) phase can win despite higher loss, and at large n lower loss wins. Chen et al. describe this as sequential learning.",
+   "explain": "The loss term grows like n and the complexity term like log n, so at small n a simpler (low-λ) phase can win despite higher loss, and at large n lower loss wins. Chen et al. describe learning in their toy model, Bayesian or by SGD, as a journey from high-loss, low-complexity to low-loss, high-complexity regions.",
    "source": "https://arxiv.org/abs/2310.06301"
   },
   {
@@ -457,9 +457,9 @@
    "prompt": "In Cullen et al.'s account, what determines when the grokking transition happens during training?",
    "choices": [
     "Optimization dynamics; the LLC ranks basins but not timing",
-    "The LLC gap alone, through where the free energies cross",
-    "The training-set size alone, independent of which optimizer is used",
-    "The initial weight norm alone, independent of the data"
+    "The LLC gap, through the step where the free energies cross",
+    "The prior's scale, through its O(1) term in the free energy",
+    "SGLD sampling noise, from chains run alongside training"
    ],
    "answer": 0,
    "explain": "The LLC says which basin the posterior prefers, but the authors attribute the timing of the move to optimization dynamics. Empirically, estimated LLC trajectories track the onset of generalization.",
