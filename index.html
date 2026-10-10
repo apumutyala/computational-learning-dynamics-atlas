@@ -34,6 +34,7 @@
     <button class="tool" id="t-drift" aria-pressed="true" title="Slow automatic rotation"><span class="sw"></span><span class="txt">Drift</span></button>
     <button class="tool" id="t-overview" title="Return to the full view"><span class="txt">Overview</span><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/></svg></button>
   </div>
+  <button id="paths-btn" aria-expanded="false" aria-controls="learn-side" title="Browse learning paths"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="3.5" cy="12" r="1.8" stroke="currentColor" stroke-width="1.2"/><circle cx="12.5" cy="4" r="1.8" stroke="currentColor" stroke-width="1.2"/><path d="M5 11c3-1 1-5 4.5-6.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="2 2"/></svg><span class="txt">Paths</span></button>
   <button id="ask-btn" aria-expanded="false" aria-controls="chat"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span class="txt">Ask the atlas</span></button>
 </header>
 
@@ -41,6 +42,7 @@
   <span class="eyebrow">150 topics · 287 typed connections</span>
   <h1 id="welcome-title">The Computational Learning Dynamics Atlas</h1>
   <p>Each point is a research topic. Each line is a recorded connection with its evidence level. Move between topics to see why they connect.</p>
+  <div class="learn-cta"><button class="btn primary" id="personalize-btn"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5 9.6 6.4 14.5 8 9.6 9.6 8 14.5 6.4 9.6 1.5 8 6.4 6.4Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Personalize my path</button><button class="btn" id="learn-continue" hidden data-path=""></button></div>
   <ul class="howto">
     <li><b>Click a point</b> to open its topic window.</li>
     <li><b>Click a connected point</b> to cross over and see the recorded connection and its evidence.</li>
@@ -58,6 +60,9 @@
 
 <aside id="panel" class="glass" hidden aria-live="polite"></aside>
 <aside id="satellite" class="glass" hidden></aside>
+<aside id="learn-side" class="glass" hidden aria-label="Learning paths"></aside>
+<button id="learn-pill" class="glass" hidden>‹ Back to path</button>
+<div id="learn-modal" hidden><div class="l-backdrop"></div><div id="learn-dialog" class="glass" role="dialog" aria-modal="true" aria-labelledby="learn-title"></div></div>
 
 <section id="chat" class="glass" hidden aria-label="Ask the atlas">
   <div class="chat-head">
