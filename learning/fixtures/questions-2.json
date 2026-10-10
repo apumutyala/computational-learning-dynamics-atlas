@@ -8,12 +8,12 @@
    "difficulty": 1,
    "prompt": "LQR computes a feedback law u = −Kx that minimizes…",
    "choices": [
+    "a quadratic cost on states and inputs over time",
     "only the peak overshoot",
     "the L1 norm of the state",
-    "the number of sensors",
-    "a quadratic cost on states and inputs over time"
+    "the number of sensors"
    ],
-   "answer": 3,
+   "answer": 0,
    "explain": "LQR trades state error (Q) against control effort (R) in a quadratic cost.",
    "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
   },
@@ -24,12 +24,12 @@
    "difficulty": 2,
    "prompt": "For infinite-horizon LQR, the optimal gain comes from solving…",
    "choices": [
-    "an algebraic Riccati equation",
     "a linear program",
+    "the heat equation",
     "a k-means problem",
-    "the heat equation"
+    "an algebraic Riccati equation"
    ],
-   "answer": 0,
+   "answer": 3,
    "explain": "The cost-to-go is xᵀPx, where P solves the algebraic Riccati equation; then K = R⁻¹BᵀP.",
    "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
   },
@@ -40,12 +40,12 @@
    "difficulty": 2,
    "prompt": "The separation principle in LQG says you can…",
    "choices": [
+    "never combine estimation and control",
     "ignore the noise models",
     "design the Kalman estimator and the LQR controller independently, then combine them",
-    "only control systems whose full state is measured",
-    "never combine estimation and control"
+    "only control systems whose full state is measured"
    ],
-   "answer": 1,
+   "answer": 2,
    "explain": "For linear-Gaussian problems the optimal output-feedback controller is LQR applied to the Kalman estimate.",
    "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
   },
@@ -56,12 +56,12 @@
    "difficulty": 2,
    "prompt": "The system ẋ = Ax + Bu with n states is controllable iff [B, AB, …, Aⁿ⁻¹B] has…",
    "choices": [
-    "determinant zero",
-    "rank 1",
     "only positive entries",
-    "rank n"
+    "rank n",
+    "rank 1",
+    "determinant zero"
    ],
-   "answer": 3,
+   "answer": 1,
    "explain": "Full rank means the inputs can push the state in every direction of the state space.",
    "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
   },
@@ -72,12 +72,12 @@
    "difficulty": 3,
    "prompt": "By duality, (A, C) is observable iff…",
    "choices": [
-    "A is stable",
-    "A has no zero eigenvalues",
     "(Aᵀ, Cᵀ) is controllable",
+    "A has no zero eigenvalues",
+    "A is stable",
     "C is square and invertible"
    ],
-   "answer": 2,
+   "answer": 0,
    "explain": "The observability matrix of (A, C) is the transpose of the controllability matrix of (Aᵀ, Cᵀ).",
    "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
   },
@@ -104,12 +104,12 @@
    "difficulty": 2,
    "prompt": "Why are complex exponentials e^(iωt) eigenfunctions of linear time-invariant systems?",
    "choices": [
-    "Shifting e^(iωt) only multiplies it by a phase, so the system scales it by its frequency response",
-    "Because they are bounded",
+    "Because LTI systems are nonlinear",
     "Because they are real-valued",
-    "Because LTI systems are nonlinear"
+    "Shifting e^(iωt) only multiplies it by a phase, so the system scales it by its frequency response",
+    "Because they are bounded"
    ],
-   "answer": 0,
+   "answer": 2,
    "explain": "Time-invariance plus linearity means the output is the input times a complex number H(ω).",
    "source": "https://ocw.mit.edu/courses/res-6-dtsp-discrete-time-signal-processing/pages/signal-processing-courses/"
   },
@@ -120,12 +120,12 @@
    "difficulty": 1,
    "prompt": "Vanilla RNNs struggle with long-range dependencies largely because…",
    "choices": [
+    "they have no parameters",
     "gradients through many time steps vanish or explode",
-    "they cannot process sequences",
     "they need labels at every step",
-    "they have no parameters"
+    "they cannot process sequences"
    ],
-   "answer": 0,
+   "answer": 1,
    "explain": "Backpropagating through time multiplies many Jacobians, whose product shrinks or blows up.",
    "source": "https://pages.ucsd.edu/~rbelew/courses/readings/elman90-fsit.pdf"
   },
@@ -152,9 +152,9 @@
    "difficulty": 3,
    "prompt": "Why are SSM state matrices parameterized with eigenvalues of negative real part?",
    "choices": [
+    "To make attention cheaper",
     "To make the model sparse",
     "To avoid training",
-    "To make attention cheaper",
     "To keep the recurrence stable so states do not blow up over long sequences"
    ],
    "answer": 3,
@@ -168,10 +168,10 @@
    "difficulty": 3,
    "prompt": "What makes Mamba's SSM 'selective' compared with S4?",
    "choices": [
-    "It uses softmax attention",
     "It freezes its parameters",
+    "It selects layers at random",
     "Its state-space parameters depend on the input, so it is no longer time-invariant",
-    "It selects layers at random"
+    "It uses softmax attention"
    ],
    "answer": 2,
    "explain": "Input-dependent step sizes and projections let it choose what to remember, at the cost of the convolution view.",
@@ -184,9 +184,9 @@
    "difficulty": 1,
    "prompt": "Scaled dot-product attention computes weights as…",
    "choices": [
-    "the sum of all keys",
-    "softmax(QKᵀ/√d)",
     "QK + V",
+    "softmax(QKᵀ/√d)",
+    "the sum of all keys",
     "a fixed Gaussian kernel"
    ],
    "answer": 1,
@@ -200,12 +200,12 @@
    "difficulty": 2,
    "prompt": "Standard self-attention costs O(L²) in sequence length L because…",
    "choices": [
-    "it uses a recurrence",
-    "softmax is quadratic in d",
     "every query is compared with every key",
-    "the embedding dimension equals L"
+    "it uses a recurrence",
+    "the embedding dimension equals L",
+    "softmax is quadratic in d"
    ],
-   "answer": 2,
+   "answer": 0,
    "explain": "The L×L score matrix is the bottleneck that linear attention and SSMs try to avoid.",
    "source": "https://arxiv.org/abs/1706.03762v5"
   },
@@ -216,9 +216,9 @@
    "difficulty": 1,
    "prompt": "A diffusion model generates data by…",
    "choices": [
-    "running k-means",
     "sorting the training set",
     "adversarial training only",
+    "running k-means",
     "learning to reverse a gradual noising process"
    ],
    "answer": 3,
@@ -232,10 +232,10 @@
    "difficulty": 3,
    "prompt": "The probability-flow ODE of a score-based model is useful because…",
    "choices": [
+    "it always samples in one step",
     "it removes the need for a score network",
-    "it only works for discrete data",
     "it is a deterministic map with the same marginals as the SDE, enabling exact likelihoods",
-    "it always samples in one step"
+    "it only works for discrete data"
    ],
    "answer": 2,
    "explain": "Song et al. show the ODE shares marginals with the SDE, so change-of-variables gives likelihoods.",
@@ -248,12 +248,12 @@
    "difficulty": 2,
    "prompt": "A neural ODE defines dh/dt = f(h, t; θ). What replaces the network's depth?",
    "choices": [
-    "A fixed three layers",
-    "The number of attention heads",
+    "The batch size",
     "Integration time, handled by an ODE solver",
-    "The batch size"
+    "A fixed three layers",
+    "The number of attention heads"
    ],
-   "answer": 2,
+   "answer": 1,
    "explain": "The hidden state evolves continuously; the solver decides how many evaluations to take.",
    "source": "https://arxiv.org/pdf/1806.07366"
   },
@@ -265,9 +265,9 @@
    "prompt": "Flow matching trains a model to regress…",
    "choices": [
     "a velocity field that carries noise to data along chosen probability paths",
+    "the KL divergence by sampling",
     "a discriminator output",
-    "the data labels",
-    "the KL divergence by sampling"
+    "the data labels"
    ],
    "answer": 0,
    "explain": "It is simulation-free: the target velocity along each path is known in closed form.",
@@ -281,11 +281,11 @@
    "prompt": "In reinforcement learning, a policy maps…",
    "choices": [
     "actions to rewards",
-    "states or observations to actions",
     "datasets to labels",
-    "rewards to states"
+    "rewards to states",
+    "states or observations to actions"
    ],
-   "answer": 1,
+   "answer": 3,
    "explain": "The policy is the decision rule; value functions and models support choosing it.",
    "source": "https://arxiv.org/pdf/1805.00909v3"
   },
@@ -296,12 +296,12 @@
    "difficulty": 2,
    "prompt": "A Lyapunov function for an equilibrium is positive definite and…",
    "choices": [
-    "decreases along system trajectories",
+    "increases along trajectories",
     "equals the input energy",
-    "is constant everywhere",
-    "increases along trajectories"
+    "decreases along system trajectories",
+    "is constant everywhere"
    ],
-   "answer": 0,
+   "answer": 2,
    "explain": "A decreasing energy-like function certifies stability without solving the dynamics.",
    "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
   },
@@ -312,12 +312,12 @@
    "difficulty": 1,
    "prompt": "Backpropagation computes gradients using…",
    "choices": [
-    "the chain rule applied backward through the computation graph",
     "finite differences on every weight",
-    "random search",
-    "the Kalman gain"
+    "the chain rule applied backward through the computation graph",
+    "the Kalman gain",
+    "random search"
    ],
-   "answer": 0,
+   "answer": 1,
    "explain": "Reverse-mode differentiation reuses intermediate results, so the gradient costs about one extra pass.",
    "source": "https://arxiv.org/abs/1703.00443"
   }

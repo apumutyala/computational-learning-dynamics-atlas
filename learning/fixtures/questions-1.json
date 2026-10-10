@@ -9,11 +9,11 @@
    "prompt": "Ridge regression adds which term to the least-squares loss?",
    "choices": [
     "A hinge-loss term",
+    "λ‖w‖₂², the squared L2 norm of the weights",
     "λ‖w‖₁, the L1 norm of the weights",
-    "The log-determinant of XᵀX",
-    "λ‖w‖₂², the squared L2 norm of the weights"
+    "The log-determinant of XᵀX"
    ],
-   "answer": 3,
+   "answer": 1,
    "explain": "Ridge penalizes the squared L2 norm, shrinking weights toward zero. The L1 penalty is the lasso.",
    "source": "https://gaussianprocess.org/gpml/chapters/RW2.pdf"
   },
@@ -24,12 +24,12 @@
    "difficulty": 2,
    "prompt": "The ridge solution is w = (XᵀX + λI)⁻¹Xᵀy. Why does adding λI help when features are collinear?",
    "choices": [
+    "It lifts every eigenvalue of XᵀX by λ, so the matrix becomes invertible and well conditioned",
     "It forces w to be sparse",
     "It rescales y to unit variance",
-    "It lifts every eigenvalue of XᵀX by λ, so the matrix becomes invertible and well conditioned",
     "It deletes the collinear columns"
    ],
-   "answer": 2,
+   "answer": 0,
    "explain": "Collinearity makes XᵀX singular or nearly so. Adding λI shifts all eigenvalues up by λ > 0.",
    "source": "https://gaussianprocess.org/gpml/chapters/RW2.pdf"
   },
@@ -40,9 +40,9 @@
    "difficulty": 3,
    "prompt": "Ridge regression is the MAP estimate under which prior on the weights?",
    "choices": [
-    "A Laplace prior",
-    "A Dirichlet prior",
     "A uniform prior over a box",
+    "A Dirichlet prior",
+    "A Laplace prior",
     "A zero-mean Gaussian prior"
    ],
    "answer": 3,
@@ -56,10 +56,10 @@
    "difficulty": 1,
    "prompt": "A Gaussian process is fully specified by…",
    "choices": [
-    "a set of weights and biases",
     "a transition matrix",
+    "a finite list of basis functions",
     "a mean function and a covariance (kernel) function",
-    "a finite list of basis functions"
+    "a set of weights and biases"
    ],
    "answer": 2,
    "explain": "Any finite set of GP values is jointly Gaussian, so the mean and covariance functions determine everything.",
@@ -72,12 +72,12 @@
    "difficulty": 2,
    "prompt": "With matched noise and prior, the GP posterior mean equals the prediction of…",
    "choices": [
-    "k-nearest neighbours",
     "a decision tree",
-    "lasso regression",
-    "kernel ridge regression with the same kernel"
+    "kernel ridge regression with the same kernel",
+    "k-nearest neighbours",
+    "lasso regression"
    ],
-   "answer": 3,
+   "answer": 1,
    "explain": "Both solve the same linear system (K + σ²I)α = y; the GP adds a posterior variance on top.",
    "source": "https://gaussianprocess.org/gpml/chapters/"
   },
@@ -88,12 +88,12 @@
    "difficulty": 3,
    "prompt": "Exact GP regression on n training points costs O(n³) mainly because of…",
    "choices": [
+    "factoring or solving with the n×n kernel matrix",
     "evaluating the mean function",
-    "evaluating the kernel at test points",
     "sampling hyperparameters",
-    "factoring or solving with the n×n kernel matrix"
+    "evaluating the kernel at test points"
    ],
-   "answer": 3,
+   "answer": 0,
    "explain": "A Cholesky factorization of the n×n kernel matrix is cubic in n and dominates the cost.",
    "source": "https://gaussianprocess.org/gpml/chapters/"
   },
@@ -105,11 +105,11 @@
    "prompt": "In the infinite-width limit (NTK parameterization), gradient-descent training of a network behaves like…",
    "choices": [
     "a random walk that never converges",
+    "training a decision tree",
     "k-means clustering",
-    "kernel regression with a fixed kernel, the NTK",
-    "training a decision tree"
+    "kernel regression with a fixed kernel, the NTK"
    ],
-   "answer": 2,
+   "answer": 3,
    "explain": "At infinite width the tangent kernel stays constant during training, so the dynamics are those of kernel regression.",
    "source": "https://arxiv.org/abs/1806.07572"
   },
@@ -120,10 +120,10 @@
    "difficulty": 3,
    "prompt": "Why is the 'lazy' NTK regime considered a limited model of deep learning?",
    "choices": [
-    "It cannot fit the training data",
+    "It only works for binary labels",
     "It only applies to convolutional networks",
     "Features barely move during training, so it cannot capture feature learning",
-    "It only works for binary labels"
+    "It cannot fit the training data"
    ],
    "answer": 2,
    "explain": "In the lazy regime the representation is frozen at initialization; real networks gain much of their power by learning features.",
@@ -136,12 +136,12 @@
    "difficulty": 2,
    "prompt": "In deep linear networks trained from small initialization, the singular modes of the input–output map are learned…",
    "choices": [
-    "one after another, strongest first, giving stage-like drops in the loss",
     "in random order unrelated to their strength",
-    "all at exactly the same rate",
-    "never, since linear networks cannot learn"
+    "one after another, strongest first, giving stage-like drops in the loss",
+    "never, since linear networks cannot learn",
+    "all at exactly the same rate"
    ],
-   "answer": 0,
+   "answer": 1,
    "explain": "Saxe et al. show each mode follows a sigmoidal trajectory whose timing scales inversely with its singular value.",
    "source": "https://www.saxelab.org/assets/papers/Saxe2013a.pdf"
   },
@@ -152,12 +152,12 @@
    "difficulty": 1,
    "prompt": "The Wiener filter is…",
    "choices": [
-    "a filter that removes everything above the Nyquist frequency",
-    "an adaptive filter driven by error signs",
     "the linear filter that minimizes mean-squared error for stationary signals",
-    "a nonlinear maximum-likelihood filter"
+    "a filter that removes everything above the Nyquist frequency",
+    "a nonlinear maximum-likelihood filter",
+    "an adaptive filter driven by error signs"
    ],
-   "answer": 2,
+   "answer": 0,
    "explain": "Wiener filtering is optimal linear MSE estimation given the signal and noise spectra.",
    "source": "https://direct.mit.edu/books/oa-monograph/4361/chapter/187129/Introduction"
   },
@@ -168,8 +168,8 @@
    "difficulty": 1,
    "prompt": "The Kalman filter alternates which two steps?",
    "choices": [
-    "Forward and backward smoothing passes",
     "Encode and decode",
+    "Forward and backward smoothing passes",
     "Sample and reject",
     "Predict (propagate the state) and update (correct with the measurement)"
    ],
@@ -186,10 +186,10 @@
    "choices": [
     "becomes negative",
     "stays the same",
-    "grows, so the filter trusts measurements more",
-    "shrinks, so the filter trusts its model prediction more"
+    "shrinks, so the filter trusts its model prediction more",
+    "grows, so the filter trusts measurements more"
    ],
-   "answer": 3,
+   "answer": 2,
    "explain": "The gain weighs prediction uncertainty against measurement noise; noisier measurements get less weight.",
    "source": "https://people.duke.edu/~hpgavin/SystemID/References/KalmanBucy-ASME-JBE-1961.pdf"
   },
@@ -200,12 +200,12 @@
    "difficulty": 3,
    "prompt": "For linear-Gaussian systems the Kalman filter is exactly optimal because…",
    "choices": [
-    "its gain is fixed in advance",
     "it uses many particles",
     "the posterior stays Gaussian, so its mean and covariance update in closed form",
-    "it ignores the noise"
+    "it ignores the noise",
+    "its gain is fixed in advance"
    ],
-   "answer": 2,
+   "answer": 1,
    "explain": "Linear maps of Gaussians are Gaussian, so the full posterior is carried by two moments.",
    "source": "https://people.duke.edu/~hpgavin/SystemID/References/KalmanBucy-ASME-JBE-1961.pdf"
   }

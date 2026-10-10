@@ -258,6 +258,971 @@
     "control"
    ],
    "prereqs": []
+  },
+  "svm": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "kmeans": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "trees": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "latent": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "wavelet": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "nonlinearfilter": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "bilateral": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "anisotropic": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "cnn": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": []
+  },
+  "lstm": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": []
+  },
+  "linearattention": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": []
+  },
+  "ssd": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": []
+  },
+  "hyena": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": []
+  },
+  "bridge": {
+   "level": 2,
+   "skills": [
+    "dynamical-systems",
+    "calculus-odes"
+   ],
+   "prereqs": []
+  },
+  "dit": {
+   "level": 2,
+   "skills": [
+    "dynamical-systems",
+    "calculus-odes"
+   ],
+   "prereqs": []
+  },
+  "sindy": {
+   "level": 2,
+   "skills": [
+    "dynamical-systems",
+    "calculus-odes"
+   ],
+   "prereqs": []
+  },
+  "koopman": {
+   "level": 2,
+   "skills": [
+    "dynamical-systems",
+    "calculus-odes"
+   ],
+   "prereqs": []
+  },
+  "hnn": {
+   "level": 2,
+   "skills": [
+    "dynamical-systems",
+    "calculus-odes"
+   ],
+   "prereqs": []
+  },
+  "pinn": {
+   "level": 2,
+   "skills": [
+    "dynamical-systems",
+    "calculus-odes"
+   ],
+   "prereqs": []
+  },
+  "operator": {
+   "level": 2,
+   "skills": [
+    "dynamical-systems",
+    "calculus-odes"
+   ],
+   "prereqs": []
+  },
+  "control": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "world": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "policy": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "kalnet": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "chaos": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "reservoir": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "lowrank": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "dmft": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "critical": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "info": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "ib": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "rate": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "slt": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "llc": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "development": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "mdl": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "thesis": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "td": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "ppo": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "cde": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": []
+  },
+  "graph": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": []
+  },
+  "reduction": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "hopfield": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "gam": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "concept": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "causal": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "ren": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "port": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "equivariant": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "constrainedrl": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "preference": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": []
+  },
+  "llm": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": []
+  },
+  "vlm": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": []
+  },
+  "videoworld": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": []
+  },
+  "objectworld": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": []
+  },
+  "neurosymbolic": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": []
+  },
+  "rag": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": []
+  },
+  "plant": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "sysid": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "gramian": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "hankel": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "balanced": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "nonlinearbalance": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "balancedpod": {
+   "level": 2,
+   "skills": [
+    "dynamical-systems",
+    "calculus-odes"
+   ],
+   "prereqs": []
+  },
+  "era": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "fisher": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "frequency": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "robust": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "mpc": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "barrier": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "dual": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "hippo": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": []
+  },
+  "lru": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": []
+  },
+  "patterning": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "predictivedata": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "featurerewards": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": []
+  },
+  "probeattr": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "interference": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "mup": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "typedcontrol": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "stateproject": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "structuredproject": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "sampling": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "psd": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "adaptive": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "scattering": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": []
+  },
+  "compressed": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "particle": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "smoothing": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "enkf": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "logistic": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "lasso": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "pca": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "ica": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "gmm": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "em": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "bootstrap": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "conformal": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "proper": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "onlinecal": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "pgm": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "bayesnet": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "mrf": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "factorgraph": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "beliefprop": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "dbn": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "hmm": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "variational": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "pomdp": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "psr": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "arima": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "ets": {
+   "level": 2,
+   "skills": [
+    "signals-estimation",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "forecastcv": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": []
+  },
+  "forecastworld": {
+   "level": 2,
+   "skills": [
+    "dynamical-systems",
+    "calculus-odes"
+   ],
+   "prereqs": []
+  },
+  "horizonuncert": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": []
+  },
+  "gibbs": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "linearresponse": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "langevin": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "memoryclosure": {
+   "level": 2,
+   "skills": [
+    "dynamical-systems",
+    "calculus-odes"
+   ],
+   "prereqs": []
+  },
+  "predictivestate": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "thermopredict": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "dynamical-systems"
+   ],
+   "prereqs": []
+  },
+  "assistance": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": []
+  },
+  "rewardhack": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "alignmentthesis": {
+   "level": 4,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": []
   }
  }
 }

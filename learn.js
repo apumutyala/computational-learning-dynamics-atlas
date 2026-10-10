@@ -110,8 +110,11 @@ function nextItem(ob) {
 function confident(ob) {
   if (ob.asked.length >= MAX_Q) return true;
   if (ob.asked.length < MIN_Q) return false;
-  const { r } = skillRelevance(ob.model, ob.votes), M = ob.model;
-  return Object.entries(r).filter(([, w]) => w >= .5).every(([s]) => (M.n[s] || 0) >= 2 || ((M.n[s] || 0) >= 1 && Math.abs(mOf(M, s) - .5) >= .25) || !D.items.some(i => i.skill === s && !ob.asked.some(a => a.id === i.id)));
+  // Confident = the top recommendation has held for the last 3 answers and each of its skills is pinned down
+  // (2+ answers, or 1 answer that left mastery far from the 0.5 boundary, or nothing left to ask about it).
+  const M = ob.model, h = ob.tops.slice(-3), top = D.pathById.get(h[h.length - 1]);
+  if (h.length < 3 || h.some(x => x !== h[0]) || !top) return false;
+  return (top.skills || []).every(s => (M.n[s] || 0) >= 2 || ((M.n[s] || 0) >= 1 && Math.abs(mOf(M, s) - .5) >= .25) || !D.items.some(i => i.skill === s && !ob.asked.some(a => a.id === i.id)));
 }
 
 /* ---------------- onboarding modal ---------------- */
@@ -120,7 +123,7 @@ let ob = null, opener = null;
 async function openOnboarding() {
   opener = document.activeElement;
   await loadData();
-  ob = { step: 1, bg: { ...(st.bg || {}) }, asked: [], cur: null, fb: null };
+  ob = { step: 1, bg: { ...(st.bg || {}) }, asked: [], tops: [], cur: null, fb: null };
   modal().hidden = false; document.body.classList.add('learn-modal-open');
   renderModal();
 }
@@ -170,7 +173,7 @@ function answer(choice, idk) {
   if (!ob?.cur || ob.fb) return;
   const it = ob.cur, correct = !idk && choice === it.answer;
   observe(ob.model, it, correct);
-  ob.asked.push({ id: it.id, correct, idk: !!idk });
+  ob.asked.push({ id: it.id, correct, idk: !!idk }); ob.tops.push(rankPaths(ob.model, ob.votes)[0]?.p.id);
   ob.fb = { choice: idk ? -1 : choice, correct, idk: !!idk };
   renderModal('[data-l="next"]');
 }
@@ -207,7 +210,8 @@ function renderResults(d) {
 function whyText(p) {
   const s = scorePath(p, st.model, st.votes || {}), bits = [];
   if (s.goal > 0) bits.push('matches your goal');
-  bits.push(s.fit > .7 ? 'pitched at your level' : s.fit > .4 ? 'a reasonable stretch' : 'a big stretch from your level');
+  const above = mean((p.skills || []).map(k => mOf(st.model, k))) > (LEVEL_TARGET[p.level] ?? .5);
+  bits.push(s.fit > .7 ? 'pitched at your level' : above ? (s.fit > .4 ? 'you will move quickly' : 'mostly review for you') : (s.fit > .4 ? 'a reasonable stretch' : 'a big stretch from your level'));
   if (s.rel > .7) bits.push('exercises skills you are ready to grow');
   return bits.join(' · ');
 }
@@ -223,7 +227,10 @@ function pathCard(p, primary) {
 const side = () => $('#learn-side');
 let view = null; // { kind: 'browse' } | { kind: 'path', id, active, quiz }
 const routeOf = p => ({ ids: p.steps.map(s => s.node), edges: p.steps.map((s, i) => s.via || (i ? A.edgeBetween(p.steps[i - 1].node, s.node)?.id : null)).filter(Boolean) });
+let welcomeBack = false; // re-show the welcome window if browsing paths was the only thing that hid it
 function openSide(v) {
+  if (side().hidden) welcomeBack = !$('#welcome').classList.contains('hide');
+  if (v.kind === 'path') welcomeBack = false;
   view = v; side().hidden = false; document.body.classList.add('learn-open');
   $('#welcome').classList.add('hide'); $('#paths-btn').setAttribute('aria-expanded', 'true');
   renderSide(); A.updateOffset();
@@ -232,7 +239,8 @@ function closeSide() {
   if (side().hidden) return;
   side().hidden = true; document.body.classList.remove('learn-open'); $('#paths-btn').setAttribute('aria-expanded', 'false');
   if (view?.kind === 'path') A.clearRoute();
-  view = null; $('#learn-pill').hidden = true; A.updateOffset();
+  if (welcomeBack && $('#panel').hidden && !A.S.current) $('#welcome').classList.remove('hide');
+  welcomeBack = false; view = null; $('#learn-pill').hidden = true; A.updateOffset();
 }
 const sideHead = (eyebrow) => `<div class="panel-head"><span class="eyebrow">${eyebrow}</span><button class="icon-btn" data-l="side-close" aria-label="Close learning paths">${X}</button></div>`;
 function renderSide(focusSel) {
