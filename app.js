@@ -39,6 +39,8 @@ let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); }
 catch { $('#nogl').style.display = 'grid'; $('#loading').classList.add('done'); throw new Error('WebGL unavailable'); }
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+// iOS only applies :active styles (tap feedback) once a touchstart listener exists
+document.addEventListener('touchstart', () => {}, { passive: true });
 renderer.setClearColor(0x000000, 0);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 1, 5000);
@@ -763,4 +765,4 @@ addEventListener('hashchange', () => { const id = decodeURIComponent(location.ha
 window.__atlas = { S, travel, byId, project, enter };
 // Learning harness (learn.js) gets only this surface; the atlas keeps working if it fails to load.
 const learnAPI = { S, byId, edges, nodes, EV, enter, travel, showRoute, highlightRoute, clearRoute, closePanel, updateOffset, isMobile, esc, clusterColor: id => clusterOf.get(byId.get(id).group).color, edgeById: id => edges.find(e => e.id === id) || null, edgeBetween: (a, b) => adj.get(a)?.find(e => other(e, a) === b) || null };
-import('./learn.js?v=20261010f').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
+import('./learn.js?v=20261010g').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
