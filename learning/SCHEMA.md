@@ -39,6 +39,12 @@ Mastery levels are numbers in [0, 1] per skill (0 = never seen it, 1 = fluent).
 ```
 - `sets` gives prior mastery per skill when chosen (max wins across answers). `goal` nudges path choice.
 
+## learning/index.json — which question banks the site loads
+```json
+{ "version": 1, "questions": ["questions-1.json", "questions-2.json"] }
+```
+- Add a new bank's filename here or the site won't load it.
+
 ## learning/questions-*.json — diagnostic probe items
 ```json
 { "version": 1,

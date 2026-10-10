@@ -24,20 +24,26 @@ async function getJSON(name) {
   try { const r = await fetch(name); if (r.ok) return { json: await r.json(), fixture: name.includes('/fixtures/') }; } catch { /* missing or malformed */ }
   return { json: null, fixture: false };
 }
-const FILES = ['nodes.json', 'paths.json', 'background.json', 'questions-1.json', 'questions-2.json'];
+const BASE = ['nodes.json', 'paths.json', 'background.json'];
+// learning/index.json lists the question banks, so new banks load without a code change.
+const DEFAULT_QFILES = ['questions-1.json', 'questions-2.json'];
 function loadData() {
-  return dataP ||= Promise.all(FILES.map(f => getJSON('learning/' + f))).then(async real => {
-    // Fixtures stand in for a missing real file. Question files are a set: once any real bank exists,
-    // a missing questions-N.json is just empty (no sample items mixed into real content).
-    const anyRealQ = real[3].json || real[4].json;
-    return Promise.all(real.map((r, i) => r.json || (i >= 3 && anyRealQ) ? r : getJSON('learning/fixtures/' + FILES[i])));
-  }).then(([n, p, b, q1, q2]) => {
-    const seen = new Set(), items = [...(q1.json?.items || []), ...(q2.json?.items || [])].filter(it =>
+  return dataP ||= getJSON('learning/index.json').then(ix => {
+    const qf = Array.isArray(ix.json?.questions) && ix.json.questions.length ? ix.json.questions : DEFAULT_QFILES;
+    const FILES = [...BASE, ...qf];
+    return Promise.all(FILES.map(f => getJSON('learning/' + f))).then(async real => {
+      // Fixtures stand in for a missing real file. Question files are a set: once any real bank exists,
+      // a missing bank is just empty (no sample items mixed into real content).
+      const anyRealQ = real.slice(3).some(r => r.json);
+      return Promise.all(real.map((r, i) => r.json || (i >= 3 && anyRealQ) ? r : getJSON('learning/fixtures/' + (i >= 3 ? DEFAULT_QFILES[(i - 3) % 2] : FILES[i]))));
+    });
+  }).then(([n, p, b, ...qs]) => {
+    const seen = new Set(), items = qs.flatMap(q => q.json?.items || []).filter(it =>
       it && !seen.has(it.id) && seen.add(it.id) && A.byId.has(it.node) && SKILLS[it.skill] && Array.isArray(it.choices) && it.answer >= 0 && it.answer < it.choices.length);
     const meta = n.json?.nodes || {};
     const paths = (p.json?.paths || []).map(x => ({ ...x, steps: (x.steps || []).filter(s => A.byId.has(s.node)) })).filter(x => x.steps.length >= 2);
     D = { meta, paths, bg: b.json?.questions || [], items, pathById: new Map(paths.map(x => [x.id, x])),
-      fixtures: [n, p, b, q1, q2].some(r => r.fixture) };
+      fixtures: [n, p, b, ...qs].some(r => r.fixture) };
     return D;
   });
 }
