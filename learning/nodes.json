@@ -1661,6 +1661,51 @@
     "variational",
     "gibbs"
    ]
+  },
+  "mcmc": {
+   "level": 2,
+   "skills": [
+    "probability",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "pgm"
+   ]
+  },
+  "gibbssampling": {
+   "level": 2,
+   "skills": [
+    "probability",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "mcmc",
+    "mrf"
+   ]
+  },
+  "blockedgibbs": {
+   "level": 3,
+   "skills": [
+    "probability",
+    "signals-estimation",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "gibbssampling",
+    "hmm",
+    "kalman"
+   ]
+  },
+  "particlegibbs": {
+   "level": 3,
+   "skills": [
+    "probability",
+    "signals-estimation"
+   ],
+   "prereqs": [
+    "particle",
+    "blockedgibbs"
+   ]
   }
  }
 }

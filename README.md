@@ -8,14 +8,14 @@ An interactive 3D map of research topics in learning, signals, physics, control 
 
 ## What it is
 
-The atlas has 161 topics in 8 clusters, joined by 323 recorded connections. The clusters are statistical learning; signals and estimation; neural architectures; physical and generative models; actions and control; theory and learning dynamics; construction and assurance; and capable and grounded systems. Each topic window gives a short description, a primary source and notes on what the topic does and does not establish. Each connection is labelled with one of four evidence levels:
+The atlas has 165 topics in 8 clusters, joined by 340 recorded connections. The clusters are statistical learning; signals and estimation; neural architectures; physical and generative models; actions and control; theory and learning dynamics; construction and assurance; and capable and grounded systems. Each topic window gives a short description, a primary source and notes on what the topic does and does not establish. Each connection is labelled with one of four evidence levels:
 
 | Label | Count | Meaning |
 |---|---|---|
-| Exact, conditional | 28 | A mathematical identity that holds under stated assumptions (e.g. ridge regression and the Gaussian-process posterior mean under matched noise and prior). |
-| Established | 194 | A well-supported result in the published literature. |
+| Exact, conditional | 38 | A mathematical identity that holds under stated assumptions (e.g. ridge regression and the Gaussian-process posterior mean under matched noise and prior). |
+| Established | 200 | A well-supported result in the published literature. |
 | Empirical | 41 | Observed in experiments, without a general guarantee. |
-| Hypothesis | 60 | An untested proposal. Hidden by default. |
+| Hypothesis | 61 | An untested proposal. Hidden by default. |
 
 Positions group topics by cluster to make them easier to find. **Distance is not evidence.** Two points sitting close together are not thereby related. Only a drawn, labelled connection records a relationship.
 
@@ -99,7 +99,7 @@ To **add a question bank**:
 2. Add the filename to the `questions` list in `learning/index.json`. The site loads only the banks listed there.
 3. Run the validator.
 
-The current banks hold 390 items (178 + 180 + 32).
+The current banks hold 401 items (178 + 180 + 11 + 32).
 
 ## Optional AI chat backend
 
