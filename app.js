@@ -1,9 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from './vendor/OrbitControls.js';
 
-const API = 'port/8000'.startsWith('__') ? 'http://127.0.0.1:8000' : 'port/8000';
-// The AI chat and connection summaries need a backend that isn't part of this static site.
-const AI_ENABLED = false;
+// AI chat and connection summaries need the backend in backend/ (a Cloudflare Worker).
+// Set this to its URL, e.g. 'https://atlas-ai.<account>.workers.dev'. Empty string = AI off:
+// all AI UI stays hidden and the page makes no AI network calls.
+const AI_API = '';
+const API = AI_API.replace(/\/+$/, '');
+const AI_ENABLED = !!AI_API;
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const inlineMd = s => esc(s)
