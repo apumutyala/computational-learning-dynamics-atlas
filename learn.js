@@ -65,7 +65,8 @@ function nodeMeta(id) {
 /* ---------------- learner model ---------------- */
 // IRT with uncertainty: logit ability θ_s ~ N(μ, v) per skill, mastery m[s] = σ(μ) ∈ [0,1], variance v[s].
 // P(correct) = g + (1-g)·σ(SLOPE·(θ − B[d])), g = 1/#choices (0 for "I don't know"). Each answer is an exact grid
-// posterior moment-matched back to a Gaussian; kin skills (KIN) get the same evidence down-weighted by SPILL.
+// posterior moment-matched back to a Gaussian; kin skills (KIN) get the same evidence down-weighted by SPILL, and less
+// once they have answers of their own (indirect evidence must not override direct evidence).
 const newModel = priors => ({ m: { ...priors }, n: {}, seen: {}, self: { ...priors }, v: Object.fromEntries(Object.keys(priors).map(s => [s, VSELF])) });
 const mOf = (M, s) => M.m[s] ?? PRIOR;
 const lg = m => { m = clamp(+m || PRIOR, .02, .98); return Math.log(m / (1 - m)); };
@@ -79,7 +80,7 @@ function posterior(mu, v, it, correct, g, w) {
 function observe(M, it, correct, idk) {
   const g = idk ? 0 : 1 / it.choices.length; if (!M.v || typeof M.v !== 'object') M.v = {};
   Object.keys(SKILLS).forEach(s => { const own = s === it.skill; if (!own && !kin(s, it.skill)) return;
-    const [mu, v] = posterior(lg(mOf(M, s)), vOf(M, s), it, correct, own ? g : 1 / it.choices.length, own ? 1 : SPILL);
+    const [mu, v] = posterior(lg(mOf(M, s)), vOf(M, s), it, correct, own ? g : 1 / it.choices.length, own ? 1 : SPILL / (1 + (M.n[s] || 0)));
     M.m[s] = clamp(sig(mu), .02, .98); M.v[s] = v; });
   M.n[it.skill] = (M.n[it.skill] || 0) + 1;
   const ev = M.seen[it.node] ||= { c: 0, t: 0 };
@@ -104,21 +105,24 @@ function priorsFrom(bgAns) {
   return pr;
 }
 // Core skills of a path: share of its steps that exercise each skill, plus a bonus for the path's declared skills.
-const coreW = new WeakMap();
+// A node lists its primary skill first (the one its questions mostly test), so later-listed skills count less (PRIMACY).
+const coreW = new WeakMap(), PRIMACY = [1, .7, .5];
 function core(p) {
-  if (!coreW.has(p)) { const w = {}; p.steps.forEach(st => nodeMeta(st.node).skills.forEach(s => w[s] = (w[s] || 0) + 1 / p.steps.length)); (p.skills || []).forEach(s => { if (SKILLS[s]) w[s] = (w[s] || 0) + .5; });
+  if (!coreW.has(p)) { const w = {}; p.steps.forEach(st => nodeMeta(st.node).skills.forEach((s, i) => w[s] = (w[s] || 0) + PRIMACY[Math.min(i, 2)] / p.steps.length)); (p.skills || []).forEach(s => { if (SKILLS[s]) w[s] = (w[s] || 0) + .5; });
     const t = Object.values(w).reduce((a, x) => a + x, 0) || 1; coreW.set(p, Object.entries(w).map(([s, x]) => [s, x / t])); }
   return coreW.get(p);
 }
 const overall = M => { let a = .5 * PRIOR, b = .5; Object.keys(SKILLS).forEach(s => { const c = conf(M, s); a += c * mOf(M, s); b += c; }); return a / b; };
 // score = goal match + level fit + strength in the core skills + room to grow. lvl = core-weighted mastery where each skill
 // counts by its evidence: untested skills are uncertain (low weight, leaning to the learner's overall level), not weak.
-// str = evidence-weighted signed strength (+ measured strong, − measured weak, 0 untested). opt > 0: optimistic view.
+// str = evidence-weighted signed strength (+ measured strong, − measured weak, 0 untested), plus a bonus for answered
+// strength in the skills that set this path apart (its share of a skill above the average path's). opt > 0: optimistic view.
 function scorePath(p, M, votes, opt = 0) {
   const maxV = Math.max(1, ...Object.values(votes)), goal = (votes[p.id] || 0) / maxV, G = overall(M);
   let a = 0, b = 0, str = 0, rel = 0;
-  core(p).forEach(([s, x]) => { const m = mOf(M, s), c = conf(M, s), u = .15 * (1 - c);
-    a += x * (c * m + u * ((m + G) / 2 + opt)); b += x * (c + u); str += x * c * (2 * m - 1); rel += x * 4 * m * (1 - m); });
+  core(p).forEach(([s, x]) => { const m = mOf(M, s), c = conf(M, s), u = .15 * (1 - c), n = M.n[s] || 0;
+    a += x * (c * m + u * ((m + G) / 2 + opt)); b += x * (c + u); rel += x * 4 * m * (1 - m);
+    str += x * c * (2 * m - 1) + 2 * Math.max(0, x - imp(s) / 4) * n / (n + 1.5) * Math.max(0, 2 * m - 1); });
   const lvl = a / b, fit = clamp(1 - Math.abs(lvl - (LEVEL_TARGET[p.level] ?? .55)) * 2.2);
   return { p, score: 3 * goal + 1.2 * fit + 1.5 * str + .3 * rel, goal, fit, rel, str, lvl };
 }
@@ -143,7 +147,7 @@ function skillRelevance(M, votes) {
   return { r, onPath: new Set(top.flatMap(({ p }) => p.steps.map(s => s.node))) };
 }
 const NFAM = new Set(Object.values(FAMILY)).size;
-let IMP = null; // how central a skill is across all paths (opening items favour central skills: theory over calculus)
+let IMP = null; // how central a skill is across all paths, = 4 × average core share (opening items favour central skills: theory over calculus)
 const imp = s => (IMP ||= D.paths.reduce((r, p) => (core(p).forEach(([k, x]) => r[k] = (r[k] || 0) + x / D.paths.length * 4), r), {}))[s] || 0;
 function nextItem(ob) {
   const M = ob.model, asked = new Set(ob.asked.map(a => a.id)), sk = ob.asked.map(a => D.items.find(i => i.id === a.id)?.skill);
