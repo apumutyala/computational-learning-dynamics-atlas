@@ -1536,6 +1536,131 @@
     "rewardhack",
     "pgm"
    ]
+  },
+  "wbic": {
+   "level": 3,
+   "skills": [
+    "theory",
+    "probability"
+   ],
+   "prereqs": [
+    "slt",
+    "gibbs"
+   ]
+  },
+  "llcsgld": {
+   "level": 4,
+   "skills": [
+    "probability",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "llc",
+    "langevin",
+    "wbic"
+   ]
+  },
+  "degeneracy": {
+   "level": 4,
+   "skills": [
+    "theory",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "slt",
+    "fisher"
+   ]
+  },
+  "stagewise": {
+   "level": 4,
+   "skills": [
+    "deep-learning",
+    "theory"
+   ],
+   "prereqs": [
+    "llcsgld",
+    "attention",
+    "development"
+   ]
+  },
+  "rllc": {
+   "level": 4,
+   "skills": [
+    "deep-learning",
+    "theory"
+   ],
+   "prereqs": [
+    "llcsgld",
+    "attention"
+   ]
+  },
+  "bayesphase": {
+   "level": 4,
+   "skills": [
+    "theory",
+    "probability"
+   ],
+   "prereqs": [
+    "slt",
+    "llc"
+   ]
+  },
+  "transientridge": {
+   "level": 4,
+   "skills": [
+    "deep-learning",
+    "theory"
+   ],
+   "prereqs": [
+    "bayesphase",
+    "ridge",
+    "attention"
+   ]
+  },
+  "susceptibility": {
+   "level": 4,
+   "skills": [
+    "probability",
+    "theory",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "llcsgld",
+    "linearresponse"
+   ]
+  },
+  "bif": {
+   "level": 4,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": [
+    "llcsgld",
+    "fisher"
+   ]
+  },
+  "grokkingslt": {
+   "level": 4,
+   "skills": [
+    "theory",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "bayesphase",
+    "llc"
+   ]
+  },
+  "pacbayes": {
+   "level": 3,
+   "skills": [
+    "theory",
+    "probability"
+   ],
+   "prereqs": [
+    "variational",
+    "gibbs"
+   ]
   }
  }
 }
