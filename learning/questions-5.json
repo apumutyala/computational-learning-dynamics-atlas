@@ -22,7 +22,7 @@
       "node": "svm",
       "skill": "optimization",
       "difficulty": 1,
-      "prompt": "In the dual of a soft-margin SVM, which training points receive nonzero dual coefficients αᵢ?",
+      "prompt": "In the dual of a soft-margin SVM, which training points can receive nonzero dual coefficients αᵢ?",
       "choices": [
         "Every training point, with equal weight",
         "Points on the margin, inside it, or misclassified",
@@ -30,7 +30,7 @@
         "The points farthest from the decision boundary on each side"
       ],
       "answer": 1,
-      "explain": "By complementary slackness, αᵢ > 0 only where the margin constraint is active or violated; these are the support vectors. Points safely outside the margin have αᵢ = 0 and do not affect the solution.",
+      "explain": "By complementary slackness, αᵢ > 0 only where the margin constraint is active or violated; these are the support vectors (a point exactly on the margin may still have αᵢ = 0). Points safely outside the margin have αᵢ = 0 and do not affect the solution.",
       "source": null
     },
     {
@@ -230,7 +230,7 @@
       "node": "mpc",
       "skill": "optimization",
       "difficulty": 3,
-      "prompt": "For linear MPC with quadratic cost and polyhedral constraints, what form does the optimal first input u*(x) take as a function of the current state (explicit MPC)?",
+      "prompt": "For linear MPC with a strictly convex quadratic cost and polyhedral constraints, what form does the optimal first input u*(x) take as a function of the current state over the feasible set (explicit MPC)?",
       "choices": [
         "Linear everywhere, equal to the unconstrained LQR gain",
         "Continuous and piecewise affine over a polyhedral partition",
@@ -238,8 +238,8 @@
         "A smooth, infinitely differentiable nonlinear map"
       ],
       "answer": 1,
-      "explain": "The QP is a multiparametric program in x. Within each region where the set of active constraints is fixed, the KKT system is linear, so u*(x) is affine there, and the pieces join continuously. In the region where no constraint is active it is a single linear gain (the LQR gain when the terminal cost is the Riccati solution).",
-      "source": null
+      "explain": "The QP is a multiparametric program in x. Bemporad et al. (2002) show that when its Hessian in the inputs is positive definite, u*(x) is continuous and piecewise affine over a polyhedral partition of the feasible states: affine within each region of fixed active constraints, and in the region with none active a single linear gain (the LQR gain when the terminal cost is the Riccati solution).",
+      "source": "https://doi.org/10.1016/S0005-1098(01)00174-1"
     },
     {
       "id": "q5-logistic-3",
@@ -262,7 +262,7 @@
       "node": "lqr",
       "skill": "optimization",
       "difficulty": 3,
-      "prompt": "The LQR cost J(K) of a static gain u = −Kx is nonconvex in K, yet policy gradient converges globally to the optimal gain (Fazel et al., 2018). What makes this possible?",
+      "prompt": "The LQR cost J(K) of a static gain u = −Kx, averaged over random initial states with full-rank covariance, is nonconvex in K, yet policy gradient converges globally to the optimal gain (Fazel et al., 2018). What makes this possible?",
       "choices": [
         "J(K) is in fact convex over the set of stabilizing gains",
         "The set of stabilizing gains is convex, so projected gradient steps suffice",
@@ -270,7 +270,7 @@
         "J obeys gradient domination: J(K) − J* ≤ c‖∇J(K)‖² on stabilizing K"
       ],
       "answer": 3,
-      "explain": "Fazel et al. show a Polyak–Łojasiewicz-type gradient-domination inequality: every stationary point in the stabilizing set is globally optimal and suboptimality is bounded by the gradient norm. Neither J nor the stabilizing set is convex in general.",
+      "explain": "Fazel et al. prove a Polyak–Łojasiewicz-type gradient-domination bound J(K) − J* ≤ c‖∇J(K)‖_F² over stabilizing gains, with c set by the optimal gain's state covariance, σmin(E[x₀x₀ᵀ]) > 0 and σmin(R). So every stationary stabilizing gain is optimal, and small gradient steps from a stabilizing start converge linearly. Neither J nor the stabilizing set is convex in general.",
       "source": "https://arxiv.org/abs/1801.05039"
     },
     {
@@ -414,7 +414,7 @@
         "h < 0.002"
       ],
       "answer": 3,
-      "explain": "Each step multiplies x by (1 − hλ), which decays iff |1 − hλ| < 1, i.e. 0 < h < 2/λ = 0.002. Fast decaying modes force tiny steps on explicit solvers, which is why stiff neural ODEs use implicit or adaptive solvers.",
+      "explain": "Each step multiplies x by (1 − hλ), which decays iff |1 − hλ| < 1, i.e. 0 < h < 2/λ = 0.002. Fast decaying modes force tiny steps on explicit solvers (adaptive ones just shrink h to stay stable), which is why stiff systems call for implicit, A-stable solvers.",
       "source": null
     },
     {
@@ -489,12 +489,12 @@
       "prompt": "Over very long simulations, a symplectic integrator such as leapfrog keeps energy error bounded instead of drifting. Why?",
       "choices": [
         "It conserves the true H exactly at every single step",
-        "It exactly conserves a nearby modified Hamiltonian",
+        "Its steps track the exact flow of a modified Hamiltonian",
         "It adapts its step size to cancel energy drift",
         "Its local error is of higher order than RK4's"
       ],
       "answer": 1,
-      "explain": "Backward error analysis shows a symplectic map is, to high accuracy, the exact flow of a modified Hamiltonian H̃ = H + O(hᵖ), so H stays within O(hᵖ) of its start for exponentially long times. Leapfrog is only second order, and generic Runge–Kutta methods have no such conserved quantity.",
+      "explain": "Backward error analysis shows a symplectic map is, up to exponentially small error, the exact flow of a modified Hamiltonian H̃ = H + O(hᵖ), so H stays within O(hᵖ) of its start for exponentially long times. Leapfrog is only second order, and generic Runge–Kutta methods have no such conserved quantity.",
       "source": null
     },
     {
@@ -606,7 +606,7 @@
         "m·n/h"
       ],
       "answer": 2,
-      "explain": "rank(AB) ≤ min(rank A, rank B) ≤ h, so the hidden width is a bottleneck: the network can represent only rank-h linear maps, and gradient descent learns the leading singular modes first.",
+      "explain": "rank(AB) ≤ min(rank A, rank B) ≤ h, so the hidden width is a bottleneck: the network can represent only rank-h linear maps, and from small initialization gradient descent learns the leading singular modes first.",
       "source": null
     },
     {
@@ -798,7 +798,7 @@
         "More forward-pass Gflops gave consistently lower (better) FID"
       ],
       "answer": 3,
-      "explain": "The DiT paper found FID falls consistently as forward-pass Gflops grow, whether from depth, width or more tokens (smaller patches). DiT-XL/2 reached FID 2.27 on class-conditional ImageNet 256×256.",
+      "explain": "The DiT paper found FID falls consistently as forward-pass Gflops grow, whether from depth, width or more tokens (smaller patches); parameter count alone did not predict quality. DiT-XL/2 reached FID 2.27 on class-conditional ImageNet 256×256 with classifier-free guidance.",
       "source": "https://arxiv.org/abs/2212.09748"
     },
     {
@@ -811,7 +811,7 @@
         "ε/σ",
         "−ε/σ",
         "−σε",
-        "x − x̃"
+        "−ε/σ²"
       ],
       "answer": 1,
       "explain": "The perturbation kernel's score is ∇ log N(x̃; x, σ²I) = −(x̃ − x)/σ² = −ε/σ, and regressing onto it recovers the score of the noised marginal. The sign matters: the score points back toward the clean data.",
@@ -825,12 +825,12 @@
       "prompt": "How do DDIM samplers relate to DDPM?",
       "choices": [
         "A new training objective that has to be learned from scratch",
-        "Same training objective; a non-Markovian sampler that allows far fewer steps",
+        "Same training objective; non-Markovian forward processes permit far fewer steps",
         "Same sampler, but with a learned variance schedule replacing a fixed one",
         "A GAN-style discriminator added to sharpen samples in fewer denoising steps"
       ],
       "answer": 1,
-      "explain": "Song, Meng and Ermon build non-Markovian forward processes with the same marginals, hence the same training loss, so a pretrained DDPM can be sampled 10–50× faster; with zero added noise the sampler is deterministic.",
+      "explain": "Song, Meng and Ermon build non-Markovian forward processes with the same marginals, hence the same training loss, so a pretrained DDPM can be sampled 10–50× faster with a short subsequence of steps; with η = 0 (σₜ = 0, no added noise) the sampler is deterministic.",
       "source": "https://arxiv.org/abs/2010.02502"
     },
     {
@@ -906,11 +906,11 @@
       "choices": [
         "Clean data have no score, because their density is uniform",
         "Scores are poorly estimated in low-density regions where sampling starts",
-        "Without noise the score-matching loss has no unique minimizer in the parameters θ",
+        "Without noise, score matching needs the data density's normalizing constant",
         "Noise turns the score into a linear function of x that networks fit easily"
       ],
       "answer": 1,
-      "explain": "Data concentrate near a low-dimensional set, so scores learned from clean data are inaccurate or undefined in the empty regions where sampling begins. Large noise fills space with accurate scores, and annealing down the noise levels guides samples to the data.",
+      "explain": "Song and Ermon note that data concentrate near a low-dimensional manifold, where the ambient score is undefined, and that in low-density regions, where Langevin sampling starts, few samples make score estimates inaccurate. Noise fills space with well-estimated scores, and annealing down the noise levels guides samples to the data.",
       "source": "https://arxiv.org/abs/1907.05600"
     },
     {
@@ -942,7 +942,7 @@
         "Σⱼ dⱼ/(dⱼ + λ)"
       ],
       "answer": 2,
-      "explain": "Ridge's hat matrix X(XᵀX + λI)⁻¹Xᵀ has eigenvalues dⱼ²/(dⱼ² + λ), and degrees of freedom is its trace. It falls from p (λ = 0) toward 0 as λ grows, shrinking weak singular directions most.",
+      "explain": "Ridge's hat matrix X(XᵀX + λI)⁻¹Xᵀ has eigenvalues dⱼ²/(dⱼ² + λ), and degrees of freedom is its trace. It falls from rank(X) (p for full column rank) at λ = 0 toward 0 as λ grows, shrinking weak singular directions most.",
       "source": null
     },
     {
