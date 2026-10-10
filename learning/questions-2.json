@@ -25,7 +25,7 @@
    "prompt": "An engineer proves that a closed-loop system is stable for the nominal plant model. What does this result alone establish?",
    "choices": [
     "Robust stability for any plausible model error, since nominal stability implies margins",
-    "That every state can be reconstructed from the available sensor measurements",
+    "That the state can be reconstructed from the sensors, since stability requires observability",
     "That any target state can be reached in finite time with the available actuators",
     "Nominal stability only; robustness, observability and reachability need separate checks"
    ],
@@ -303,7 +303,7 @@
    ],
    "answer": 0,
    "explain": "SAC (Haarnoja et al.) learns soft Q-functions from replayed data under an entropy-regularized objective. PPO alternates fresh on-policy interaction with surrogate optimization.",
-   "source": "https://arxiv.org/pdf/1805.00909v3"
+   "source": "https://arxiv.org/abs/1801.01290"
   },
   {
    "id": "q2-constrainedrl-1",
@@ -319,7 +319,7 @@
    ],
    "answer": 1,
    "explain": "CPO solves a constrained MDP: maximize expected return subject to expected discounted cost staying at or below a limit.",
-   "source": "https://ar5iv.labs.arxiv.org/html/1812.05506"
+   "source": "https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf"
   },
   {
    "id": "q2-constrainedrl-2",
@@ -335,7 +335,7 @@
    ],
    "answer": 1,
    "explain": "An expectation constraint allows rare, severe violations. Every-trajectory safety needs a different mechanism, such as shields, barrier filters or predictive safety filters with a safe fallback.",
-   "source": "https://ar5iv.labs.arxiv.org/html/1812.05506"
+   "source": "https://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf"
   },
   {
    "id": "q2-plant-1",
@@ -409,7 +409,7 @@
    "prompt": "A linear system passes the Kalman rank test. Which conclusion is NOT justified by that alone?",
    "choices": [
     "Some input of unrestricted magnitude steers any state to any other in finite time",
-    "The finite-horizon reachability Gramian is positive definite",
+    "The reachability Gramian over a long enough finite horizon is positive definite",
     "Any target is reachable before a deadline with the actual bounded actuators",
     "The dual pair (Aᵀ, Bᵀ) is observable"
    ],
@@ -537,7 +537,7 @@
    "prompt": "A team reduces a nonlinear model with empirical-Gramian balancing. Can they quote the LTI twice-tail-sum error bound for the reduced model?",
    "choices": [
     "Yes, because empirical Gramians always equal the linear Gramians",
-    "Yes, provided the nonlinear system is asymptotically stable at the origin and smooth",
+    "It can, provided the nonlinear system is asymptotically stable at the origin and smooth",
     "Yes, but only after halving the bound to account for nonlinearity",
     "No; nonlinear results depend on operating region, amplitudes and coordinates"
    ],
@@ -632,13 +632,13 @@
    "difficulty": 3,
    "prompt": "With Q = CᵀC ⪰ 0 and R ≻ 0, which conditions guarantee that the continuous-time algebraic Riccati equation has a unique stabilizing solution?",
    "choices": [
-    "A Hurwitz, with no condition on B or C",
+    "(A, C) observable, with no condition on B",
     "(A, B) controllable, with no condition on Q",
     "(A, B) stabilizable and (A, C) detectable",
     "R ⪰ 0 only, so that zero control cost is allowed"
    ],
    "answer": 2,
-   "explain": "Stabilizability lets feedback reach every unstable mode. Detectability makes every unstable mode show up in the cost, so the optimizer cannot ignore it. The atlas handle names exactly these conditions.",
+   "explain": "Stabilizability lets feedback reach every unstable mode. Detectability makes every unstable mode show up in the cost, so the optimizer cannot ignore it. Observability alone is not enough: an unstable mode that B cannot reach rules out any stabilizing solution.",
    "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
   },
   {
@@ -831,7 +831,7 @@
    ],
    "answer": 1,
    "explain": "Contraction concerns the distance between trajectories, so it gives stability of every solution relative to the others. The atlas stresses that stable behavior can still pursue the wrong objective.",
-   "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
+   "source": "https://arxiv.org/pdf/2104.05942"
   },
   {
    "id": "q2-dual-1",
@@ -991,7 +991,7 @@
    ],
    "answer": 2,
    "explain": "Feedback acts continually on measured state, so short predictability does not rule out control (for example OGY-style stabilization of unstable orbits). The atlas test evaluates forecasting and closed-loop regulation separately.",
-   "source": "https://pubmed.ncbi.nlm.nih.gov/10039285/"
+   "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
   },
   {
    "id": "q2-chaos-3",
@@ -1080,7 +1080,7 @@
    "difficulty": 2,
    "prompt": "What is the main analytical payoff of low-rank connectivity, and what is its stated limit?",
    "choices": [
-    "The network becomes linear, so every behavior is solvable in closed form",
+    "The dynamics become linear in the low-rank coordinates, so they can be solved in closed form",
     "Chaos is eliminated for any choice of the random connectivity gain",
     "A few collective variables describe the dynamics, but they need not be semantic variables",
     "The reduced coordinates are guaranteed to correspond to human concepts"
@@ -1323,11 +1323,11 @@
     "A proven theorem that holds for all feed-forward networks trained with gradient descent",
     "It holds for all ReLU networks and fails only for tanh networks",
     "Not generally supported; compression depended on the nonlinearity and MI estimator",
-    "Confirmed exactly with closed-form mutual information in large networks"
+    "Supported by experiments that found compression in ReLU networks as well as tanh networks"
    ],
    "answer": 2,
    "explain": "In Saxe et al.'s experiments, double-saturating nonlinearities such as tanh showed compression and ReLU networks generally did not, yet both generalized. The atlas boundary cites this work.",
-   "source": "https://www.princeton.edu/~wbialek/our_papers/tishby+al_99.pdf"
+   "source": "https://research.ibm.com/publications/on-the-information-bottleneck-theory-of-deep-learning"
   },
   {
    "id": "q2-rate-1",
@@ -1350,7 +1350,7 @@
    "node": "rate",
    "skill": "control",
    "difficulty": 2,
-   "prompt": "A scalar discrete-time plant x_{k+1} = 4·x_k + u_k + w_k is controlled over a digital channel. Under the data-rate theorem's assumptions, what is the infimum average rate needed for mean-square stabilization?",
+   "prompt": "A scalar discrete-time plant x_{k+1} = 4·x_k + u_k + w_k (i.i.d. noise w_k with bounded (2+ε)th moments) is controlled over a digital channel. Under Nair and Evans' data-rate theorem, what is the infimum average rate that permits mean-square stabilization?",
    "choices": [
     "4 bits per sample",
     "1 bit per sample",
@@ -1358,7 +1358,7 @@
     "Any positive rate suffices"
    ],
    "answer": 2,
-   "explain": "The rate must exceed Σ log₂|λᵢ| over the unstable eigenvalues. Here the single unstable eigenvalue is 4, so the infimum is 2 bits per sample.",
+   "explain": "Mean-square stabilization is possible if and only if the rate R strictly exceeds Σ log₂|λᵢ| over the unstable eigenvalues. Any R > 2 works here, so 2 bits per sample is the infimum but is not itself attained; the noise statistics do not change the bound.",
    "source": "https://people.eng.unimelb.edu.au/gnair/NairSICON04.pdf"
   },
   {
@@ -1370,11 +1370,11 @@
    "choices": [
     "It has more parameters than training examples, so it can interpolate the data",
     "Its loss surface has exactly one isolated global minimum",
-    "Its parameter-to-distribution map is not one-to-one and its Fisher information is degenerate",
+    "Its parameter-to-distribution map is not one-to-one, or its Fisher information is degenerate",
     "Its parameters are discrete, so the likelihood is not differentiable"
    ],
    "answer": 2,
-   "explain": "Mixtures, HMMs and neural networks have parameter symmetries and degenerate directions at the true parameters, so classical regular asymptotics such as BIC do not apply.",
+   "explain": "Watanabe calls a model regular when the parameter map is identifiable and the Fisher information is positive definite, and singular otherwise. Mixtures, HMMs and neural networks have parameter symmetries and degenerate directions, so classical regular asymptotics such as BIC do not apply.",
    "source": "https://www.jmlr.org/papers/volume14/watanabe13a/watanabe13a.pdf"
   },
   {
@@ -1577,7 +1577,7 @@
    "prompt": "A Hopfield network is cued with a corrupted pattern and converges to a stable state. Has it retrieved the intended memory?",
    "choices": [
     "Yes; convergence guarantees retrieval of the nearest stored memory",
-    "Yes, provided the energy decreased at every update step",
+    "Yes, if the energy decreased at each update step",
     "No; Hopfield networks never converge from corrupted inputs",
     "Not necessarily; it may have settled into a spurious attractor"
    ],
@@ -1961,7 +1961,7 @@
    "prompt": "Can this result be applied directly as an energy law for neural network training?",
    "choices": [
     "Yes; the relation holds for any learning system that stores information about its inputs",
-    "Yes, provided training uses stochastic gradient descent with injected noise",
+    "It can, if training uses SGD with injected noise, which acts as a heat bath",
     "No; it assumes a specific physical setup with no feedback, so transfer is a hypothesis",
     "Yes, because softmax temperature in a network is a physical temperature"
    ],
@@ -2011,7 +2011,7 @@
     "Tree-based ensembles remained competitive or better in that data regime",
     "Deep networks outperformed tree ensembles on every one of the benchmark datasets",
     "Trees and deep networks performed identically on every task",
-    "Deep networks won once all manual feature engineering was removed"
+    "Deep networks were more robust to uninformative features, so they won on most datasets"
    ],
    "answer": 0,
    "explain": "The edge is labeled empirical and limited to medium-sized tabular tasks, not every data regime.",
@@ -2255,7 +2255,7 @@
    ],
    "answer": 1,
    "explain": "The basic theorem assumes a correct model and state; perception error and sampled actuation need explicit extensions. The atlas test injects sensor error, saturation and sampling delay.",
-   "source": "https://arxiv.org/html/2307.15818v1"
+   "source": "https://arxiv.org/html/2512.11891v2"
   },
   {
    "id": "q2-typedcontrol-1",
@@ -2393,7 +2393,7 @@
    "prompt": "Skalse et al. analyze unhackable proxy rewards over the set of all stochastic policies. What do they find?",
    "choices": [
     "Any reward learned from enough human preference data is unhackable",
-    "A proxy that is a smoothed version of the true reward is always unhackable on any policy set",
+    "Non-trivial unhackable pairs exist whenever the proxy is a coarsened version of the true reward",
     "Every pair of reward functions is unhackable when the MDP is finite",
     "Two rewards can be unhackable there only if one of them is trivial (constant)"
    ],
@@ -2527,7 +2527,7 @@
    ],
    "answer": 2,
    "explain": "Step-level labels gave more reliable reward models on the MATH benchmark in their experiments. That is an empirical result, not a guarantee for all domains.",
-   "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12443585/"
+   "source": "https://arxiv.org/abs/2305.20050"
   },
   {
    "id": "q2-llm-3",
@@ -2543,7 +2543,7 @@
    ],
    "answer": 3,
    "explain": "The atlas edges stress that GenCtrl's controllable sets are defined for particular attributes and processes, not universal semantic compliance. Prompt controllability is task- and distribution-dependent.",
-   "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12443585/"
+   "source": "https://arxiv.org/html/2601.05637v1"
   },
   {
    "id": "q2-vlm-1",
@@ -2559,7 +2559,7 @@
    ],
    "answer": 2,
    "explain": "Contrastive pretraining yields a shared embedding space for zero-shot transfer. The atlas cautions that text–image similarity does not establish grounding.",
-   "source": "https://arxiv.org/abs/2304.08485"
+   "source": "https://cdn.openai.com/papers/Learning_Transferable_Visual_Models_From_Natural_Language.pdf"
   },
   {
    "id": "q2-vlm-2",
@@ -2623,7 +2623,7 @@
    ],
    "answer": 0,
    "explain": "Flow matching gives continuous, multimodal action chunks, which contrasts with RT-2's discrete tokens.",
-   "source": "https://arxiv.org/html/2307.15818v1"
+   "source": "https://arxiv.org/html/2410.24164"
   },
   {
    "id": "q2-vla-3",
@@ -2666,12 +2666,12 @@
    "choices": [
     "Yes; realistic video implies that the underlying learned dynamics are accurate",
     "No; visual plausibility need not mean reliable closed-loop consequences",
-    "Yes, provided the generated videos are long enough",
+    "Largely, if the videos also score well on perceptual metrics such as FVD",
     "No, because world models can never be used for control"
    ],
    "answer": 1,
    "explain": "The atlas cites WorldLens-style evaluations. Its test intervenes on actions, visibility and hidden state and compares with held-out rollouts.",
-   "source": "https://ai.meta.com/research/publications/v-jepa-2-self-supervised-video-models-enable-understanding-prediction-and-planning/"
+   "source": "https://openaccess.thecvf.com/content/CVPR2026/papers/Liang_WorldLens_Full-Spectrum_Evaluations_of_Driving_World_Models_in_Real_World_CVPR_2026_paper.pdf"
   },
   {
    "id": "q2-objectworld-1",
@@ -2735,7 +2735,7 @@
    ],
    "answer": 1,
    "explain": "Wake–sleep cycles alternate between solving tasks, compressing solutions into new library primitives, and training a neural recognition model.",
-   "source": "https://www.nature.com/articles/s41586-023-06747-5"
+   "source": "https://royalsocietypublishing.org/doi/10.1098/rsta.2022.0050"
   },
   {
    "id": "q2-neurosymbolic-3",
@@ -2842,7 +2842,7 @@
    "choices": [
     "No; it must be checked against proper scores and empirical coverage",
     "Yes; growing variance with horizon is exactly what calibration means",
-    "Yes, provided the ensemble has at least five members",
+    "It does, if each ensemble member was trained on a different bootstrap sample",
     "No, because ensembles cannot represent uncertainty at all"
    ],
    "answer": 0,
