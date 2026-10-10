@@ -1,0 +1,2853 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "q1-ridge-1",
+      "node": "ridge",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What does ridge regression add to ordinary least squares?",
+      "choices": [
+        "A penalty λ‖w‖₁ on the sum of absolute coefficient values",
+        "A penalty λ‖w‖² on the squared L2 norm of the coefficients",
+        "A logistic link function applied to the linear prediction",
+        "A constraint that every coefficient must be non-negative"
+      ],
+      "answer": 1,
+      "explain": "Ridge minimizes ‖y − Xw‖² + λ‖w‖², shrinking coefficients toward zero. The L1 penalty is the lasso, which behaves differently.",
+      "source": "https://gaussianprocess.org/gpml/chapters/RW2.pdf"
+    },
+    {
+      "id": "q1-ridge-2",
+      "node": "ridge",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "Assume y = Xw + ε with ε ~ N(0, σ²I) and prior w ~ N(0, τ²I). For which λ does the ridge estimate equal the posterior mean of w?",
+      "choices": [
+        "λ = 0, since the posterior mean equals the maximum-likelihood fit",
+        "λ = σ²·τ²",
+        "λ = τ²/σ²",
+        "λ = σ²/τ²"
+      ],
+      "answer": 3,
+      "explain": "The negative log posterior is ‖y − Xw‖²/(2σ²) + ‖w‖²/(2τ²) + const; multiplying by 2σ² gives the ridge objective with λ = σ²/τ². A Gaussian posterior's mean and mode coincide, so ridge is also the MAP estimate.",
+      "source": "https://gaussianprocess.org/gpml/chapters/RW2.pdf"
+    },
+    {
+      "id": "q1-ridge-3",
+      "node": "ridge",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Bayesian linear regression f(x) = xᵀw with prior w ~ N(0, Σp) is a Gaussian process. Which covariance function does it induce?",
+      "choices": [
+        "k(x, x′) = xᵀ Σp x′",
+        "k(x, x′) = 1 if x = x′, otherwise 0",
+        "k(x, x′) = exp(−‖x − x′‖²/2)",
+        "k(x, x′) = (x − x′)ᵀ Σp (x − x′)"
+      ],
+      "answer": 0,
+      "explain": "Cov(f(x), f(x′)) = xᵀ E[wwᵀ] x′ = xᵀ Σp x′, a linear kernel. This weight-space/function-space equivalence (Rasmussen and Williams, ch. 2) is why GP posterior means match ridge under matched assumptions.",
+      "source": "https://gaussianprocess.org/gpml/chapters/RW2.pdf"
+    },
+    {
+      "id": "q1-svm-1",
+      "node": "svm",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What does a soft-margin support vector machine optimize?",
+      "choices": [
+        "The Bernoulli log-likelihood under a sigmoid link",
+        "The marginal likelihood of a GP prior over functions",
+        "A hinge loss on the margin plus a weight-norm penalty",
+        "The squared distance of points to their class centroid"
+      ],
+      "answer": 2,
+      "explain": "The SVM minimizes ½‖w‖² + C Σ max(0, 1 − yᵢ f(xᵢ)), which maximizes the margin while tolerating violations. The Bernoulli log-likelihood is logistic regression's objective.",
+      "source": "https://gaussianprocess.org/gpml/chapters/RW6.pdf"
+    },
+    {
+      "id": "q1-svm-2",
+      "node": "svm",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "A team treats raw SVM decision values as class probabilities for risk decisions. What is the problem?",
+      "choices": [
+        "Decision values are margin scores; probabilities need a separately fitted and checked calibration step",
+        "None: the hinge loss is a proper scoring rule, so SVM outputs are already calibrated",
+        "None once the decision values are clipped to [0, 1], which makes them probabilities",
+        "It only fails for linear kernels; RBF-kernel SVMs output exact class probabilities"
+      ],
+      "answer": 0,
+      "explain": "The margin objective does not model a likelihood, so it does not provide calibrated uncertainty by itself. Probability outputs need an extra calibration model, such as Platt scaling, fitted on held-out data.",
+      "source": "https://gaussianprocess.org/gpml/chapters/RW6.pdf"
+    },
+    {
+      "id": "q1-svm-3",
+      "node": "svm",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "SVMs and Gaussian processes share a kernel-regularization framework. What is the key difference?",
+      "choices": [
+        "GPs minimize the hinge loss, whereas SVMs maximize the marginal likelihood of the labels given the kernel",
+        "There is no real difference: both compute the same estimator, only implemented in different software",
+        "SVMs accept any positive-definite kernel, whereas GPs are restricted to linear kernels for tractable inference",
+        "GPs give a predictive distribution from a likelihood and prior; SVMs optimize a margin loss with no built-in predictive variance"
+      ],
+      "answer": 3,
+      "explain": "Both solutions lie in a reproducing-kernel Hilbert space, but the losses differ. GP regression's Gaussian likelihood yields a posterior covariance, while the SVM's margin loss yields only a decision function.",
+      "source": "https://gaussianprocess.org/gpml/chapters/RW6.pdf"
+    },
+    {
+      "id": "q1-gp-1",
+      "node": "gp",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "What is a Gaussian process?",
+      "choices": [
+        "A mixture of finitely many Gaussian clusters fitted with EM",
+        "A distribution over functions where any finite set of values is jointly Gaussian",
+        "A network whose weights are drawn from a Gaussian and then frozen",
+        "An optimizer that adds Gaussian noise to each gradient step"
+      ],
+      "answer": 1,
+      "explain": "A GP is specified by a mean function and a covariance kernel. Conditioning on data gives a posterior mean and covariance that expose the model's uncertainty.",
+      "source": "https://gaussianprocess.org/gpml/chapters/"
+    },
+    {
+      "id": "q1-gp-2",
+      "node": "gp",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "In GP regression with a squared-exponential kernel, what happens to the posterior variance of f at a test input far from all training inputs?",
+      "choices": [
+        "It equals the observation-noise variance σ² at every test input",
+        "It becomes undefined, because GPs cannot be evaluated outside the data",
+        "It returns toward the prior variance k(x*, x*)",
+        "It shrinks to zero, since more data makes the posterior certain everywhere"
+      ],
+      "answer": 2,
+      "explain": "The posterior variance is k(x*, x*) − k*ᵀ(K + σ²I)⁻¹k*. Far from the data k* → 0, so the reduction term vanishes and only the prior variance remains.",
+      "source": "https://gaussianprocess.org/gpml/chapters/"
+    },
+    {
+      "id": "q1-gp-3",
+      "node": "gp",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "Which statement about wide neural networks and Gaussian processes is correct?",
+      "choices": [
+        "At initialization an infinitely wide net is a GP; its gradient-descent training follows the neural tangent kernel, generally a different kernel",
+        "A trained network of finite width is exactly a GP with a squared-exponential kernel, whatever its architecture",
+        "The NTK is defined as the GP prior covariance at initialization, so the two kernels always coincide",
+        "Infinite-width networks cannot be trained at all, so the GP correspondence applies only before training"
+      ],
+      "answer": 0,
+      "explain": "The NNGP kernel describes the prior over outputs at initialization. The NTK describes how outputs move under gradient descent. Both are kernels, but they are generally not equal.",
+      "source": "https://gaussianprocess.org/gpml/chapters/"
+    },
+    {
+      "id": "q1-kmeans-1",
+      "node": "kmeans",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What objective does k-means minimize?",
+      "choices": [
+        "Largest distance between two points in the same cluster",
+        "Negative log-likelihood of a full-covariance Gaussian mixture",
+        "Difference in size between the largest and smallest clusters",
+        "Total squared distance from each point to its assigned centroid"
+      ],
+      "answer": 3,
+      "explain": "k-means minimizes within-cluster squared Euclidean distance. It is a clustering or quantization objective, not a probabilistic model by itself.",
+      "source": "https://web.mit.edu/r/current/lib/R/library/stats/html/kmeans.html"
+    },
+    {
+      "id": "q1-kmeans-2",
+      "node": "kmeans",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "Lloyd's algorithm alternates nearest-centroid assignment and centroid recomputation. What is guaranteed?",
+      "choices": [
+        "The objective can rise in the centroid step, but it falls on average across iterations",
+        "The objective never increases and it stops in finitely many steps, possibly at a local optimum",
+        "It converges only when k equals the true number of clusters in the data",
+        "It reaches the global minimum from any initialization, since each step is an exact minimization"
+      ],
+      "answer": 1,
+      "explain": "Each step can only lower or keep the objective, and there are finitely many partitions, so it terminates. Global optimality is not guaranteed, which is why restarts and k-means++ seeding are used.",
+      "source": "https://web.mit.edu/r/current/lib/R/library/stats/html/kmeans.html"
+    },
+    {
+      "id": "q1-kmeans-3",
+      "node": "kmeans",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "How does k-means relate to EM for a Gaussian mixture model?",
+      "choices": [
+        "It is EM that fits the mixing weights while holding the means fixed",
+        "It is exactly EM for a mixture whose components learn full covariances",
+        "It is the σ² → 0 limit of EM with shared isotropic covariance σ²I",
+        "A Gaussian mixture is the special case of k-means with k = 1"
+      ],
+      "answer": 2,
+      "explain": "With equal isotropic covariances, responsibilities depend only on distance to each mean. As the variance shrinks they collapse to hard nearest-centroid assignments, which gives Lloyd's algorithm.",
+      "source": null
+    },
+    {
+      "id": "q1-trees-1",
+      "node": "trees",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "How does a random forest make a prediction?",
+      "choices": [
+        "It grows one deep decision tree on all the data and prunes it back by cross-validation",
+        "It fits a linear model on random projections of the features and thresholds the output",
+        "It averages or votes over many trees, each grown on a bootstrap sample with random feature subsets",
+        "It trains trees one after another, each one fitting the residuals of the ensemble so far"
+      ],
+      "answer": 2,
+      "explain": "Bagging plus feature subsampling decorrelates the trees, so averaging reduces variance. Sequential residual fitting describes gradient boosting, a different ensemble method.",
+      "source": null
+    },
+    {
+      "id": "q1-trees-2",
+      "node": "trees",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "What did the 45-dataset tabular benchmark cited in the atlas (Grinsztajn et al., 2022) report?",
+      "choices": [
+        "Tree ensembles won on image and text data but not on tabular data",
+        "Deep networks outperformed tree ensembles on every tabular dataset tested",
+        "Tree ensembles and deep networks were indistinguishable on all datasets",
+        "Tree ensembles compared favorably with deep models on medium-sized tabular data"
+      ],
+      "answer": 3,
+      "explain": "The study found tree ensembles remained strong on medium-sized tabular tasks. The atlas warns against reading this as universal dominance in every data regime.",
+      "source": "https://arxiv.org/abs/2207.08815"
+    },
+    {
+      "id": "q1-latent-1",
+      "node": "latent",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "What makes a model a latent-variable model?",
+      "choices": [
+        "It contains unobserved variables that must be inferred from data",
+        "Its outputs depend only on the observed inputs",
+        "All of its parameters are learned by gradient descent",
+        "It has no parameters and is defined entirely by a kernel"
+      ],
+      "answer": 0,
+      "explain": "Latent variables, such as cluster labels or hidden states, are part of the model but never observed. Fitting needs inference over them, as in EM, filtering or variational methods.",
+      "source": "https://www.cambridge.org/core/books/algebraic-geometry-and-statistical-learning-theory/9C8FD1BDC817E2FC79117C7F41544A3A"
+    },
+    {
+      "id": "q1-latent-2",
+      "node": "latent",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "Why does singular learning theory call Gaussian mixtures and HMMs singular models?",
+      "choices": [
+        "Their Fisher information is always positive definite, but extremely large",
+        "Different parameters can give the same distribution, so the Fisher information can be degenerate",
+        "Their likelihood has a single global maximum, which makes them uniquely identifiable",
+        "Each of them contains only one latent variable, unlike deep networks"
+      ],
+      "answer": 1,
+      "explain": "Label switching, or a zero-weight component whose mean is undetermined, makes the parameter-to-distribution map non-injective. Regular theory assumes identifiability and positive-definite Fisher information; SLT handles the cases where these fail.",
+      "source": "https://www.cambridge.org/core/books/algebraic-geometry-and-statistical-learning-theory/9C8FD1BDC817E2FC79117C7F41544A3A"
+    },
+    {
+      "id": "q1-reduction-1",
+      "node": "reduction",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What is the main aim of dimensionality reduction?",
+      "choices": [
+        "Cut the number of training examples needed to fit a model",
+        "Add derived features until the classes become linearly separable",
+        "Represent data with fewer variables while keeping the structure the task needs",
+        "Delete highly correlated samples so the dataset is less redundant"
+      ],
+      "answer": 2,
+      "explain": "Reduction maps data to a lower-dimensional representation. The atlas stresses that what must be preserved depends on the use, for example actions and constraints, not only prediction.",
+      "source": "https://www.saxelab.org/assets/papers/Saxe2013a.pdf"
+    },
+    {
+      "id": "q1-reduction-2",
+      "node": "reduction",
+      "skill": "control",
+      "difficulty": 3,
+      "prompt": "For a controlled dynamical system, why can PCA of state trajectories be a poor reduction compared with balanced truncation?",
+      "choices": [
+        "PCA cannot be applied to data that come from time series",
+        "A low-variance direction can still strongly affect the outputs",
+        "Balanced truncation always keeps more dimensions than PCA",
+        "PCA preserves the input-output map exactly in every case"
+      ],
+      "answer": 1,
+      "explain": "PCA ranks directions by variance; balanced truncation ranks them by joint reachability and observability (Hankel singular values). Neither criterion implies the other.",
+      "source": "https://www.saxelab.org/assets/papers/Saxe2013a.pdf"
+    },
+    {
+      "id": "q1-fisher-1",
+      "node": "fisher",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "What does the Fisher information measure?",
+      "choices": [
+        "How sensitive the likelihood is to a parameter",
+        "The number of free parameters in the model",
+        "The entropy of the data distribution",
+        "The KL divergence from prior to posterior"
+      ],
+      "answer": 0,
+      "explain": "I(θ) = E[(∂ log p/∂θ)²], which equals −E[∂² log p/∂θ²] under regularity conditions. High information means the data sharply discriminate between nearby parameter values.",
+      "source": "https://arxiv.org/pdf/1801.09877"
+    },
+    {
+      "id": "q1-fisher-2",
+      "node": "fisher",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "An unbiased estimator θ̂ of a scalar θ uses n i.i.d. samples, each with Fisher information I(θ). What does the Cramér–Rao bound state?",
+      "choices": [
+        "Var(θ̂) ≥ n·I(θ)",
+        "Var(θ̂) ≥ 1/I(θ), whatever n is",
+        "Var(θ̂) ≤ 1/(n·I(θ))",
+        "Var(θ̂) ≥ 1/(n·I(θ))"
+      ],
+      "answer": 3,
+      "explain": "Fisher information adds across independent samples to n·I(θ), and the variance of any unbiased estimator is at least its inverse. It is a lower bound, not an upper bound.",
+      "source": null
+    },
+    {
+      "id": "q1-fisher-3",
+      "node": "fisher",
+      "skill": "control",
+      "difficulty": 3,
+      "prompt": "Known dynamics x_{k+1} = A x_k, measurements y_k = C x_k + v_k with v_k i.i.d. N(0, R), k = 0…N−1. What is the Fisher information about x₀?",
+      "choices": [
+        "R⁻¹ alone",
+        "Σₖ Aᵏ B Bᵀ (Aᵏ)ᵀ",
+        "Cᵀ R C, independent of A",
+        "Σₖ (Aᵏ)ᵀ Cᵀ R⁻¹ C Aᵏ"
+      ],
+      "answer": 3,
+      "explain": "Each measurement is y_k = (C Aᵏ) x₀ + v_k, a linear-Gaussian observation of x₀ with information (CAᵏ)ᵀR⁻¹(CAᵏ). The sum is the noise-weighted observability Gramian, the exact link in the atlas.",
+      "source": "https://arxiv.org/pdf/1801.09877"
+    },
+    {
+      "id": "q1-probeattr-1",
+      "node": "probeattr",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What does probe-based data attribution, as described in the atlas, do?",
+      "choices": [
+        "Ranks training examples by alignment with a behavior probe, so the data can be edited and the model retrained",
+        "Edits the model's weights along the probe direction, removing the behavior without changing data",
+        "Has human annotators mark which preference examples caused the behavior, then drops them",
+        "Retrains the model once per training example to measure exact leave-one-out influence on behavior"
+      ],
+      "answer": 0,
+      "explain": "Preference-example representation differences are aligned with a behavior probe and the data are ranked. The intervention is on the dataset, followed by retraining, and is far cheaper than per-example retraining.",
+      "source": "https://www.goodfire.com/research/probe-based-data-attribution"
+    },
+    {
+      "id": "q1-probeattr-2",
+      "node": "probeattr",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "In the cited Goodfire work, what intervention follows the ranking of preference (DPO) examples?",
+      "choices": [
+        "Pruning the neurons that correlate most with the probe",
+        "Filtering or editing the top-ranked examples, then retraining",
+        "Steering activations along the probe direction at inference",
+        "Raising the learning rate on top-ranked examples mid-run"
+      ],
+      "answer": 1,
+      "explain": "Attribution changes the training data, not the inference-time computation. The reported result filtered the top 30,000 examples and measured a 63% drop in the tested harmful-distractor compliance.",
+      "source": "https://www.goodfire.com/research/probe-based-data-attribution"
+    },
+    {
+      "id": "q1-logistic-1",
+      "node": "logistic",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What does logistic regression model?",
+      "choices": [
+        "The class label as a linear function of x, fitted by squared loss",
+        "The logarithm of each feature as a linear function of the label",
+        "The log-odds of the positive class as a linear function of x",
+        "The probability as a linear function of x, clipped to [0, 1]"
+      ],
+      "answer": 2,
+      "explain": "P(y = 1 | x) = σ(wᵀx + b), so the logit of the probability is linear in x. Parameters are fitted by maximizing the Bernoulli likelihood, usually with regularization.",
+      "source": "https://scikit-learn.org/stable/modules/linear_model.html"
+    },
+    {
+      "id": "q1-logistic-2",
+      "node": "logistic",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "A fitted logistic regression has coefficient 0.7 on a feature. If that feature rises by 1 with the others fixed, what happens?",
+      "choices": [
+        "The odds of y = 1 multiply by e^0.7 ≈ 2.0",
+        "P(y = 1) rises by 0.7",
+        "P(y = 1) rises by 70%",
+        "P(y = 1) multiplies by e^0.7 ≈ 2.0"
+      ],
+      "answer": 0,
+      "explain": "Coefficients act additively on the log-odds, so they act multiplicatively on the odds. The change in the probability itself depends on where you start.",
+      "source": null
+    },
+    {
+      "id": "q1-logistic-3",
+      "node": "logistic",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Why is the logit the canonical link for a Bernoulli response in a generalized linear model?",
+      "choices": [
+        "The Bernoulli variance p(1 − p) peaks at p = 0.5",
+        "The logit is the only smooth map from ℝ onto (0, 1)",
+        "The Bernoulli's natural parameter is the log-odds",
+        "Probit links cannot be fitted by maximum likelihood"
+      ],
+      "answer": 2,
+      "explain": "Writing p^y(1 − p)^(1−y) = exp(y·log(p/(1 − p)) + log(1 − p)) shows the natural parameter is log(p/(1 − p)). Probit is also a valid link, just not the canonical one.",
+      "source": "https://scikit-learn.org/stable/modules/linear_model.html"
+    },
+    {
+      "id": "q1-lasso-1",
+      "node": "lasso",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What penalty does the lasso add, and what is its characteristic effect?",
+      "choices": [
+        "λ·(number of nonzero wⱼ), solved as a convex problem",
+        "λ Σ wⱼ², which sets many coefficients exactly to zero",
+        "λ maxⱼ |wⱼ|, which forces all coefficients to be equal",
+        "λ Σ|wⱼ|, which can set some coefficients exactly to zero"
+      ],
+      "answer": 3,
+      "explain": "The L1 penalty's corner at zero produces sparse solutions. The squared L2 penalty (ridge) shrinks but rarely zeroes coefficients, and counting nonzeros (L0) is combinatorial, not convex.",
+      "source": "https://scikit-learn.org/stable/modules/linear_model.html"
+    },
+    {
+      "id": "q1-lasso-2",
+      "node": "lasso",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "Two strongly correlated features are both predictive. How do the lasso and the elastic net typically behave?",
+      "choices": [
+        "Lasso keeps both with equal weights; elastic net tends to drop both",
+        "Lasso tends to pick one somewhat arbitrarily; elastic net tends to keep both",
+        "Both give identical solutions, because the L1 term dominates either way",
+        "Lasso fails to converge whenever features are strongly correlated"
+      ],
+      "answer": 1,
+      "explain": "The elastic net's L2 term produces a grouping effect, giving correlated predictors similar coefficients (Zou and Hastie, 2005). Pure L1 has no preference among them, so its selection can be unstable.",
+      "source": "https://scikit-learn.org/stable/modules/linear_model.html"
+    },
+    {
+      "id": "q1-lasso-3",
+      "node": "lasso",
+      "skill": "signals-estimation",
+      "difficulty": 3,
+      "prompt": "Compressed sensing recovers a sparse x from y = Ax with fewer measurements than unknowns, by L1 minimization. What makes recovery possible?",
+      "choices": [
+        "Having at least n/2 measurements, after which L1 recovers any x, sparse or not",
+        "Sparsity plus conditions on A, such as restricted isometry, with enough measurements",
+        "Sparsity of x alone: any sensing matrix A works as long as x has few nonzeros",
+        "A square, invertible A, so that L1 minimization reduces to solving Ax = y"
+      ],
+      "answer": 1,
+      "explain": "L1 is a convex surrogate for sparsity, but guarantees need operator assumptions such as restricted isometry or incoherence. Without them, many sparse vectors can explain the same measurements.",
+      "source": "https://scikit-learn.org/stable/modules/linear_model.html"
+    },
+    {
+      "id": "q1-pca-1",
+      "node": "pca",
+      "skill": "linear-algebra",
+      "difficulty": 1,
+      "prompt": "What are the principal component directions of a centered data matrix?",
+      "choices": [
+        "The columns of the data matrix with the largest norms",
+        "Directions that make the projected components independent",
+        "Directions that best separate the labeled classes",
+        "Eigenvectors of the sample covariance, ordered by variance"
+      ],
+      "answer": 3,
+      "explain": "PCA finds orthogonal directions of maximal variance, equivalently the right singular vectors of the centered data. Independence is ICA's target, and class separation is linear discriminant analysis.",
+      "source": "https://scikit-learn.org/stable/modules/decomposition.html"
+    },
+    {
+      "id": "q1-pca-2",
+      "node": "pca",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "Centered data have covariance eigenvalues 6, 3 and 1. What fraction of the total variance do the top two principal components retain?",
+      "choices": [
+        "90%",
+        "66.7%",
+        "60%",
+        "30%"
+      ],
+      "answer": 0,
+      "explain": "Total variance is the sum of the eigenvalues, 10. The top two components carry 6 + 3 = 9, so they retain 90%.",
+      "source": null
+    },
+    {
+      "id": "q1-pca-3",
+      "node": "pca",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "How does factor analysis differ from probabilistic PCA?",
+      "choices": [
+        "FA needs non-Gaussian latent factors; PPCA uses Gaussian factors",
+        "Nothing: they are the same model known under two different names",
+        "FA gives each dimension its own noise variance; PPCA shares one σ²I",
+        "FA has no noise model; PPCA uses full-covariance observation noise"
+      ],
+      "answer": 2,
+      "explain": "Both use x = Wz + μ + ε with Gaussian latent z; only the noise covariance differs (diagonal Ψ versus isotropic σ²I). This makes factor analysis invariant to rescaling individual dimensions but not to rotations.",
+      "source": "https://scikit-learn.org/stable/modules/decomposition.html"
+    },
+    {
+      "id": "q1-gmm-1",
+      "node": "gmm",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "What density does a Gaussian mixture model define?",
+      "choices": [
+        "p(x) = Πₖ N(x; μₖ, Σₖ), a product over the components",
+        "p(x) = N(x; Σₖ πₖμₖ, Σₖ πₖΣₖ), one averaged Gaussian",
+        "p(x) = Σₖ πₖ N(x; μₖ, Σₖ), with πₖ ≥ 0 and Σₖ πₖ = 1",
+        "p(x) = maxₖ N(x; μₖ, Σₖ), the best-fitting component"
+      ],
+      "answer": 2,
+      "explain": "A mixture is a weighted sum of component densities. A latent component label chooses which Gaussian generated each point.",
+      "source": "https://scikit-learn.org/stable/modules/mixture.html"
+    },
+    {
+      "id": "q1-gmm-2",
+      "node": "gmm",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "In a Gaussian mixture, what is the responsibility γᵢₖ of component k for point xᵢ?",
+      "choices": [
+        "N(xᵢ; μₖ, Σₖ), without the mixing weight",
+        "πₖ N(xᵢ; μₖ, Σₖ) / Σⱼ πⱼ N(xᵢ; μⱼ, Σⱼ)",
+        "πₖ alone, independent of the point xᵢ",
+        "1 if μₖ is the nearest mean to xᵢ, else 0"
+      ],
+      "answer": 1,
+      "explain": "The responsibility is the posterior probability that component k generated xᵢ: prior weight times likelihood, normalized by Bayes' rule. Hard nearest-mean assignment is only the k-means limit.",
+      "source": "https://scikit-learn.org/stable/modules/mixture.html"
+    },
+    {
+      "id": "q1-gmm-3",
+      "node": "gmm",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "Why can maximum likelihood for a Gaussian mixture with freely learned covariances be degenerate?",
+      "choices": [
+        "The mixing weights can turn negative during unconstrained optimization",
+        "The likelihood is convex, so its only maximum is the one-component fit",
+        "EM always diverges whenever there are more than two components",
+        "A component can collapse onto one point, sending the likelihood to infinity"
+      ],
+      "answer": 3,
+      "explain": "A Gaussian centered exactly on a data point has density that grows without bound as its variance shrinks. In practice this is handled with covariance floors, priors or restarts.",
+      "source": "https://scikit-learn.org/stable/modules/mixture.html"
+    },
+    {
+      "id": "q1-em-1",
+      "node": "em",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "What does each iteration of the expectation-maximization (EM) algorithm do?",
+      "choices": [
+        "E-step: posterior over latents; M-step: maximize expected complete-data log-likelihood",
+        "E-step: drop the latents; M-step: maximize the observed-data likelihood directly",
+        "E-step: sample a gradient estimate; M-step: take one fixed-rate SGD step on it",
+        "E-step: maximize the parameters; M-step: compute the posterior over the latents"
+      ],
+      "answer": 0,
+      "explain": "EM separates inference about latent assignments from parameter fitting. scikit-learn's GaussianMixture uses this loop.",
+      "source": "https://scikit-learn.org/stable/modules/mixture.html"
+    },
+    {
+      "id": "q1-em-2",
+      "node": "em",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "What does EM guarantee about the observed-data log-likelihood?",
+      "choices": [
+        "It never decreases, though EM can stop at a local optimum or saddle point",
+        "It decreases monotonically, because EM minimizes a free-energy bound",
+        "For Gaussian mixtures it converges exactly within a single iteration",
+        "It reaches the global maximum from any initialization, given enough steps"
+      ],
+      "answer": 0,
+      "explain": "EM maximizes a lower bound that touches the log-likelihood at the current parameters, so no step can lower the likelihood. Nothing prevents convergence to a poor local optimum, so restarts are common.",
+      "source": "https://scikit-learn.org/stable/modules/mixture.html"
+    },
+    {
+      "id": "q1-em-3",
+      "node": "em",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "In Baum–Welch (EM for hidden Markov models), what supplies the E-step statistics?",
+      "choices": [
+        "Counts along the single best Viterbi path, an equivalent update",
+        "A Kalman filter run over the discrete hidden states",
+        "States sampled from the initial distribution, ignoring the data",
+        "Posterior state and transition marginals from forward–backward"
+      ],
+      "answer": 3,
+      "explain": "Forward–backward gives the posterior marginals needed for expected transition and emission counts. Using only the Viterbi path is a different, hard-assignment approximation.",
+      "source": "https://scikit-learn.org/stable/modules/mixture.html"
+    },
+    {
+      "id": "q1-bootstrap-1",
+      "node": "bootstrap",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What does the nonparametric bootstrap do?",
+      "choices": [
+        "Splits the data without replacement into disjoint folds to estimate test error",
+        "Resamples the data with replacement and uses the spread of the recomputed statistic",
+        "Trains a model, relabels the data with its predictions, and retrains on them",
+        "Adds Gaussian noise to every data point once and refits the model on the result"
+      ],
+      "answer": 1,
+      "explain": "The empirical distribution stands in for the unknown population, so the spread of the statistic across resamples approximates its sampling variability. Disjoint folds describe cross-validation.",
+      "source": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.bootstrap.html"
+    },
+    {
+      "id": "q1-bootstrap-2",
+      "node": "bootstrap",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "A bootstrap resample draws n points with replacement from n originals. For large n, about what fraction of the originals appears at least once?",
+      "choices": [
+        "About 36.8%",
+        "About 50%",
+        "About 63.2%",
+        "100%"
+      ],
+      "answer": 2,
+      "explain": "Each point is missed with probability (1 − 1/n)ⁿ → 1/e ≈ 0.368, so about 1 − 1/e ≈ 63.2% appear. The rest are the out-of-bag points random forests use for validation.",
+      "source": null
+    },
+    {
+      "id": "q1-bootstrap-3",
+      "node": "bootstrap",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "You want uncertainty on a forecasting metric computed from autocorrelated errors. Why is an i.i.d. row bootstrap a poor choice?",
+      "choices": [
+        "It is fine if the series is shuffled first, which removes the dependence",
+        "It only needs more replicates, which corrects for the dependence",
+        "It is fine: the bootstrap makes no assumptions about the data at all",
+        "It treats dependent rows as independent, typically understating variability"
+      ],
+      "answer": 3,
+      "explain": "The bootstrap assumes the resampled units are exchangeable, which autocorrelation breaks. Resample dependence-aware units such as blocks, and pair this with chronological backtesting.",
+      "source": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.bootstrap.html"
+    },
+    {
+      "id": "q1-conformal-1",
+      "node": "conformal",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What does split conformal prediction guarantee?",
+      "choices": [
+        "Point predictions with the smallest possible squared error",
+        "Coverage of at least 1 − α conditional on every input x",
+        "Marginal coverage of at least 1 − α under exchangeability",
+        "Coverage of at least 1 − α under arbitrary distribution shift"
+      ],
+      "answer": 2,
+      "explain": "The guarantee is finite-sample but marginal, averaged over calibration and test draws, and it relies on exchangeability. Conditional coverage for each x is not guaranteed in general.",
+      "source": "https://arxiv.org/pdf/2411.11824v4"
+    },
+    {
+      "id": "q1-conformal-2",
+      "node": "conformal",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "Split conformal regression has n = 19 calibration nonconformity scores and α = 0.1. Which score sets the threshold?",
+      "choices": [
+        "An interpolated 90th percentile",
+        "The 18th smallest",
+        "The 19th smallest (the maximum)",
+        "The 17th smallest"
+      ],
+      "answer": 1,
+      "explain": "The rule takes the ⌈(n + 1)(1 − α)⌉-th smallest score, here ⌈18⌉ = 18. Treating the test score as the (n + 1)-th exchangeable score is what gives coverage of at least 1 − α.",
+      "source": "https://arxiv.org/pdf/2411.11824v4"
+    },
+    {
+      "id": "q1-proper-1",
+      "node": "proper",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "When is a scoring rule for probabilistic forecasts called proper?",
+      "choices": [
+        "When reporting your true belief optimizes your expected score",
+        "When it depends only on the forecast's point estimate",
+        "When its values always lie between 0 and 1",
+        "When it equals the empirical coverage of the intervals"
+      ],
+      "answer": 0,
+      "explain": "Propriety makes honesty optimal in expectation (uniquely so for strictly proper rules), so the score rewards calibrated, sharp distributions. Log score, Brier score and CRPS are standard examples.",
+      "source": "https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf"
+    },
+    {
+      "id": "q1-proper-2",
+      "node": "proper",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "Which of these is a strictly proper scoring rule for probability forecasts of a binary event?",
+      "choices": [
+        "The Brier score, (p − y)²",
+        "Accuracy after thresholding p at 0.5",
+        "The absolute error, |p − y|",
+        "Hinge loss applied to the log-odds"
+      ],
+      "answer": 0,
+      "explain": "The expected Brier score is minimized only at the true probability. Absolute error is minimized by reporting 0 or 1, which rewards overconfidence.",
+      "source": "https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf"
+    },
+    {
+      "id": "q1-onlinecal-1",
+      "node": "onlinecal",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What problem does adaptive (online) conformal inference address?",
+      "choices": [
+        "Shrinking prediction sets to single points once a model is accurate",
+        "Removing the need for calibration data or held-out errors entirely",
+        "Making one fixed calibration set valid forever under any shift",
+        "Keeping coverage near target as the data distribution shifts over time"
+      ],
+      "answer": 3,
+      "explain": "Exchangeability fails under shift, so the split-conformal guarantee no longer applies. Online methods adjust the threshold from observed misses, with different, regret-style guarantees.",
+      "source": "https://www.jmlr.org/papers/v25/22-1218.html"
+    },
+    {
+      "id": "q1-onlinecal-2",
+      "node": "onlinecal",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "Adaptive conformal inference updates αₜ₊₁ = αₜ + γ(α − errₜ), where errₜ = 1 if the set missed yₜ. What happens after a miss?",
+      "choices": [
+        "αₜ increases, so the next set gets smaller",
+        "αₜ stays the same, as misses are expected",
+        "αₜ decreases, so the next set gets larger",
+        "αₜ resets to the nominal level α"
+      ],
+      "answer": 2,
+      "explain": "After a miss the update adds γ(α − 1) < 0. A smaller αₜ means a higher score quantile 1 − αₜ, hence a wider prediction set.",
+      "source": "https://www.jmlr.org/papers/v25/22-1218.html"
+    },
+    {
+      "id": "q1-pgm-1",
+      "node": "pgm",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "What does a probabilistic graphical model represent?",
+      "choices": [
+        "A dataset stored as a table of nodes and edges for efficient database queries",
+        "A joint distribution factorized according to a graph of conditional independencies",
+        "A neural network whose layers and connections are drawn as a computation graph",
+        "A deterministic flowchart describing the steps of an inference algorithm"
+      ],
+      "answer": 1,
+      "explain": "The graph makes the factorization explicit, and missing edges encode conditional independence assumptions. Inference algorithms exploit this structure.",
+      "source": "https://people.eecs.berkeley.edu/~jordan/papers/wainwright-jordan-fnt.pdf"
+    },
+    {
+      "id": "q1-pgm-2",
+      "node": "pgm",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "Which statement correctly contrasts Bayesian networks and Markov random fields?",
+      "choices": [
+        "MRFs need no normalizing constant, whereas Bayesian networks always require one",
+        "Both factorize into locally normalized conditionals, so neither needs a constant Z",
+        "BNs use clique potentials with a global Z; MRFs use normalized conditionals on a DAG",
+        "BNs use normalized conditionals on a DAG; MRFs use clique potentials with a global Z"
+      ],
+      "answer": 3,
+      "explain": "Directed factors are conditional distributions, so their product is already normalized. Undirected clique potentials are not, so a partition function Z is required.",
+      "source": "https://people.eecs.berkeley.edu/~jordan/papers/wainwright-jordan-fnt.pdf"
+    },
+    {
+      "id": "q1-bayesnet-1",
+      "node": "bayesnet",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "How does a Bayesian network factorize the joint distribution?",
+      "choices": [
+        "p(x) = (1/Z) Π_c ψ_c(x_c)",
+        "p(x) = Πᵢ p(xᵢ | parents(xᵢ))",
+        "p(x) = Πᵢ p(xᵢ)",
+        "p(x) = Πᵢ p(xᵢ | children(xᵢ))"
+      ],
+      "answer": 1,
+      "explain": "Each node contributes one conditional distribution given its parents in the DAG. The clique-potential form describes undirected models.",
+      "source": "https://people.eecs.berkeley.edu/~jordan/papers/wainwright-jordan-fnt.pdf"
+    },
+    {
+      "id": "q1-bayesnet-2",
+      "node": "bayesnet",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "In the network A → C ← B, A and B are independent a priori. What happens when C is observed?",
+      "choices": [
+        "The edges into C are deleted",
+        "A and B become independent of C",
+        "A and B can become dependent",
+        "A and B stay independent"
+      ],
+      "answer": 2,
+      "explain": "C is a collider, and conditioning on a collider opens the path between its parents. Learning one cause is present can lower the probability of the other ('explaining away').",
+      "source": null
+    },
+    {
+      "id": "q1-mrf-1",
+      "node": "mrf",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "How does a Markov random field define a distribution?",
+      "choices": [
+        "p(x) = (1/Z) Π_c ψ_c(x_c) over cliques of an undirected graph",
+        "A product of independent per-node marginals, one for each vertex",
+        "p(x) = Πᵢ p(xᵢ | parents(xᵢ)) over a directed acyclic graph",
+        "A Gaussian whose covariance matrix equals the graph's adjacency matrix"
+      ],
+      "answer": 0,
+      "explain": "Nonnegative potentials encode local compatibilities, such as Ising pairwise couplings, and Z normalizes the product. Writing ψ = exp(−energy) gives the Gibbs form.",
+      "source": "https://people.eecs.berkeley.edu/~jordan/papers/wainwright-jordan-fnt.pdf"
+    },
+    {
+      "id": "q1-mrf-2",
+      "node": "mrf",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "In a Markov random field, a node is conditionally independent of all other nodes given which set?",
+      "choices": [
+        "No set suffices",
+        "Its parents only",
+        "All nodes two steps away",
+        "Its immediate neighbours"
+      ],
+      "answer": 3,
+      "explain": "In an undirected graph a node's Markov blanket is its neighbour set. Conditioning on it separates the node from the rest of the graph.",
+      "source": null
+    },
+    {
+      "id": "q1-factorgraph-1",
+      "node": "factorgraph",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "What is the structure of a factor graph?",
+      "choices": [
+        "A bipartite graph linking each factor node to the variables it depends on",
+        "A graph of variables only, joined whenever two variables are correlated",
+        "A directed acyclic graph whose nodes hold conditional distributions",
+        "A tree of variable clusters used only for junction-tree inference"
+      ],
+      "answer": 0,
+      "explain": "Factor graphs make each local factor explicit, so directed and undirected models share one representation that supports sum-product message passing.",
+      "source": "https://cba.mit.edu/events/03.11.ASE/docs/Loeliger.pdf"
+    },
+    {
+      "id": "q1-factorgraph-2",
+      "node": "factorgraph",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "When does the sum-product algorithm compute exact marginals on a factor graph?",
+      "choices": [
+        "Only on chains, never on branching trees",
+        "Only when every factor is Gaussian",
+        "When the graph is finite and cycle-free",
+        "On any graph, if enough iterations are run"
+      ],
+      "answer": 2,
+      "explain": "On a tree, messages summarize disjoint subtrees, so marginals are exact after one pass each way. On graphs with cycles, loopy belief propagation is an approximation and may not converge.",
+      "source": "https://cba.mit.edu/events/03.11.ASE/docs/Loeliger.pdf"
+    },
+    {
+      "id": "q1-beliefprop-1",
+      "node": "beliefprop",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "What does belief propagation (sum-product) compute?",
+      "choices": [
+        "The graph structure, by testing conditional independencies",
+        "Marginal distributions, by passing local messages along the graph",
+        "Maximum-likelihood parameters, by gradient descent on the graph",
+        "Posterior samples, by running a Markov chain Monte Carlo sampler"
+      ],
+      "answer": 1,
+      "explain": "Each message summarizes evidence from one part of the graph, and combining incoming messages at a node gives its marginal. The result is exact on cycle-free graphs.",
+      "source": "https://cba.mit.edu/events/03.11.ASE/docs/Loeliger.pdf"
+    },
+    {
+      "id": "q1-beliefprop-2",
+      "node": "beliefprop",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "How is the forward–backward algorithm for hidden Markov models related to belief propagation?",
+      "choices": [
+        "It is max-product message passing, returning the most probable path",
+        "It is the M-step that re-estimates the transition probabilities",
+        "It is a loopy approximation, since HMM chains contain cycles",
+        "It is sum-product message passing on the hidden-state chain"
+      ],
+      "answer": 3,
+      "explain": "An HMM's factor graph is a chain, so forward and backward messages give exact posterior marginals. Max-product on the same chain is the Viterbi algorithm.",
+      "source": "https://cba.mit.edu/events/03.11.ASE/docs/Loeliger.pdf"
+    },
+    {
+      "id": "q1-hmm-1",
+      "node": "hmm",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "What are the components of a hidden Markov model?",
+      "choices": [
+        "Hidden states drawn independently at each step, each emitting one observation",
+        "Discrete hidden states with Markov transitions, plus per-state emission distributions",
+        "Observations that form a Markov chain themselves, with no hidden state at all",
+        "Continuous hidden states with linear dynamics and Gaussian measurement noise"
+      ],
+      "answer": 1,
+      "explain": "An HMM also has an initial state distribution, and it is the discrete-state special case of a dynamic Bayesian network. Linear-Gaussian dynamics describe the Kalman-filter model instead.",
+      "source": "https://www.cs.ubc.ca/~murphyk/Thesis/thesis_double.pdf"
+    },
+    {
+      "id": "q1-hmm-2",
+      "node": "hmm",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "What does the forward algorithm cost for an HMM with K states over T time steps?",
+      "choices": [
+        "O(KT)",
+        "O(Kᵀ)",
+        "O(K²T)",
+        "O(KT²)"
+      ],
+      "answer": 2,
+      "explain": "Each step updates K forward probabilities, each a sum over K predecessors, giving K² work per step. Dynamic programming avoids enumerating all Kᵀ state sequences.",
+      "source": null
+    },
+    {
+      "id": "q1-hmm-3",
+      "node": "hmm",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Why can picking the most probable state at each time (from forward–backward marginals) differ from the Viterbi path?",
+      "choices": [
+        "Per-time maxima ignore joint consistency; the sequence can even contain impossible transitions",
+        "They always coincide, since both maximize the same posterior quantity",
+        "Forward–backward ignores the observations, so its states are less accurate",
+        "Viterbi uses only the forward pass, so its path is only approximate"
+      ],
+      "answer": 0,
+      "explain": "Viterbi maximizes the probability of the whole state sequence, while marginal decoding maximizes each time slice separately. They answer different questions.",
+      "source": "https://www.cs.ubc.ca/~murphyk/Thesis/thesis_double.pdf"
+    },
+    {
+      "id": "q1-forecastcv-1",
+      "node": "forecastcv",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What is forecast backtesting (time-series cross-validation)?",
+      "choices": [
+        "Forecasting from successive origins, fitting only on data available at each one",
+        "Shuffling time points into random K folds and averaging the test errors",
+        "Scoring the forecast only against the final observation of the series",
+        "Fitting on the full series and reporting the in-sample one-step errors"
+      ],
+      "answer": 0,
+      "explain": "Backtesting preserves the arrow of time, so each forecast uses only information available at its origin. Random folds leak future information into training.",
+      "source": "https://robjhyndman.com/hyndsight/tscv-fable/"
+    },
+    {
+      "id": "q1-forecastcv-2",
+      "node": "forecastcv",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "Why report backtest error separately for each forecast horizon rather than as one pooled number?",
+      "choices": [
+        "Pooling is invalid because different horizons are in different units",
+        "Error usually grows with horizon, and pooling hides where skill decays",
+        "Longer horizons always have smaller errors, which pooling exaggerates",
+        "Errors at all horizons are identical, so splitting them only saves compute"
+      ],
+      "answer": 1,
+      "explain": "A model can be excellent one step ahead and poor twelve steps ahead. Per-horizon error shows which uses the model actually supports.",
+      "source": "https://robjhyndman.com/hyndsight/tscv-fable/"
+    },
+    {
+      "id": "q1-conv-1",
+      "node": "conv",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "A discrete-time LTI system has impulse response h. How is its output y computed from input x?",
+      "choices": [
+        "y[n] = maxₖ h[k] x[n − k]",
+        "y[n] = h[0] · Σₖ x[k]",
+        "y[n] = h[n] · x[n]",
+        "y[n] = Σₖ h[k] x[n − k]"
+      ],
+      "answer": 3,
+      "explain": "Linearity and time invariance make the output a superposition of shifted, scaled impulse responses, which is convolution.",
+      "source": "https://ocw.mit.edu/courses/res-6-dtsp-discrete-time-signal-processing/pages/signal-processing-courses/"
+    },
+    {
+      "id": "q1-conv-2",
+      "node": "conv",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "The filter y[n] = 0.5 y[n − 1] + x[n] starts at rest. What kind of filter is it, and what is its impulse response?",
+      "choices": [
+        "IIR, with h[n] = 0 after two samples",
+        "FIR, since it uses one past output",
+        "IIR, with h[n] = 0.5ⁿ for n ≥ 0",
+        "FIR, with two taps h = [1, 0.5]"
+      ],
+      "answer": 2,
+      "explain": "Feedback makes each output carry a decaying copy of every earlier input, so the impulse response never becomes exactly zero. FIR filters use only a finite window of inputs.",
+      "source": null
+    },
+    {
+      "id": "q1-conv-3",
+      "node": "conv",
+      "skill": "dynamical-systems",
+      "difficulty": 3,
+      "prompt": "For y[n] = a·y[n − 1] + x[n], which condition on a gives bounded-input bounded-output stability?",
+      "choices": [
+        "|a| < 1",
+        "a > 0",
+        "a < 1",
+        "|a| ≤ 1"
+      ],
+      "answer": 0,
+      "explain": "BIBO stability of an LTI system requires the impulse response aⁿ to be absolutely summable, which needs |a| < 1. With a = 1 the system accumulates a constant input without bound, and a = −2 diverges even though a < 1.",
+      "source": null
+    },
+    {
+      "id": "q1-fourier-1",
+      "node": "fourier",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "What does the convolution theorem state?",
+      "choices": [
+        "Convolution in time is addition in frequency",
+        "Convolution in time is convolution in frequency",
+        "Multiplication in time is multiplication in frequency",
+        "Convolution in time is multiplication in frequency"
+      ],
+      "answer": 3,
+      "explain": "Fourier transforms turn convolution into pointwise multiplication. With the FFT, long convolutions then cost O(N log N) instead of O(N²).",
+      "source": "https://ocw.mit.edu/courses/res-6-dtsp-discrete-time-signal-processing/pages/signal-processing-courses/"
+    },
+    {
+      "id": "q1-fourier-2",
+      "node": "fourier",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "You compute the linear convolution of a length-N signal with a length-M filter using DFTs. What is the minimum DFT length that avoids circular wrap-around?",
+      "choices": [
+        "N · M",
+        "N + M",
+        "N + M − 1",
+        "max(N, M)"
+      ],
+      "answer": 2,
+      "explain": "The linear convolution has N + M − 1 samples, and the DFT computes circular convolution. Zero-padding to at least that length stops the tail wrapping onto the start; N + M also works but is not the minimum.",
+      "source": null
+    },
+    {
+      "id": "q1-fourier-3",
+      "node": "fourier",
+      "skill": "control",
+      "difficulty": 3,
+      "prompt": "A stable LTI system with frequency response H(iω) is driven by sin(ωt). What is the steady-state output?",
+      "choices": [
+        "A sum of harmonics at 2ω, 3ω and higher, weighted by H",
+        "A sinusoid at ω, scaled by |H(iω)| and phase-shifted by ∠H(iω)",
+        "A decaying exponential whose rate is set by |H(iω)|",
+        "A sinusoid at the shifted frequency |H(iω)|·ω, with no phase change"
+      ],
+      "answer": 1,
+      "explain": "Complex exponentials are eigenfunctions of LTI systems, so a sinusoid passes through with only gain and phase changed. Bode and Nyquist analysis in frequency-domain control rely on this.",
+      "source": "https://ocw.mit.edu/courses/res-6-dtsp-discrete-time-signal-processing/pages/signal-processing-courses/"
+    },
+    {
+      "id": "q1-sampling-1",
+      "node": "sampling",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "A signal has no frequencies above B Hz. Above what uniform sampling rate can it be perfectly reconstructed?",
+      "choices": [
+        "B samples per second",
+        "B/2 samples per second",
+        "2B samples per second",
+        "4B samples per second"
+      ],
+      "answer": 2,
+      "explain": "Sampling replicates the spectrum at multiples of the sampling rate. Above 2B the copies do not overlap, so an ideal low-pass filter recovers the signal.",
+      "source": "https://ocw.mit.edu/courses/2-161-signal-processing-continuous-and-discrete-fall-2008/80ec6fb9bd027f30adcdc16577e8ab16_samplingdft.pdf"
+    },
+    {
+      "id": "q1-sampling-2",
+      "node": "sampling",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "A 70 Hz sinusoid is sampled at 100 Hz with no anti-alias filter. At what frequency does it appear in the samples?",
+      "choices": [
+        "170 Hz",
+        "30 Hz",
+        "70 Hz",
+        "50 Hz"
+      ],
+      "answer": 1,
+      "explain": "The Nyquist frequency is 50 Hz, so 70 Hz folds to |70 − 100| = 30 Hz. Its samples are identical to those of a 30 Hz sinusoid.",
+      "source": null
+    },
+    {
+      "id": "q1-sampling-3",
+      "node": "sampling",
+      "skill": "signals-estimation",
+      "difficulty": 3,
+      "prompt": "Why must anti-alias filtering happen before sampling rather than on the samples afterwards?",
+      "choices": [
+        "After sampling, aliased content is indistinguishable from real in-band content",
+        "Aliasing changes only the phase, which later filters cannot see",
+        "Filtering afterwards works equally well, only at higher compute cost",
+        "Digital filters cannot implement low-pass frequency responses"
+      ],
+      "answer": 0,
+      "explain": "Aliasing is many-to-one: different continuous signals give identical samples, so no processing of the samples can undo it. That is why the atlas puts acquisition choices before modeling.",
+      "source": "https://ocw.mit.edu/courses/2-161-signal-processing-continuous-and-discrete-fall-2008/80ec6fb9bd027f30adcdc16577e8ab16_samplingdft.pdf"
+    },
+    {
+      "id": "q1-wavelet-1",
+      "node": "wavelet",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "What does a wavelet multiresolution decomposition produce?",
+      "choices": [
+        "Coefficients of global sinusoids with no time localization",
+        "The eigenvectors of the signal's sample covariance matrix",
+        "A single low-pass filtered copy of the original signal",
+        "A coarse approximation plus detail coefficients at each scale"
+      ],
+      "answer": 3,
+      "explain": "Repeated low-pass and high-pass filtering with downsampling (a filter bank) splits a signal into scale-specific approximations and details, following Mallat's construction.",
+      "source": "https://www.di.ens.fr/~mallat/papiers/MallatTheory89.pdf"
+    },
+    {
+      "id": "q1-wavelet-2",
+      "node": "wavelet",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "A long smooth signal contains one brief spike. Why do wavelets represent it more compactly than a Fourier basis?",
+      "choices": [
+        "A wavelet transform always has fewer coefficients than samples",
+        "Fourier transforms cannot be computed for signals containing spikes",
+        "Wavelets discard high frequencies, so the spike is simply removed",
+        "Wavelets are localized, so the spike touches only a few coefficients"
+      ],
+      "answer": 3,
+      "explain": "A brief event has energy at many frequencies but occupies few positions and scales. Wavelets are localized in both time and scale, whereas in a Fourier basis the spike spreads across every frequency.",
+      "source": "https://www.di.ens.fr/~mallat/papiers/MallatTheory89.pdf"
+    },
+    {
+      "id": "q1-wiener-1",
+      "node": "wiener",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "What is the Wiener filter?",
+      "choices": [
+        "A recursive estimator built for time-varying, non-stationary systems",
+        "A nonlinear filter that removes impulse noise by taking local medians",
+        "The linear filter minimizing mean-squared error for stationary signals",
+        "A filter that maximizes output signal power regardless of the noise"
+      ],
+      "answer": 2,
+      "explain": "Wiener's solution uses the second-order statistics (autocorrelations or spectra) of signal and noise. Kalman later recast the problem in recursive state-space form.",
+      "source": "https://direct.mit.edu/books/oa-monograph/4361/chapter/187129/Introduction"
+    },
+    {
+      "id": "q1-wiener-2",
+      "node": "wiener",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "Observation = x + n, with stationary, uncorrelated signal and noise of spectra Sₓ(ω) and Sₙ(ω). What is the non-causal Wiener filter H(ω) for estimating x?",
+      "choices": [
+        "Sₙ / (Sₓ + Sₙ)",
+        "Sₓ / (Sₓ + Sₙ)",
+        "Sₓ / Sₙ",
+        "1 / (Sₓ + Sₙ)"
+      ],
+      "answer": 1,
+      "explain": "The filter passes frequencies where signal dominates (gain near 1) and attenuates those where noise dominates (gain near 0).",
+      "source": null
+    },
+    {
+      "id": "q1-kalman-1",
+      "node": "kalman",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "What does the Kalman filter compute?",
+      "choices": [
+        "The Gaussian posterior mean and covariance of a linear-Gaussian state, recursively",
+        "Weighted particle samples from an arbitrary nonlinear posterior",
+        "A fixed low-pass filter whose gain ignores the noise covariances",
+        "The most likely past sequence of discrete states, by dynamic programming"
+      ],
+      "answer": 0,
+      "explain": "The filter alternates predict and update steps and is exact for linear dynamics and measurements with Gaussian noise. Nonlinear or non-Gaussian problems need approximations such as the EKF, UKF or particle filters.",
+      "source": "https://people.duke.edu/~hpgavin/SystemID/References/KalmanBucy-ASME-JBE-1961.pdf"
+    },
+    {
+      "id": "q1-kalman-2",
+      "node": "kalman",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "In a scalar Kalman update with H = 1, predicted variance P⁻ = 4 and measurement noise variance R = 1. What are the gain K and posterior variance P⁺?",
+      "choices": [
+        "K = 0.2, P⁺ = 3.2",
+        "K = 0.8, P⁺ = 0.8",
+        "K = 4, P⁺ = 0",
+        "K = 0.8, P⁺ = 3.2"
+      ],
+      "answer": 1,
+      "explain": "K = P⁻/(P⁻ + R) = 4/5 = 0.8 and P⁺ = (1 − K)P⁻ = 0.8. The gain is high because the prediction is much less certain than the measurement.",
+      "source": null
+    },
+    {
+      "id": "q1-kalman-3",
+      "node": "kalman",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Treat regression weights w as a constant state (no process noise) observed via yₜ = xₜᵀw + vₜ (vₜ ~ N(0, σ²)), with prior w ~ N(0, τ²I). After t observations, what is the Kalman filter's mean?",
+      "choices": [
+        "The least-squares fit to the most recent observation",
+        "The LMS stochastic-gradient iterate after t updates",
+        "A smoothed estimate that also uses later observations",
+        "The Bayesian linear-regression (ridge) solution on all t observations"
+      ],
+      "answer": 3,
+      "explain": "With a static state, sequential Gaussian updates give the same posterior as a batch fit, so the mean is the ridge solution with λ = σ²/τ². This recursion is recursive least squares, the atlas's regression-weights-as-state link.",
+      "source": "https://people.duke.edu/~hpgavin/SystemID/References/KalmanBucy-ASME-JBE-1961.pdf"
+    },
+    {
+      "id": "q1-nonlinearfilter-1",
+      "node": "nonlinearfilter",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "Why are the extended Kalman, unscented and particle filters needed?",
+      "choices": [
+        "Nonlinear or non-Gaussian models break the exact closed-form Gaussian recursion",
+        "They give exact posteriors for any nonlinear model, unlike the Kalman filter",
+        "The Kalman filter is too slow to run even on linear-Gaussian systems",
+        "Linear-Gaussian systems have no well-defined posterior distribution"
+      ],
+      "answer": 0,
+      "explain": "Exact recursive filtering in closed form holds for linear-Gaussian models and a few other special cases. Each approximation family suits different posterior shapes.",
+      "source": "https://users.aalto.fi/~ssarkka/pub/bfs_book_2023_online.pdf"
+    },
+    {
+      "id": "q1-nonlinearfilter-2",
+      "node": "nonlinearfilter",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "How does the extended Kalman filter handle nonlinear dynamics and measurement functions?",
+      "choices": [
+        "It computes the exact non-Gaussian posterior in closed form",
+        "It propagates many weighted random samples and resamples them",
+        "It linearizes them with Jacobians at the current estimate",
+        "It pushes deterministic sigma points through the exact functions"
+      ],
+      "answer": 2,
+      "explain": "The EKF applies the Kalman update to a first-order Taylor expansion. Sigma points describe the unscented filter, and weighted samples describe particle filters.",
+      "source": "https://users.aalto.fi/~ssarkka/pub/bfs_book_2023_online.pdf"
+    },
+    {
+      "id": "q1-particle-1",
+      "node": "particle",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "How does a particle filter represent the filtering distribution?",
+      "choices": [
+        "With one Gaussian mean and covariance, updated in closed form",
+        "With only the single most probable state at each time step",
+        "With weighted samples, propagated, reweighted by likelihood and resampled",
+        "With a fixed grid of state values whose weights never change"
+      ],
+      "answer": 2,
+      "explain": "Sequential Monte Carlo can represent multimodal, non-Gaussian beliefs. Accuracy depends on the number of particles and the proposal distribution.",
+      "source": "https://users.aalto.fi/~ssarkka/pub/bfs_book_2023_online.pdf"
+    },
+    {
+      "id": "q1-particle-2",
+      "node": "particle",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "Why do particle filters resample?",
+      "choices": [
+        "To make the represented posterior exactly Gaussian after every update",
+        "To remove the need for a measurement likelihood in the update step",
+        "To increase the number of distinct particle values at every step",
+        "To counter weight degeneracy, where a few particles carry almost all the weight"
+      ],
+      "answer": 3,
+      "explain": "Without resampling, the effective sample size collapses over time. Resampling duplicates high-weight particles and drops low-weight ones, at the cost of some extra Monte Carlo variance.",
+      "source": "https://users.aalto.fi/~ssarkka/pub/bfs_book_2023_online.pdf"
+    },
+    {
+      "id": "q1-smoothing-1",
+      "node": "smoothing",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "What is the difference between filtering and smoothing for a hidden state xₜ?",
+      "choices": [
+        "They give the same estimate, computed by different numerical methods",
+        "Smoothing also uses observations after t; filtering uses those up to t",
+        "Filtering also uses observations after t; smoothing uses those up to t",
+        "Smoothing predicts states beyond the last available observation"
+      ],
+      "answer": 1,
+      "explain": "Smoothing gives retrospective estimates, for example via forward–backward or Rauch–Tung–Striebel recursions. Filtering is what is available online at time t.",
+      "source": "https://www.cs.ubc.ca/~murphyk/Thesis/thesis_double.pdf"
+    },
+    {
+      "id": "q1-smoothing-2",
+      "node": "smoothing",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "In a linear-Gaussian state-space model, how does the smoothed posterior covariance of xₜ compare with the filtered one?",
+      "choices": [
+        "It is no larger",
+        "It is always identical",
+        "It is always larger",
+        "It is not defined"
+      ],
+      "answer": 0,
+      "explain": "Smoothing conditions on a superset of the observations, and in a jointly Gaussian model more conditioning cannot increase posterior covariance. The two coincide at the final time step.",
+      "source": "https://www.cs.ubc.ca/~murphyk/Thesis/thesis_double.pdf"
+    },
+    {
+      "id": "q1-enkf-1",
+      "node": "enkf",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "What does the ensemble Kalman filter do?",
+      "choices": [
+        "Propagates an ensemble and uses its sample covariance in a Kalman-type update",
+        "Samples states from the prior and never assimilates any observations",
+        "Runs many independent Kalman filters and averages their gains at each step",
+        "Propagates one state with its exact covariance through a linear model"
+      ],
+      "answer": 0,
+      "explain": "The EnKF replaces the propagated covariance with an ensemble estimate, which scales to large, possibly nonlinear geophysical models. With linear dynamics and an infinite ensemble it recovers the Kalman covariance.",
+      "source": "https://www.ecmwf.int/sites/default/files/elibrary/2003/9321-ensemble-kalman-filter-theoretical-formulation-and-practical-implementation.pdf"
+    },
+    {
+      "id": "q1-enkf-2",
+      "node": "enkf",
+      "skill": "signals-estimation",
+      "difficulty": 3,
+      "prompt": "A weather model has 10⁷ state variables but the EnKF uses 50 members. What problem arises?",
+      "choices": [
+        "None: 50 members already give the exact forecast covariance",
+        "A rank-deficient, noisy covariance with spurious long-range correlations",
+        "The ensemble mean diverges unless the model is linear",
+        "The filter turns into a particle filter and must resample"
+      ],
+      "answer": 1,
+      "explain": "With far fewer members than state dimensions, the ensemble spans a tiny subspace and sampling error creates false correlations. Covariance localization and inflation are the standard remedies.",
+      "source": null
+    },
+    {
+      "id": "q1-dbn-1",
+      "node": "dbn",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "What is a dynamic Bayesian network?",
+      "choices": [
+        "A Bayesian network whose graph structure is relearned at every time step",
+        "An undirected graph over all time steps that has no direction of time",
+        "A Bayesian network repeated over time slices, with edges within and between slices",
+        "A recurrent neural network trained with Bayesian priors on its weights"
+      ],
+      "answer": 2,
+      "explain": "DBNs factor a sequential distribution across and within time slices. HMMs and linear-Gaussian state-space models are special cases.",
+      "source": "https://www.cs.ubc.ca/~murphyk/Thesis/thesis_double.pdf"
+    },
+    {
+      "id": "q1-dbn-2",
+      "node": "dbn",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "HMMs and linear-Gaussian state-space models are both dynamic Bayesian networks. What distinguishes them?",
+      "choices": [
+        "Only one of them satisfies the Markov property",
+        "An undirected chain versus a directed chain over time",
+        "No hidden state versus a hidden state at each step",
+        "Discrete hidden state versus continuous Gaussian state"
+      ],
+      "answer": 3,
+      "explain": "Both share the chain of hidden states and observations. The state type changes the inference: forward–backward sums over discrete states, while the Kalman filter updates Gaussians.",
+      "source": "https://www.cs.ubc.ca/~murphyk/Thesis/thesis_double.pdf"
+    },
+    {
+      "id": "q1-sysid-1",
+      "node": "sysid",
+      "skill": "control",
+      "difficulty": 1,
+      "prompt": "What is system identification?",
+      "choices": [
+        "Labelling which physical system a dataset came from",
+        "Estimating a dynamical model from measured input/output data",
+        "Designing a controller without any model of the plant",
+        "Proving the stability of a controller for a known plant"
+      ],
+      "answer": 1,
+      "explain": "Identification fits models to experimental data, with excitation and validation suited to the intended use. Models should be checked on different trajectories before closing the loop.",
+      "source": "https://faculty.washington.edu/sbrunton/papers/BrDaRo2014.pdf"
+    },
+    {
+      "id": "q1-sysid-2",
+      "node": "sysid",
+      "skill": "control",
+      "difficulty": 2,
+      "prompt": "Why must identification inputs be persistently exciting?",
+      "choices": [
+        "Otherwise different models fit the data equally well",
+        "To make the measurement noise Gaussian",
+        "It is only needed when the system is nonlinear",
+        "To hold the plant at one steady operating point"
+      ],
+      "answer": 0,
+      "explain": "Data reveal only the dynamics the input stimulates. A constant input, for instance, cannot separate models that share the same DC gain, so their parameters are not identifiable.",
+      "source": null
+    },
+    {
+      "id": "q1-observability-1",
+      "node": "observability",
+      "skill": "control",
+      "difficulty": 1,
+      "prompt": "What does it mean for a system to be observable?",
+      "choices": [
+        "The output stays bounded for every bounded input",
+        "Every state variable is measured directly by its own sensor",
+        "The input can drive the state to any desired value",
+        "The initial state can be uniquely determined from inputs and outputs"
+      ],
+      "answer": 3,
+      "explain": "Observability asks whether finite input/output records distinguish states. Steering the state with inputs is reachability, its dual property.",
+      "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
+    },
+    {
+      "id": "q1-observability-2",
+      "node": "observability",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "For ẋ = Ax, y = Cx with A = [[0, 1], [0, 0]] and C = [0, 1], is the system observable?",
+      "choices": [
+        "Yes: [C; CA] = [[0, 1], [1, 0]] has rank 2",
+        "Yes: A is nilpotent, so every state is seen",
+        "No: CA = [0, 0], so [C; CA] has rank 1",
+        "Unknown without specifying the input signal"
+      ],
+      "answer": 2,
+      "explain": "Here y measures the second state, which is constant and unaffected by the first, so the first state never reaches the output. Rank 1 < 2 confirms it.",
+      "source": null
+    },
+    {
+      "id": "q1-observability-3",
+      "node": "observability",
+      "skill": "control",
+      "difficulty": 3,
+      "prompt": "Observability and reachability of LTI systems are dual. Which statement expresses the duality?",
+      "choices": [
+        "(A, C) is observable iff (Aᵀ, Cᵀ) is reachable",
+        "(A, C) is observable iff (A⁻¹, C) is reachable",
+        "(A, C) is observable iff (Aᵀ, C) is observable",
+        "(A, C) is observable iff (A, C) is reachable"
+      ],
+      "answer": 0,
+      "explain": "The observability matrix of (A, C) is the transpose of the reachability matrix of (Aᵀ, Cᵀ). This algebraic duality does not mean the two properties play the same practical role.",
+      "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
+    },
+    {
+      "id": "q1-hankel-1",
+      "node": "hankel",
+      "skill": "control",
+      "difficulty": 1,
+      "prompt": "For a stable LTI system with reachability Gramian Wc and observability Gramian Wo, what are the Hankel singular values?",
+      "choices": [
+        "The eigenvalues of A",
+        "√λᵢ(Wc + Wo)",
+        "√λᵢ(Wc Wo)",
+        "The singular values of C"
+      ],
+      "answer": 2,
+      "explain": "Hankel singular values are the singular values of the operator mapping past inputs to future outputs. They do not change under state-coordinate transformations.",
+      "source": "https://personal.math.vt.edu/jborggaa/nlromc/Scherpen_NLROMc_tutorial.pdf"
+    },
+    {
+      "id": "q1-hankel-2",
+      "node": "hankel",
+      "skill": "control",
+      "difficulty": 3,
+      "prompt": "A state direction has a very small Hankel singular value. What does this indicate?",
+      "choices": [
+        "It dominates the impulse response and must be kept first",
+        "It depends on the chosen coordinates, so it carries no information",
+        "It is an unstable mode that must be kept in any reduction",
+        "It is hard to reach and hard to observe, so it can be truncated"
+      ],
+      "answer": 3,
+      "explain": "Balanced truncation discards small-σ directions, with an H∞ error bound of twice the sum of the discarded values. One Gramian alone cannot tell whether a direction matters.",
+      "source": "https://personal.math.vt.edu/jborggaa/nlromc/Scherpen_NLROMc_tutorial.pdf"
+    },
+    {
+      "id": "q1-era-1",
+      "node": "era",
+      "skill": "control",
+      "difficulty": 1,
+      "prompt": "What does the Eigensystem Realization Algorithm (ERA) use to build a model?",
+      "choices": [
+        "Frequency-response measurements fitted by a neural network",
+        "Impulse-response data in a Hankel matrix, reduced by an SVD",
+        "Sparse regression onto a library of candidate nonlinear terms",
+        "A first-principles physics model linearized at an equilibrium"
+      ],
+      "answer": 1,
+      "explain": "ERA arranges measured Markov parameters in a Hankel matrix and uses its SVD to obtain a reduced realization (A, B, C). It is a standard modal-identification and model-reduction tool.",
+      "source": "https://ntrs.nasa.gov/citations/19850022899"
+    },
+    {
+      "id": "q1-era-2",
+      "node": "era",
+      "skill": "control",
+      "difficulty": 2,
+      "prompt": "In ERA, why is the SVD of the Hankel matrix truncated?",
+      "choices": [
+        "Truncation deliberately makes the identified model unstable",
+        "Small singular values mostly reflect noise or weak dynamics",
+        "An SVD cannot be computed for a Hankel matrix otherwise",
+        "The smallest singular values carry the dominant dynamics"
+      ],
+      "answer": 1,
+      "explain": "Keeping the r largest singular values gives a reduced-order model, with r often chosen at a gap in the spectrum. This trades a little accuracy for a much smaller model and suppresses noise.",
+      "source": "https://ntrs.nasa.gov/citations/19850022899"
+    },
+    {
+      "id": "q1-psd-1",
+      "node": "psd",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "How does Welch's method estimate a power spectral density?",
+      "choices": [
+        "Takes one unwindowed periodogram of the full record",
+        "Inverse-transforms the magnitude of the signal's spectrum",
+        "Fits a high-order autoregressive model and reads its poles",
+        "Averages periodograms of windowed, often overlapping segments"
+      ],
+      "answer": 3,
+      "explain": "Averaging periodograms reduces the large variance of a single periodogram, and windowing controls spectral leakage.",
+      "source": "https://ocw.mit.edu/courses/2-161-signal-processing-continuous-and-discrete-fall-2008/c7d1951d44fe78ea97d0e14ea5158aee_lecture_23.pdf"
+    },
+    {
+      "id": "q1-psd-2",
+      "node": "psd",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "With a fixed record length, what happens if you use shorter segments in Welch's method?",
+      "choices": [
+        "Lower variance, coarser frequency resolution",
+        "Lower variance and finer frequency resolution",
+        "Higher variance, finer frequency resolution",
+        "No change, as total data length is fixed"
+      ],
+      "answer": 0,
+      "explain": "Resolution scales with segment length, while variance falls with the number of segments averaged. This is the bias-variance trade-off in spectral estimation.",
+      "source": "https://ocw.mit.edu/courses/2-161-signal-processing-continuous-and-discrete-fall-2008/c7d1951d44fe78ea97d0e14ea5158aee_lecture_23.pdf"
+    },
+    {
+      "id": "q1-adaptive-1",
+      "node": "adaptive",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "With error e = d − wᵀx between desired and filtered signals, what is the LMS weight update?",
+      "choices": [
+        "w ← (XᵀX)⁻¹Xᵀd",
+        "w ← w + μ x",
+        "w ← w + μ e x",
+        "w ← w − μ e x"
+      ],
+      "answer": 2,
+      "explain": "LMS takes a stochastic-gradient step on e²/2. Since ∂(e²/2)/∂w = −e x, descent adds μ e x.",
+      "source": "https://www2.spsc.tugraz.at/www-archive/downloads/adaptivefilter.pdf"
+    },
+    {
+      "id": "q1-adaptive-2",
+      "node": "adaptive",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "How does RLS compare with LMS for adapting an n-tap linear filter?",
+      "choices": [
+        "RLS usually converges faster but costs O(n²) per step versus O(n)",
+        "RLS and LMS produce identical weight vectors at every single step",
+        "RLS cannot track time-varying systems, whereas LMS can track them",
+        "RLS is the cheaper O(n) method but converges more slowly than LMS"
+      ],
+      "answer": 0,
+      "explain": "RLS recursively solves an exponentially weighted least-squares problem using an inverse-correlation matrix, which speeds convergence when inputs are correlated. LMS uses only the instantaneous gradient.",
+      "source": "https://www2.spsc.tugraz.at/www-archive/downloads/adaptivefilter.pdf"
+    },
+    {
+      "id": "q1-compressed-1",
+      "node": "compressed",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "What is the goal of compressed sensing?",
+      "choices": [
+        "Compress a signal losslessly with an entropy code such as Huffman",
+        "Reduce the number of sensor channels by applying PCA",
+        "Sample a bandlimited signal at exactly its Nyquist rate",
+        "Recover a sparse signal from fewer linear measurements than its length"
+      ],
+      "answer": 3,
+      "explain": "Sparsity plus suitable measurement operators make an underdetermined linear system solvable for the sparse solution.",
+      "source": "https://candes.su.domains/publications/downloads/CompressiveSampling.pdf"
+    },
+    {
+      "id": "q1-compressed-2",
+      "node": "compressed",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "With a random Gaussian sensing matrix, roughly how many measurements m are needed to recover an s-sparse signal of length n?",
+      "choices": [
+        "Exactly s, for any matrix",
+        "On the order of s·log(n/s)",
+        "At least n",
+        "On the order of n/s"
+      ],
+      "answer": 1,
+      "explain": "Random Gaussian matrices satisfy the restricted isometry property with high probability once m ≳ C·s·log(n/s). The count grows with sparsity, not with the full dimension.",
+      "source": "https://candes.su.domains/publications/downloads/CompressiveSampling.pdf"
+    },
+    {
+      "id": "q1-ica-1",
+      "node": "ica",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "What does independent component analysis aim to do?",
+      "choices": [
+        "Remove noise by low-pass filtering each channel separately",
+        "Find orthogonal directions of maximal variance in the data",
+        "Recover independent sources from their observed linear mixtures",
+        "Cluster samples into groups that share a common mean"
+      ],
+      "answer": 2,
+      "explain": "ICA uses statistical independence, a stronger requirement than uncorrelatedness, to unmix superimposed sources. Maximal-variance directions are PCA's target.",
+      "source": "https://scikit-learn.org/stable/modules/decomposition.html"
+    },
+    {
+      "id": "q1-ica-2",
+      "node": "ica",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Why can ICA not separate sources that are all Gaussian?",
+      "choices": [
+        "Gaussian sources are always perfectly correlated with one another",
+        "Rotated whitened Gaussians stay independent, so the rotation is unidentifiable",
+        "ICA requires an orthogonal mixing matrix, which Gaussians violate",
+        "Gaussian sources have zero variance after the data are whitened"
+      ],
+      "answer": 1,
+      "explain": "After whitening, ICA must find a rotation, and only non-Gaussianity (higher-order statistics) can pin it down, so at most one source may be Gaussian. Even then sources are recovered only up to permutation and scale.",
+      "source": null
+    },
+    {
+      "id": "q1-bilateral-1",
+      "node": "bilateral",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "In a bilateral filter, what determines the weight given to a neighbouring pixel?",
+      "choices": [
+        "Only its intensity, wherever it is in the image",
+        "A weight learned by training on example images",
+        "Its spatial distance and its intensity difference",
+        "Only its spatial distance, as in a Gaussian blur"
+      ],
+      "answer": 2,
+      "explain": "Spatial and intensity (range) kernels are multiplied and normalized, which makes the averaging depend on image content.",
+      "source": "https://www.cs.jhu.edu/~misha/ReadingSeminar/Papers/Tomasi98.pdf"
+    },
+    {
+      "id": "q1-bilateral-2",
+      "node": "bilateral",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "Why does bilateral filtering preserve edges better than a Gaussian blur?",
+      "choices": [
+        "It uses a much smaller spatial kernel than a Gaussian blur does",
+        "It sharpens the image after first blurring it with a Gaussian",
+        "It skips every pixel whose gradient exceeds a fixed threshold",
+        "Pixels across an edge differ in intensity, so they get little weight"
+      ],
+      "answer": 3,
+      "explain": "Averaging happens mainly within regions of similar intensity. A Gaussian blur weights by distance alone and mixes values across edges.",
+      "source": "https://www.cs.jhu.edu/~misha/ReadingSeminar/Papers/Tomasi98.pdf"
+    },
+    {
+      "id": "q1-anisotropic-1",
+      "node": "anisotropic",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "What does Perona–Malik anisotropic diffusion do to an image?",
+      "choices": [
+        "Smooths within regions while diffusing less across strong edges",
+        "Applies exactly the same Gaussian blur at every pixel",
+        "Sharpens the image by boosting all high frequencies equally",
+        "Adds noise step by step so a network can learn to reverse it"
+      ],
+      "answer": 0,
+      "explain": "A PDE with diffusivity that decreases with gradient magnitude slows smoothing at edges. It is deterministic image smoothing, not generative modeling.",
+      "source": "https://openreview.net/forum?id=R2gc38YmhX"
+    },
+    {
+      "id": "q1-anisotropic-2",
+      "node": "anisotropic",
+      "skill": "generative-models",
+      "difficulty": 3,
+      "prompt": "How does anisotropic image diffusion relate to generative diffusion models?",
+      "choices": [
+        "Only by analogy: one smooths images, the other learns to reverse noising to sample",
+        "A DDPM is Perona–Malik diffusion run backwards in time on pure noise",
+        "Both are trained by denoising score matching on corrupted images",
+        "Generative diffusion is anisotropic diffusion with constant diffusivity"
+      ],
+      "answer": 0,
+      "explain": "The atlas marks this edge as a hypothesis-level comparison. Edge-aware smoothing and reverse generative modeling solve different tasks with different objectives.",
+      "source": "https://openreview.net/forum?id=R2gc38YmhX"
+    },
+    {
+      "id": "q1-arima-1",
+      "node": "arima",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "In an ARIMA(p, d, q) model, what does d specify?",
+      "choices": [
+        "The number of autoregressive lags",
+        "The number of moving-average lags",
+        "The length of the seasonal period",
+        "The number of differences taken"
+      ],
+      "answer": 3,
+      "explain": "The 'I' stands for integrated: the model is fitted to the d-th difference of the series, usually to make it stationary. p counts autoregressive lags and q counts moving-average terms.",
+      "source": "https://otexts.com/fpp3/arima-r.html"
+    },
+    {
+      "id": "q1-arima-2",
+      "node": "arima",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "For a pure autoregressive AR(p) process, what pattern do the ACF and PACF show?",
+      "choices": [
+        "Both cut off sharply after lag p",
+        "Both are zero at every nonzero lag",
+        "PACF cuts off after lag p; ACF decays gradually",
+        "ACF cuts off after lag p; PACF decays gradually"
+      ],
+      "answer": 2,
+      "explain": "Once the p autoregressive lags are accounted for, no further direct dependence remains, so the PACF cuts off. The reverse pattern identifies an MA(q) process.",
+      "source": "https://otexts.com/fpp3/arima-r.html"
+    },
+    {
+      "id": "q1-ets-1",
+      "node": "ets",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "In simple exponential smoothing, how is the level updated?",
+      "choices": [
+        "ℓₜ = mean of all past y",
+        "ℓₜ = α yₜ + (1 − α) ℓₜ₋₁",
+        "ℓₜ = yₜ − yₜ₋₁",
+        "ℓₜ = α ℓₜ₋₁"
+      ],
+      "answer": 1,
+      "explain": "Weights on past observations decay geometrically. With no trend or seasonal component, the forecast for every horizon equals the latest level.",
+      "source": "https://robjhyndman.com/nyc2018/1-5-StateSpace.pdf"
+    },
+    {
+      "id": "q1-ets-2",
+      "node": "ets",
+      "skill": "signals-estimation",
+      "difficulty": 3,
+      "prompt": "How does the ETS innovations state-space form differ from a standard Kalman local-level model?",
+      "choices": [
+        "They have identical noise structures and differ only in software",
+        "ETS uses one shared innovation; the Kalman model has two independent noises",
+        "The Kalman local-level model cannot produce point forecasts",
+        "ETS has no state equation at all, only an observation equation"
+      ],
+      "answer": 1,
+      "explain": "In ETS the same error drives the observation and state equations, while the local-level model has separate measurement and process noises. Matching point forecasts does not mean matching noise models or forecast distributions.",
+      "source": "https://robjhyndman.com/nyc2018/1-5-StateSpace.pdf"
+    },
+    {
+      "id": "q1-cnn-1",
+      "node": "cnn",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What distinguishes a convolutional layer from a fully connected layer?",
+      "choices": [
+        "Every output connects to every input with its own weight",
+        "Its filters are fixed wavelets that are never trained",
+        "Local receptive fields with weights shared across positions",
+        "It processes a sequence step by step with a hidden state"
+      ],
+      "answer": 2,
+      "explain": "Weight sharing gives translation equivariance and far fewer parameters. LeNet established this design for images.",
+      "source": "https://leon.bottou.org/papers/lecun-98h"
+    },
+    {
+      "id": "q1-cnn-2",
+      "node": "cnn",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "A 32×32 single-channel input passes through a 5×5 convolution with stride 1 and no padding. What is the output's spatial size?",
+      "choices": [
+        "30×30",
+        "32×32",
+        "27×27",
+        "28×28"
+      ],
+      "answer": 3,
+      "explain": "Output size is (32 − 5)/1 + 1 = 28 per dimension. 'Same' padding would keep 32×32.",
+      "source": null
+    },
+    {
+      "id": "q1-cnn-3",
+      "node": "cnn",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "Why can a deep CNN not be collapsed into one equivalent convolution?",
+      "choices": [
+        "The nonlinear activations between layers",
+        "It can be: a CNN is a linear operator",
+        "Each layer has a different channel count",
+        "Convolution is not an associative operation"
+      ],
+      "answer": 0,
+      "explain": "Composing linear convolutions gives another convolution, so without nonlinearities a stack would collapse. Activations break this, which is why a single conv layer and an entire CNN are different operators.",
+      "source": "https://leon.bottou.org/papers/lecun-98h"
+    },
+    {
+      "id": "q1-rnn-1",
+      "node": "rnn",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What is the core update of a simple (Elman) recurrent neural network?",
+      "choices": [
+        "hₜ = hₜ₋₁ + xₜ",
+        "hₜ = f(U xₜ + b)",
+        "hₜ = softmax(QKᵀ)V",
+        "hₜ = f(W hₜ₋₁ + U xₜ + b)"
+      ],
+      "answer": 3,
+      "explain": "The hidden state carries information from earlier inputs, making the network a learned dynamical system. Its state is a predictive memory, not necessarily a physically identified state.",
+      "source": "https://pages.ucsd.edu/~rbelew/courses/readings/elman90-fsit.pdf"
+    },
+    {
+      "id": "q1-rnn-2",
+      "node": "rnn",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Why do gradients often vanish in vanilla RNNs trained with backpropagation through time?",
+      "choices": [
+        "Products of many Jacobians with norm below 1 shrink exponentially",
+        "The loss is only ever computed at the first time step",
+        "The softmax output layer saturates on long sequences",
+        "Weight sharing across time blocks gradient computation"
+      ],
+      "answer": 0,
+      "explain": "The gradient across k steps multiplies k recurrent Jacobians, so it shrinks or explodes exponentially in the lag. Gated architectures such as the LSTM were designed to counter this.",
+      "source": "https://pages.ucsd.edu/~rbelew/courses/readings/elman90-fsit.pdf"
+    },
+    {
+      "id": "q1-rnn-3",
+      "node": "rnn",
+      "skill": "dynamical-systems",
+      "difficulty": 3,
+      "prompt": "If an RNN's state update is contracting in h (Lipschitz constant below 1 for every input), what follows?",
+      "choices": [
+        "The network gains unbounded memory of its start",
+        "The output becomes independent of the input",
+        "Dependence on the initial state fades exponentially",
+        "Gradients through time must explode"
+      ],
+      "answer": 2,
+      "explain": "Trajectories from different initial states converge under the same input sequence. Contraction bounds sensitivity, which also limits how long information can be stored (Miller and Hardt).",
+      "source": "https://pages.ucsd.edu/~rbelew/courses/readings/elman90-fsit.pdf"
+    },
+    {
+      "id": "q1-lstm-1",
+      "node": "lstm",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "Which gates does a standard LSTM use?",
+      "choices": [
+        "Multi-head attention gates over all past time steps",
+        "Input, forget and output gates around a cell state",
+        "Reset and update gates, with no separate cell state",
+        "No gates: a single tanh layer updates the state"
+      ],
+      "answer": 1,
+      "explain": "Forget and input gates control what the cell keeps and writes, and the output gate controls what is exposed. Reset and update gates describe the GRU.",
+      "source": "https://mlanthology.org/neco/1997/hochreiter1997neco-long/"
+    },
+    {
+      "id": "q1-lstm-2",
+      "node": "lstm",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Why can an LSTM carry information and gradients across long time lags?",
+      "choices": [
+        "It stores every past input explicitly and attends over all of them",
+        "Its cell state is updated additively, gated by the forget gate",
+        "All of its activation functions are linear, so nothing saturates",
+        "Its weights are re-initialized at the start of every time step"
+      ],
+      "answer": 1,
+      "explain": "With cₜ = fₜ ⊙ cₜ₋₁ + iₜ ⊙ c̃ₜ and fₜ near 1, signals pass through many steps without repeated squashing. This path was introduced to preserve error flow over long intervals.",
+      "source": "https://mlanthology.org/neco/1997/hochreiter1997neco-long/"
+    },
+    {
+      "id": "q1-lstm-3",
+      "node": "lstm",
+      "skill": "signals-estimation",
+      "difficulty": 3,
+      "prompt": "A Kalman gain and an LSTM gate both blend an old estimate with new input. Why should a learned gate not be read as Bayesian uncertainty?",
+      "choices": [
+        "After enough training, LSTM gates converge exactly to Kalman gains, so they already are uncertainty",
+        "LSTM gates cannot take values strictly between 0 and 1, unlike the gains of a Kalman filter",
+        "Kalman gains are binary switches, whereas LSTM gates are continuous, so they cannot be compared",
+        "The gate is trained only for task loss; its uncertainty meaning needs separate calibration tests"
+      ],
+      "answer": 3,
+      "explain": "The Kalman gain is derived from modeled covariances; nothing in gate training forces it to track posterior variance. The atlas treats the resemblance as a hypothesis.",
+      "source": "https://mlanthology.org/neco/1997/hochreiter1997neco-long/"
+    },
+    {
+      "id": "q1-attention-1",
+      "node": "attention",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What does scaled dot-product attention compute?",
+      "choices": [
+        "softmax(QKᵀ·√dₖ) V",
+        "softmax(QVᵀ) K",
+        "softmax(QKᵀ/√dₖ) V",
+        "QKᵀV, unnormalized"
+      ],
+      "answer": 2,
+      "explain": "Query-key similarities, scaled and softmax-normalized, weight a sum of value vectors. This is the core operation of the Transformer.",
+      "source": "https://arxiv.org/abs/1706.03762v5"
+    },
+    {
+      "id": "q1-attention-2",
+      "node": "attention",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "How does the compute cost of standard self-attention scale with sequence length n?",
+      "choices": [
+        "O(n²)",
+        "O(n log n)",
+        "O(n)",
+        "O(n³)"
+      ],
+      "answer": 0,
+      "explain": "Every token attends to every other token, so the n×n score matrix dominates. Linear attention and state-space models reduce this by changing the operator.",
+      "source": "https://arxiv.org/abs/1706.03762v5"
+    },
+    {
+      "id": "q1-attention-3",
+      "node": "attention",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "Why does scaled dot-product attention divide QKᵀ by √dₖ?",
+      "choices": [
+        "To make attention invariant to the order of tokens",
+        "To make each row of attention weights sum to 1",
+        "To keep logits from saturating the softmax as dₖ grows",
+        "To halve the memory footprint of the score matrix"
+      ],
+      "answer": 2,
+      "explain": "With roughly unit-variance components, dot-product variance grows with dₖ, and large logits push the softmax into regions with tiny gradients. The softmax itself already makes the weights sum to 1.",
+      "source": "https://arxiv.org/abs/1706.03762v5"
+    },
+    {
+      "id": "q1-linearattention-1",
+      "node": "linearattention",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What change does linear attention make to softmax attention?",
+      "choices": [
+        "It replaces softmax with a kernel feature map φ(q)ᵀφ(k)",
+        "It lets each token attend only to its immediate neighbour",
+        "Nothing in the output: it computes softmax attention faster",
+        "It drops the value projection and keeps the softmax"
+      ],
+      "answer": 0,
+      "explain": "Associativity lets φ(Q)(φ(K)ᵀV) avoid the n×n matrix, so cost is linear in length. This changes or approximates the attention operator; it is not an exact softmax rewrite.",
+      "source": "https://proceedings.mlr.press/v119/katharopoulos20a.html"
+    },
+    {
+      "id": "q1-linearattention-2",
+      "node": "linearattention",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "How can causal linear attention be computed as a recurrence?",
+      "choices": [
+        "Keep only the most recent key and value, discarding older ones each step",
+        "Run an LSTM over the sequence of attention weights produced so far",
+        "Store all past keys and recompute a full softmax over them at every step",
+        "Keep running sums of φ(kₜ)vₜᵀ and φ(kₜ), then read them out with φ(qₜ)"
+      ],
+      "answer": 3,
+      "explain": "With Sₜ = Sₜ₋₁ + φ(kₜ)vₜᵀ and zₜ = zₜ₋₁ + φ(kₜ), the output is φ(qₜ)ᵀSₜ / φ(qₜ)ᵀzₜ. These fixed-size accumulators are the exact link to RNNs in the atlas (Katharopoulos et al.).",
+      "source": "https://proceedings.mlr.press/v119/katharopoulos20a.html"
+    },
+    {
+      "id": "q1-s4-1",
+      "node": "s4",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "Which equivalent views does a structured state-space (S4) layer have?",
+      "choices": [
+        "Self-attention, feed-forward block and pooling",
+        "Continuous ODE, discrete recurrence and convolution",
+        "Decision tree, random forest and boosting",
+        "Only a recurrence, with no convolutional form"
+      ],
+      "answer": 1,
+      "explain": "Discretizing the linear ODE gives a recurrence, and unrolling a time-invariant recurrence gives a convolution. S4 can train with the convolution and run inference recurrently.",
+      "source": "https://arxiv.org/html/2111.00396v3"
+    },
+    {
+      "id": "q1-s4-2",
+      "node": "s4",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "A linear SSM xₖ = Ā xₖ₋₁ + B̄ uₖ, yₖ = C xₖ starts from zero state. What is its convolution kernel K?",
+      "choices": [
+        "Kⱼ = (C Ā B̄)ʲ",
+        "Kⱼ = Āʲ",
+        "Kⱼ = C B̄ for all j",
+        "Kⱼ = C Āʲ B̄"
+      ],
+      "answer": 3,
+      "explain": "Unrolling gives xₖ = Σⱼ Āʲ B̄ uₖ₋ⱼ, so yₖ = Σⱼ C Āʲ B̄ uₖ₋ⱼ. A nonzero initial state would add a separate response term.",
+      "source": "https://arxiv.org/html/2111.00396v3"
+    },
+    {
+      "id": "q1-mamba-1",
+      "node": "mamba",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What makes Mamba's state-space layer 'selective'?",
+      "choices": [
+        "Its SSM parameters (Δ, B, C) depend on the current input",
+        "It applies one fixed, input-independent convolution kernel",
+        "It keeps the top-k tokens and drops all of the others",
+        "It uses softmax attention over a sliding local window"
+      ],
+      "answer": 0,
+      "explain": "Input-dependent updates let the model choose what to retain or ignore, rather than applying one fixed filter.",
+      "source": "https://arxiv.org/html/2312.00752v2"
+    },
+    {
+      "id": "q1-mamba-2",
+      "node": "mamba",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "Why can Mamba not use S4's FFT-based convolution for training?",
+      "choices": [
+        "FFTs cannot be computed efficiently on GPU accelerators",
+        "Mamba has no recurrent form at all, so no convolution can exist",
+        "Input-dependent parameters make it time-varying, so there is no fixed kernel",
+        "Mamba's state is discrete-valued, so convolution is undefined"
+      ],
+      "answer": 2,
+      "explain": "Fixed LTI dynamics give a fixed kernel, and selectivity removes that. Mamba uses a hardware-aware parallel scan to compute the time-varying recurrence instead.",
+      "source": "https://arxiv.org/html/2312.00752v2"
+    },
+    {
+      "id": "q1-ssd-1",
+      "node": "ssd",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What does Mamba-2's state-space duality (SSD) show?",
+      "choices": [
+        "Every Transformer is exactly equivalent to some state-space model",
+        "A structured SSM class and a masked linear attention compute the same transformation",
+        "Softmax attention can always be computed exactly as a recurrence",
+        "State-space models are a special case of convolutional networks"
+      ],
+      "answer": 1,
+      "explain": "For SSMs with scalar-times-identity state matrices, the two forms give two algorithms (quadratic attention-like or linear recurrent) for one model. The equivalence is conditional, not universal.",
+      "source": "https://arxiv.org/abs/2405.21060"
+    },
+    {
+      "id": "q1-ssd-2",
+      "node": "ssd",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "In state-space duality, what class of matrix represents a selective SSM's sequence transformation?",
+      "choices": [
+        "Toeplitz",
+        "Semiseparable",
+        "Orthogonal (unitary)",
+        "Diagonal"
+      ],
+      "answer": 1,
+      "explain": "A semiseparable matrix is lower-triangular with every submatrix below the diagonal of low rank, which time-varying SSMs produce. Toeplitz structure arises only for time-invariant convolutions such as S4.",
+      "source": "https://arxiv.org/abs/2405.21060"
+    },
+    {
+      "id": "q1-hyena-1",
+      "node": "hyena",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What is the Hyena operator built from?",
+      "choices": [
+        "Gated linear recurrences combined with local sliding-window attention",
+        "Stacked softmax attention heads with rotary position embeddings",
+        "Long implicit convolutions interleaved with data-controlled gates",
+        "Fixed wavelet filters followed by a complex-modulus nonlinearity"
+      ],
+      "answer": 2,
+      "explain": "Hyena replaces attention with long convolutions, evaluated with FFTs, and element-wise multiplicative gating.",
+      "source": "https://proceedings.mlr.press/v202/poli23a/poli23a.pdf"
+    },
+    {
+      "id": "q1-hyena-2",
+      "node": "hyena",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "What qualification applies to Hyena's runtime advantage over attention?",
+      "choices": [
+        "Hyena is faster than attention at every sequence length",
+        "None: both scale as O(n²), so runtimes are identical",
+        "Hyena is always slower, since FFTs cost more than matmuls",
+        "It depends on sequence length, implementation and hardware"
+      ],
+      "answer": 3,
+      "explain": "FFT convolution scales as O(n log n), which pays off for long sequences. Constant factors and hardware efficiency set the crossover; at short lengths optimized attention can be as fast or faster.",
+      "source": "https://proceedings.mlr.press/v202/poli23a/poli23a.pdf"
+    },
+    {
+      "id": "q1-hybrid-1",
+      "node": "hybrid",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What does the Griffin architecture combine?",
+      "choices": [
+        "Gated linear recurrence with local attention",
+        "Wavelet scattering with a recurrent readout",
+        "Global softmax attention with convolutions",
+        "Mixture-of-experts layers with no sequence mixing"
+      ],
+      "answer": 0,
+      "explain": "Griffin mixes a compressed recurrent memory with explicit sliding-window attention over recent tokens.",
+      "source": "https://arxiv.org/pdf/2402.19427"
+    },
+    {
+      "id": "q1-hybrid-2",
+      "node": "hybrid",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "Why add attention layers to a recurrent sequence model?",
+      "choices": [
+        "A fixed-size state struggles with exact retrieval; attention gives direct token access",
+        "Recurrent layers cannot process sequences longer than their state dimension",
+        "Attention lowers the cost of every layer below linear in sequence length",
+        "Attention removes the need for any recurrent layers in the hybrid model"
+      ],
+      "answer": 0,
+      "explain": "Recurrence compresses history into a fixed state, while attention keeps explicit access to stored tokens. Griffin documents retrieval limitations of recurrence that motivate the mix.",
+      "source": "https://arxiv.org/pdf/2402.19427"
+    },
+    {
+      "id": "q1-hippo-1",
+      "node": "hippo",
+      "skill": "dynamical-systems",
+      "difficulty": 1,
+      "prompt": "What does HiPPO provide?",
+      "choices": [
+        "A gating scheme that replaces the forget gate in LSTMs",
+        "ODE updates for an online polynomial projection of the input history",
+        "A learned attention pattern over all past tokens in a sequence",
+        "A random recurrent reservoir with only a trained linear readout"
+      ],
+      "answer": 1,
+      "explain": "HiPPO derives linear dynamics for the coefficients of the history's projection onto orthogonal polynomials under a chosen measure. It designs memory from approximation theory rather than leaving it to unconstrained optimization.",
+      "source": "https://hazyresearch.stanford.edu/blog/2020-12-05-hippo"
+    },
+    {
+      "id": "q1-hippo-2",
+      "node": "hippo",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "How does HiPPO relate to S4?",
+      "choices": [
+        "HiPPO is a transformer training trick unrelated to S4",
+        "S4 replaces HiPPO's projections with softmax attention",
+        "S4 uses HiPPO-derived state matrices for long memory",
+        "S4 and HiPPO are the same method under two names"
+      ],
+      "answer": 2,
+      "explain": "HiPPO supplies structured memory dynamics in the SSM lineage, and S4 makes them efficient through its structured parameterization.",
+      "source": "https://hazyresearch.stanford.edu/blog/2020-12-05-hippo"
+    },
+    {
+      "id": "q1-lru-1",
+      "node": "lru",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What is the Linear Recurrent Unit (LRU)?",
+      "choices": [
+        "An attention layer whose cost is linear in sequence length",
+        "A nonlinear tanh RNN trained with truncated backpropagation",
+        "A single linear model that replaces the entire network",
+        "A stable complex diagonal linear recurrence inside a nonlinear network"
+      ],
+      "answer": 3,
+      "explain": "LRU uses stable parameterization, normalization and parallel scans, and shows linear recurrence can recover strong long-range performance. The full network still has nonlinear blocks.",
+      "source": "https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf"
+    },
+    {
+      "id": "q1-lru-2",
+      "node": "lru",
+      "skill": "dynamical-systems",
+      "difficulty": 2,
+      "prompt": "For a diagonal linear recurrence hₜ = λ ⊙ hₜ₋₁ + B xₜ with complex λ, what condition makes it stable?",
+      "choices": [
+        "λᵢ real for all i",
+        "|λᵢ| < 1 for all i",
+        "|λᵢ| > 1 for all i",
+        "Re(λᵢ) < 0 for all i"
+      ],
+      "answer": 1,
+      "explain": "In discrete time, stability needs eigenvalues inside the unit circle; Re(λ) < 0 is the continuous-time condition. LRU parameterizes λ = exp(−exp(ν) + iθ) to keep |λ| < 1.",
+      "source": "https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf"
+    },
+    {
+      "id": "q1-cde-1",
+      "node": "cde",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What is a neural controlled differential equation (neural CDE)?",
+      "choices": [
+        "A neural controller with guaranteed closed-loop stability",
+        "A discrete RNN that requires regularly sampled inputs",
+        "A hidden state driven by dz = f_θ(z) dX(t) along a path built from the data",
+        "A neural ODE that sees the inputs only at the initial time"
+      ],
+      "answer": 2,
+      "explain": "The interpolated data path drives the hidden dynamics continuously, which suits partially observed, irregularly sampled time series. The name does not imply any control guarantee.",
+      "source": "https://www.maths.ox.ac.uk/node/36672"
+    },
+    {
+      "id": "q1-cde-2",
+      "node": "cde",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Why are neural CDEs well suited to irregularly sampled time series?",
+      "choices": [
+        "They discard observation times and treat values as a plain list",
+        "They model each channel independently, with no shared hidden state",
+        "They resample every series onto a uniform grid before training",
+        "Inputs enter as path increments over real time, so no regular grid is needed"
+      ],
+      "answer": 3,
+      "explain": "The hidden state responds to how the path changes in continuous time, so uneven gaps and missing channels are handled without binning.",
+      "source": "https://www.maths.ox.ac.uk/node/36672"
+    },
+    {
+      "id": "q1-graph-1",
+      "node": "graph",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What does a message-passing graph neural network layer do?",
+      "choices": [
+        "Updates each node from its features and an order-invariant aggregate of neighbour messages",
+        "Flattens the adjacency matrix and passes it through a fully connected layer",
+        "Runs a 1-D convolution over the nodes in the order they are stored",
+        "Ignores the edges and processes each node independently of the others"
+      ],
+      "answer": 0,
+      "explain": "Aggregations such as sum or mean do not depend on neighbour order, which encodes the relational inductive bias of graph networks.",
+      "source": "https://arxiv.org/abs/1806.01261"
+    },
+    {
+      "id": "q1-graph-2",
+      "node": "graph",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "If the nodes of an input graph are relabelled (permuted), what should a message-passing GNN produce?",
+      "choices": [
+        "Entirely different node outputs, because the input order changed",
+        "An error, because GNNs require one canonical ordering of nodes",
+        "Node outputs permuted the same way; graph-level outputs unchanged",
+        "Identical node outputs listed in the original, unpermuted order"
+      ],
+      "answer": 2,
+      "explain": "Permutation-invariant aggregation makes node updates equivariant, and a symmetric readout makes graph-level outputs invariant.",
+      "source": null
+    },
+    {
+      "id": "q1-graph-3",
+      "node": "graph",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "How does message passing in a graph neural network relate to belief propagation?",
+      "choices": [
+        "Similar computation pattern, but learned messages need not be probabilistic marginals",
+        "Belief propagation is just a GNN whose messages are randomly initialized",
+        "A trained GNN is exactly belief propagation run on the same input graph",
+        "They are unrelated, since belief propagation does not pass any messages"
+      ],
+      "answer": 0,
+      "explain": "BP messages are derived from a specified probabilistic factorization; GNN messages are whatever minimizes the training loss. The atlas lists this as a comparison to test, not an identity.",
+      "source": "https://arxiv.org/abs/1806.01261"
+    },
+    {
+      "id": "q1-scattering-1",
+      "node": "scattering",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "How is a wavelet scattering representation built?",
+      "choices": [
+        "Convolutional filters trained end to end by backpropagation",
+        "PCA applied directly to the raw pixel values",
+        "A single global Fourier transform of the input",
+        "Cascaded fixed wavelet convolutions, complex modulus and averaging"
+      ],
+      "answer": 3,
+      "explain": "Scattering has a CNN-like structure with prescribed filters, which gives provable translation invariance and stability to small deformations under stated conditions.",
+      "source": "https://arxiv.org/abs/1203.1513"
+    },
+    {
+      "id": "q1-scattering-2",
+      "node": "scattering",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "How does a wavelet scattering network compare with a trained CNN?",
+      "choices": [
+        "Trained CNNs carry stronger proven deformation-stability guarantees than scattering does",
+        "Similar cascade, but fixed wavelets with proven stability versus learned filters without such guarantees",
+        "They are identical, because a trained CNN always converges to scattering's wavelet filters",
+        "Scattering networks contain no convolutions; only CNNs use convolution followed by pooling"
+      ],
+      "answer": 1,
+      "explain": "Both use a convolution–nonlinearity–pooling cascade, but scattering's filters are designed, not learned. The cited work pairs scattering features with SVM or PCA classifiers.",
+      "source": "https://arxiv.org/abs/1203.1513"
+    },
+    {
+      "id": "q1-node-1",
+      "node": "node",
+      "skill": "calculus-odes",
+      "difficulty": 1,
+      "prompt": "What is a neural ODE?",
+      "choices": [
+        "A learned vector field dh/dt = f_θ(h, t), integrated by an ODE solver",
+        "A network that outputs the solution of one fixed physics PDE",
+        "A residual network whose depth is fixed at a single layer",
+        "A recurrent network whose hidden state is removed entirely"
+      ],
+      "answer": 0,
+      "explain": "The solver is part of the computation. Physical time, network depth and solver discretization must be kept distinct.",
+      "source": "https://arxiv.org/pdf/1806.07366"
+    },
+    {
+      "id": "q1-node-2",
+      "node": "node",
+      "skill": "calculus-odes",
+      "difficulty": 2,
+      "prompt": "What is the main benefit of training neural ODEs with the adjoint method?",
+      "choices": [
+        "It guarantees the learned vector field is stable",
+        "It removes the need for any ODE solver during training",
+        "The forward solve becomes exact, with no numerical error",
+        "Memory does not grow with the number of solver steps"
+      ],
+      "answer": 3,
+      "explain": "Gradients come from solving an augmented ODE backward in time instead of storing every intermediate solver state. The trade-off is extra compute and possible numerical error in the reconstruction.",
+      "source": "https://arxiv.org/pdf/1806.07366"
+    },
+    {
+      "id": "q1-diffusion-1",
+      "node": "diffusion",
+      "skill": "generative-models",
+      "difficulty": 1,
+      "prompt": "What is the forward process in a denoising diffusion probabilistic model (DDPM)?",
+      "choices": [
+        "A sampler that removes noise from pure Gaussian input step by step",
+        "A physical heat-diffusion process measured from the training data",
+        "A fixed Markov chain that gradually adds Gaussian noise to the data",
+        "A learned encoder that compresses data into a low-dimensional code"
+      ],
+      "answer": 2,
+      "explain": "The corruption process follows a variance schedule and is not learned; only the reverse denoiser is. The noise schedule is a design choice, not automatically a physical process.",
+      "source": "https://arxiv.org/abs/2006.11239"
+    },
+    {
+      "id": "q1-diffusion-2",
+      "node": "diffusion",
+      "skill": "generative-models",
+      "difficulty": 2,
+      "prompt": "In DDPM with schedule βₛ and ᾱₜ = Πₛ₌₁ᵗ (1 − βₛ), how is xₜ sampled directly from x₀ (ε ~ N(0, I))?",
+      "choices": [
+        "xₜ = x₀ + (Σₛ βₛ) ε",
+        "xₜ = √ᾱₜ x₀ + √(1 − ᾱₜ) ε",
+        "xₜ = √(1 − ᾱₜ) x₀ + √ᾱₜ ε",
+        "xₜ = ᾱₜ x₀ + (1 − ᾱₜ) ε"
+      ],
+      "answer": 1,
+      "explain": "Composing the Gaussian steps gives this closed form, so training can pick a random t without simulating the chain. Square roots appear because variances, not standard deviations, add.",
+      "source": "https://arxiv.org/abs/2006.11239"
+    },
+    {
+      "id": "q1-diffusion-3",
+      "node": "diffusion",
+      "skill": "generative-models",
+      "difficulty": 3,
+      "prompt": "How does classifier-free guidance work?",
+      "choices": [
+        "The condition is dropped at sampling time so that generated samples become more diverse",
+        "The gradient of a separately trained noisy-image classifier is added to the model's score",
+        "Several models, each trained on one class, are averaged at every denoising step",
+        "One model is trained with and without the condition; sampling extrapolates between the two predictions"
+      ],
+      "answer": 3,
+      "explain": "Training randomly drops the condition, and sampling uses ε̃ = (1 + w)ε(x, c) − w·ε(x), where w sets conditioning strength. Adding a classifier's gradient is the earlier 'classifier guidance' method.",
+      "source": "https://arxiv.org/abs/2006.11239"
+    },
+    {
+      "id": "q1-score-1",
+      "node": "score",
+      "skill": "generative-models",
+      "difficulty": 1,
+      "prompt": "In score-based generative modeling, what is the score of a distribution pₜ?",
+      "choices": [
+        "The density value pₜ(x) evaluated at the point x",
+        "∇ₓ log pₜ(x), the gradient with respect to the data",
+        "∇_θ log p(x; θ), the gradient with respect to parameters",
+        "The KL divergence between pₜ and the data distribution"
+      ],
+      "answer": 1,
+      "explain": "The data-space score points toward higher density and lets one reverse a noising SDE. The parameter gradient is the score of classical statistics, a different object.",
+      "source": "https://arxiv.org/pdf/2011.13456"
+    },
+    {
+      "id": "q1-score-2",
+      "node": "score",
+      "skill": "generative-models",
+      "difficulty": 3,
+      "prompt": "How does the probability-flow ODE relate to the reverse-time SDE in score-based models?",
+      "choices": [
+        "Identical sample paths, since the ODE is the SDE's noise-free mean",
+        "The ODE needs no score function, unlike the reverse-time SDE",
+        "Same marginals at every time under exact scores, but different paths",
+        "Different marginals; the ODE is used only to estimate likelihoods"
+      ],
+      "answer": 2,
+      "explain": "The probability-flow ODE transports the same time-marginals deterministically, which also enables exact likelihoods via the change of variables. The ODE's deterministic paths differ from the SDE's stochastic ones.",
+      "source": "https://arxiv.org/pdf/2011.13456"
+    },
+    {
+      "id": "q1-flow-1",
+      "node": "flow",
+      "skill": "generative-models",
+      "difficulty": 1,
+      "prompt": "What does flow matching train?",
+      "choices": [
+        "A vector field regressed onto a probability path's target velocity",
+        "An invertible network with explicit Jacobian log-determinants",
+        "A denoiser trained only at the single final noise level",
+        "A discriminator that separates real from generated samples"
+      ],
+      "answer": 0,
+      "explain": "Flow matching turns training a continuous normalizing flow into regression on specified paths. Samples come from integrating the learned ODE.",
+      "source": "https://arxiv.org/abs/2210.02747"
+    },
+    {
+      "id": "q1-flow-2",
+      "node": "flow",
+      "skill": "generative-models",
+      "difficulty": 2,
+      "prompt": "Flow matching is described as simulation-free. What does that mean?",
+      "choices": [
+        "Training needs no ODE solves; sampling still integrates the ODE",
+        "Neither training nor sampling uses an ODE solver at any point",
+        "Training simulates each example's full ODE trajectory",
+        "Sampling always takes exactly one network evaluation"
+      ],
+      "answer": 0,
+      "explain": "The regression target is available in closed form at each sampled time, so training avoids the solver. Sample generation still pays for integration steps.",
+      "source": "https://arxiv.org/abs/2210.02747"
+    },
+    {
+      "id": "q1-flow-3",
+      "node": "flow",
+      "skill": "calculus-odes",
+      "difficulty": 3,
+      "prompt": "On the straight-line path xₜ = (1 − t)x₀ + t x₁ (x₀ noise, x₁ data, t ∈ [0, 1]), what is the conditional target velocity?",
+      "choices": [
+        "(x₁ − x₀)/t",
+        "x₀ − x₁",
+        "x₁ − x₀",
+        "x₁"
+      ],
+      "answer": 2,
+      "explain": "Differentiating xₜ in t gives x₁ − x₀, constant along the path. This straight, optimal-transport-style path is used in flow matching and rectified flow.",
+      "source": null
+    },
+    {
+      "id": "q1-bridge-1",
+      "node": "bridge",
+      "skill": "generative-models",
+      "difficulty": 1,
+      "prompt": "What does the Schrödinger bridge problem ask for?",
+      "choices": [
+        "A feedback controller that certifies a physical system is safe",
+        "A network that maps any image to Gaussian noise in a single step",
+        "The deterministic least-action path joining two fixed points in state space",
+        "The process closest in KL to a reference diffusion, with fixed start and end marginals"
+      ],
+      "answer": 3,
+      "explain": "It is entropy-regularized transport on path space. The atlas notes that a path-space objective is not a physical control certificate.",
+      "source": "https://arxiv.org/abs/2106.01357"
+    },
+    {
+      "id": "q1-bridge-2",
+      "node": "bridge",
+      "skill": "generative-models",
+      "difficulty": 3,
+      "prompt": "With a Brownian reference process, what does the Schrödinger bridge reduce to at its endpoints?",
+      "choices": [
+        "The KL divergence between marginals",
+        "Entropy-regularized optimal transport",
+        "Unregularized optimal transport",
+        "Nothing related to optimal transport"
+      ],
+      "answer": 1,
+      "explain": "Projecting the path-space problem onto its endpoints gives entropic OT between the two marginals. Diffusion Schrödinger bridges solve it iteratively with score-based models.",
+      "source": "https://arxiv.org/abs/2106.01357"
+    },
+    {
+      "id": "q1-dit-1",
+      "node": "dit",
+      "skill": "generative-models",
+      "difficulty": 1,
+      "prompt": "What is a diffusion transformer (DiT)?",
+      "choices": [
+        "Latent diffusion with a transformer denoiser over patch tokens, replacing the U-Net",
+        "A generative transformer that drops the diffusion objective entirely",
+        "A U-Net denoiser with one attention layer added at its bottleneck",
+        "A transformer language model trained with a diffusion-style loss on text"
+      ],
+      "answer": 0,
+      "explain": "DiT conditions transformer blocks on timestep and class. Peebles and Xie report that sample quality improves with transformer compute.",
+      "source": "https://www.wpeebles.com/DiT.html"
+    },
+    {
+      "id": "q1-dit-2",
+      "node": "dit",
+      "skill": "generative-models",
+      "difficulty": 2,
+      "prompt": "If you swap a diffusion model's U-Net for a transformer, what must change?",
+      "choices": [
+        "The noise must become non-Gaussian",
+        "Only the denoiser architecture",
+        "Sampling becomes one forward pass",
+        "It is no longer a diffusion model"
+      ],
+      "answer": 1,
+      "explain": "Backbone and generative objective are separate design axes, so the diffusion training objective and sampler can stay the same. That is why DiT can reuse standard diffusion training.",
+      "source": "https://www.wpeebles.com/DiT.html"
+    },
+    {
+      "id": "q1-sindy-1",
+      "node": "sindy",
+      "skill": "dynamical-systems",
+      "difficulty": 1,
+      "prompt": "What does SINDy (sparse identification of nonlinear dynamics) do?",
+      "choices": [
+        "Computes the Fourier spectrum of the measured trajectory",
+        "Trains a deep black-box network to predict the next state",
+        "Sparse regression of derivatives onto a library of candidate terms",
+        "Fits one linear model that keeps every library term active"
+      ],
+      "answer": 2,
+      "explain": "Sparsity keeps the identified ODE short and readable. SINDYc adds control inputs to the library.",
+      "source": "https://arxiv.org/abs/1605.06682"
+    },
+    {
+      "id": "q1-sindy-2",
+      "node": "sindy",
+      "skill": "dynamical-systems",
+      "difficulty": 2,
+      "prompt": "Why do SINDy results depend on the chosen coordinates and library?",
+      "choices": [
+        "The library only affects computation time, never the identified model",
+        "They do not: sparse regression is coordinate-free, so any coordinates work",
+        "With noise-free data SINDy always finds the true law, whatever the library",
+        "The dynamics are sparse only if few library terms in those coordinates suffice"
+      ],
+      "answer": 3,
+      "explain": "Sparsity is a property of a representation, not of the system alone. A poor library or coordinate choice can need many terms or fail to represent the dynamics.",
+      "source": "https://arxiv.org/abs/1605.06682"
+    },
+    {
+      "id": "q1-koopman-1",
+      "node": "koopman",
+      "skill": "dynamical-systems",
+      "difficulty": 1,
+      "prompt": "What is the Koopman operator of a dynamical system x ↦ F(x)?",
+      "choices": [
+        "The Jacobian of F at a fixed point",
+        "The linear operator on observables, Kg = g ∘ F",
+        "The Hessian of the system's energy",
+        "A nonlinear operator acting on the state"
+      ],
+      "answer": 1,
+      "explain": "The Koopman operator is generally infinite-dimensional; it trades nonlinear state dynamics for linear dynamics on functions of the state. Learned embeddings seek a few observables that evolve almost linearly.",
+      "source": "https://www.lri.fr/~gcharpia/deeppractice/2022/chap_5_biblio/Koopman/KoopmanAE.pdf"
+    },
+    {
+      "id": "q1-koopman-2",
+      "node": "koopman",
+      "skill": "dynamical-systems",
+      "difficulty": 3,
+      "prompt": "A Koopman autoencoder learns k observables that evolve linearly. When is this finite linear model exact?",
+      "choices": [
+        "Always, since the Koopman operator is linear",
+        "Whenever training loss reaches zero",
+        "Whenever k exceeds the state dimension",
+        "Only if the observables span a Koopman-invariant subspace"
+      ],
+      "answer": 3,
+      "explain": "Linearity of the infinite-dimensional operator does not guarantee exact finite closure; for example, a system with several isolated fixed points has no finite-dimensional Koopman-invariant subspace that includes the state itself. Closure error should be measured before relying on the model.",
+      "source": "https://www.lri.fr/~gcharpia/deeppractice/2022/chap_5_biblio/Koopman/KoopmanAE.pdf"
+    },
+    {
+      "id": "q1-hnn-1",
+      "node": "hnn",
+      "skill": "dynamical-systems",
+      "difficulty": 1,
+      "prompt": "A Hamiltonian neural network learns a scalar energy H(q, p). How are the dynamics obtained?",
+      "choices": [
+        "q̇ = ∂H/∂q, ṗ = ∂H/∂p",
+        "q̇ = p, ṗ = −H",
+        "q̇ = ∂H/∂p, ṗ = −∂H/∂q",
+        "q̇ = −∂H/∂p, ṗ = ∂H/∂q"
+      ],
+      "answer": 2,
+      "explain": "Deriving dynamics from Hamilton's equations builds conservation of H into the vector field. Flipping the signs gives time-reversed dynamics.",
+      "source": "https://arxiv.org/abs/1906.01563"
+    },
+    {
+      "id": "q1-hnn-2",
+      "node": "hnn",
+      "skill": "calculus-odes",
+      "difficulty": 2,
+      "prompt": "A trained Hamiltonian network integrated with a standard RK4 solver slowly drifts in energy. Why?",
+      "choices": [
+        "Finite steps of a non-symplectic integrator add drift, though the vector field conserves H",
+        "Hamiltonian networks cannot conserve energy, even in exact continuous time",
+        "Energy drift shows the learned H depends explicitly on time",
+        "RK4 is exact for Hamiltonian systems, so the learned network must be wrong"
+      ],
+      "answer": 0,
+      "explain": "Conservation belongs to the exact flow, and discretization is a separate source of error. Symplectic integrators keep energy error bounded over long times.",
+      "source": "https://arxiv.org/abs/1906.01563"
+    },
+    {
+      "id": "q1-pinn-1",
+      "node": "pinn",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "How is a physics-informed neural network (PINN) trained?",
+      "choices": [
+        "By penalizing the PDE residual at collocation points plus boundary terms",
+        "By hard-coding the solution's Fourier coefficients in advance",
+        "By learning a map from PDE coefficients to solutions across a family",
+        "By running a classical solver and copying only its outputs"
+      ],
+      "answer": 0,
+      "explain": "Physical laws enter the loss as soft constraints, along with initial, boundary and data terms. Learning maps across a PDE family is operator learning, a different construction.",
+      "source": "https://arxiv.org/abs/2109.01050"
+    },
+    {
+      "id": "q1-pinn-2",
+      "node": "pinn",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "What failure mode does the cited work (Krishnapriyan et al., 2021) document for PINNs?",
+      "choices": [
+        "PINNs cannot represent smooth solutions with standard activations",
+        "PINNs always overfit the boundary conditions and ignore all data terms",
+        "Adding the physics residual always makes training strictly easier",
+        "The soft residual loss can make optimization fail even when the network could fit"
+      ],
+      "answer": 3,
+      "explain": "Residual terms can create hard, ill-conditioned loss landscapes, especially for difficult coefficients. The paper proposes curriculum and sequence-to-sequence training as mitigations.",
+      "source": "https://arxiv.org/abs/2109.01050"
+    },
+    {
+      "id": "q1-operator-1",
+      "node": "operator",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What does neural operator learning (FNO, DeepONet) aim to learn?",
+      "choices": [
+        "One PDE instance's solution, by minimizing its residual",
+        "The Fourier spectrum of one particular signal",
+        "A map between function spaces across a family of problems",
+        "A classifier for images of differential equations"
+      ],
+      "answer": 2,
+      "explain": "An operator, such as initial condition or coefficients to solution, applies to new inputs in the family without retraining. Online speed must be weighed against the offline training cost.",
+      "source": "https://arxiv.org/abs/2010.08895"
+    },
+    {
+      "id": "q1-operator-2",
+      "node": "operator",
+      "skill": "signals-estimation",
+      "difficulty": 3,
+      "prompt": "What does a Fourier neural operator (FNO) layer do?",
+      "choices": [
+        "Attention over grid points in place of any Fourier transform",
+        "Learned weights on truncated low-frequency Fourier modes, plus a pointwise linear term",
+        "Fixed Fourier filters with no learned parameters, followed by a nonlinearity",
+        "Learned weights on every frequency, with the spatial representation discarded"
+      ],
+      "answer": 1,
+      "explain": "The layer FFTs its input, multiplies kept modes by learned weights, inverse-transforms, adds a pointwise linear map and applies a nonlinearity. Truncating modes keeps the parameter count independent of grid resolution.",
+      "source": "https://arxiv.org/abs/2010.08895"
+    },
+    {
+      "id": "q1-balancedpod-1",
+      "node": "balancedpod",
+      "skill": "control",
+      "difficulty": 1,
+      "prompt": "What does balanced POD use to approximate balanced truncation?",
+      "choices": [
+        "Direct simulation snapshots only, as in standard POD",
+        "Direct and adjoint simulation snapshots, combined by an SVD",
+        "Random projections of the system's state matrix",
+        "Exact dense Gramians from solving Lyapunov equations"
+      ],
+      "answer": 1,
+      "explain": "Adjoint snapshots supply observability information that direct snapshots lack. The SVD of their cross product yields biorthogonal bases and approximate Hankel singular values.",
+      "source": "https://cwrowley.princeton.edu/papers/bt_ijbc3.pdf"
+    },
+    {
+      "id": "q1-balancedpod-2",
+      "node": "balancedpod",
+      "skill": "control",
+      "difficulty": 3,
+      "prompt": "Why use balanced POD instead of exact balanced truncation for a fluid model with 10⁶ states?",
+      "choices": [
+        "Exact balancing needs dense n×n Gramians, infeasible at this size",
+        "Exact balanced truncation does not apply to stable linear systems",
+        "Balanced POD keeps every state, so it is always more accurate",
+        "Lyapunov equations have no solution for systems this large"
+      ],
+      "answer": 0,
+      "explain": "Solving Lyapunov equations for dense 10⁶×10⁶ Gramians is impractical. Balanced POD builds low-rank factors from snapshots, at the cost of approximation in the balancing.",
+      "source": "https://cwrowley.princeton.edu/papers/bt_ijbc3.pdf"
+    },
+    {
+      "id": "q1-forecastworld-1",
+      "node": "forecastworld",
+      "skill": "generative-models",
+      "difficulty": 1,
+      "prompt": "What is GraphCast, the atlas's example of a learned physical forecaster?",
+      "choices": [
+        "A data-assimilation method that estimates the current atmospheric state",
+        "A numerical weather model that integrates the primitive equations directly",
+        "A graph neural network trained on reanalysis data that rolls out weather forecasts",
+        "A diffusion model that generates realistic satellite images of clouds"
+      ],
+      "answer": 2,
+      "explain": "GraphCast learns medium-range, multi-step forecasts from historical reanalysis states. It still needs an analysis of the current state as its starting point.",
+      "source": "https://www.science.org/doi/10.1126/science.adi2336"
+    },
+    {
+      "id": "q1-forecastworld-2",
+      "node": "forecastworld",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "A deterministic learned forecaster beats a physics model on RMSE. What is needed to evaluate its forecast uncertainty?",
+      "choices": [
+        "Nothing more: a lower RMSE already implies well-calibrated uncertainty",
+        "The spread of the deterministic forecast's values across grid points",
+        "A longer RMSE evaluation period covering more seasons and regions",
+        "A probabilistic or ensemble forecast, scored with proper scores such as CRPS"
+      ],
+      "answer": 3,
+      "explain": "A single deterministic forecast has no predictive distribution to evaluate. Point accuracy and distributional quality are different properties, and proper scores plus coverage checks assess the latter.",
+      "source": "https://www.science.org/doi/10.1126/science.adi2336"
+    },
+    {
+      "id": "q1-memoryclosure-1",
+      "node": "memoryclosure",
+      "skill": "dynamical-systems",
+      "difficulty": 1,
+      "prompt": "What does the Mori–Zwanzig formalism say about projecting dynamics onto resolved variables?",
+      "choices": [
+        "The unresolved variables can be dropped with no effect",
+        "They become a linear system with no memory at all",
+        "They are always Markovian in the resolved variables alone",
+        "They gain a memory term over past history plus unresolved forcing"
+      ],
+      "answer": 3,
+      "explain": "The reduced equations split into an instantaneous term, a memory integral and an orthogonal forcing term. Discarding variables does not discard their influence.",
+      "source": "https://arxiv.org/html/2507.16058v1"
+    },
+    {
+      "id": "q1-memoryclosure-2",
+      "node": "memoryclosure",
+      "skill": "dynamical-systems",
+      "difficulty": 3,
+      "prompt": "What does Mori–Zwanzig imply when you learn a reduced model from data?",
+      "choices": [
+        "Reduced models should always use only the current resolved state",
+        "Memory terms matter only for linear systems, never nonlinear ones",
+        "A memoryless reduced model can be insufficient; history can help",
+        "Any reduced model becomes exact if it is trained for long enough"
+      ],
+      "answer": 2,
+      "explain": "The memory integral is why delay embeddings or recurrent closures are tested against Markov baselines, for example in learned turbulence models.",
+      "source": "https://arxiv.org/html/2507.16058v1"
+    }
+  ]
+}
