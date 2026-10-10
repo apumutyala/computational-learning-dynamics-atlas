@@ -1556,8 +1556,7 @@
    ],
    "prereqs": [
     "llc",
-    "langevin",
-    "wbic"
+    "langevin"
    ]
   },
   "degeneracy": {
@@ -1679,7 +1678,7 @@
     "stats-ml"
    ],
    "prereqs": [
-    "mcmc",
+    "gibbs",
     "mrf"
    ]
   },
