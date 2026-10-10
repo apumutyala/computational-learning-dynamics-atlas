@@ -99,7 +99,7 @@ To **add a question bank**:
 2. Add the filename to the `questions` list in `learning/index.json`. The site loads only the banks listed there.
 3. Run the validator.
 
-The current banks hold 401 items (178 + 180 + 11 + 32).
+The current banks hold 464 items (178 + 180 + 11 + 32 + 63).
 
 ## Optional AI chat backend
 
