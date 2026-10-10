@@ -46,12 +46,12 @@ controls.enableDamping = true; controls.dampingFactor = 0.07; controls.rotateSpe
 controls.minDistance = 40; controls.maxDistance = 1500;
 controls.autoRotate = S.drift; controls.autoRotateSpeed = 0.22;
 
-const pointVert = `attribute float size;attribute float alpha;attribute vec3 color;varying vec3 vColor;varying float vAlpha;uniform float uScale;
-void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);gl_Position=projectionMatrix*mv;float d=-mv.z;gl_PointSize=clamp(size*uScale/d,1.5,110.0);vColor=color;vAlpha=alpha*clamp(1.35-d/1700.0,0.3,1.0);}`;
+const pointVert = `attribute float size;attribute float alpha;attribute vec3 color;varying vec3 vColor;varying float vAlpha;uniform float uScale;uniform float uMax;
+void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);gl_Position=projectionMatrix*mv;float d=-mv.z;gl_PointSize=clamp(size*uScale/d,1.5,uMax*max(size,8.0)/22.0);vColor=color;vAlpha=alpha*clamp(1.35-d/1700.0,0.3,1.0);}`;
 const pointFrag = `varying vec3 vColor;varying float vAlpha;uniform float uCore;
 void main(){vec2 c=gl_PointCoord-0.5;float d=length(c);if(d>0.5)discard;float core=smoothstep(uCore,uCore*0.6,d);float halo=pow(smoothstep(0.5,0.0,d),2.4)*0.6;gl_FragColor=vec4(vColor*(0.7+core*0.55),(core+halo)*vAlpha);}`;
-const uScale = { value: 900 };
-const pointMat = (core = 0.17) => new THREE.ShaderMaterial({ vertexShader: pointVert, fragmentShader: pointFrag, uniforms: { uScale, uCore: { value: core } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+const uScale = { value: 900 }, uMax = { value: 34 * Math.min(devicePixelRatio, 2) }; // cap ≈ 34 CSS px so close-ups don't balloon
+const pointMat = (core = 0.17) => new THREE.ShaderMaterial({ vertexShader: pointVert, fragmentShader: pointFrag, uniforms: { uScale, uMax, uCore: { value: core } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
 
 // dust
 {
@@ -760,4 +760,4 @@ addEventListener('hashchange', () => { const id = decodeURIComponent(location.ha
 window.__atlas = { S, travel, byId, project, enter };
 // Learning harness (learn.js) gets only this surface; the atlas keeps working if it fails to load.
 const learnAPI = { S, byId, edges, nodes, EV, enter, travel, showRoute, highlightRoute, clearRoute, closePanel, updateOffset, isMobile, esc, clusterColor: id => clusterOf.get(byId.get(id).group).color, edgeById: id => edges.find(e => e.id === id) || null, edgeBetween: (a, b) => adj.get(a)?.find(e => other(e, a) === b) || null };
-import('./learn.js?v=20261010a').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
+import('./learn.js?v=20261010b').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
