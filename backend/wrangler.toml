@@ -1,0 +1,41 @@
+# Cloudflare Worker for the atlas AI features. Template: nothing here is secret.
+# Deploy steps, costs and the off switch are in README.md.
+
+name = "atlas-ai"
+main = "worker.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[vars]
+# Model. Default is the cheapest current model. Quality option: "claude-sonnet-5-5"
+# (20x the per-token price; lower DAILY_REQUEST_CAP if you switch).
+MODEL = "claude-haiku-5-5"
+EFFORT = "low"                 # output_config.effort: low | medium | high
+THINKING = ""                  # "" = model default (adaptive); "disabled" works on Haiku 5.5 only (Sonnet 5.5 rejects it)
+
+# Where the worker reads the atlas from (cached ATLAS_TTL_SECONDS in each isolate).
+ATLAS_URL = "https://apumutyala.github.io/computational-learning-dynamics-atlas/atlas.json"
+ATLAS_TTL_SECONDS = "600"
+
+# CORS. Comma-separated exact origins; ALLOW_LOCALHOST also admits http://localhost:* and http://127.0.0.1:*.
+ALLOWED_ORIGINS = "https://apumutyala.github.io"
+ALLOW_LOCALHOST = "true"
+
+# Guardrails.
+CHAT_MAX_TOKENS = "600"        # output cap per chat answer (thinking, if any, counts toward it)
+EXPLAIN_MAX_TOKENS = "350"     # output cap per connection summary
+MAX_BODY_BYTES = "32768"
+MAX_MESSAGES = "12"
+RATE_PER_MINUTE = "6"          # per-IP refill; burst below
+RATE_BURST = "10"
+DAILY_REQUEST_CAP = "2000"     # model calls per UTC day across the site; "0" turns AI answers off
+
+# Optional: shared counters + cached summaries across isolates. Create with
+#   npx wrangler kv namespace create ATLAS_KV
+# then uncomment and paste the id it prints.
+# [[kv_namespaces]]
+# binding = "ATLAS_KV"
+# id = "<paste id>"
+
+# Secret, never in this file:
+#   npx wrangler secret put ANTHROPIC_API_KEY
