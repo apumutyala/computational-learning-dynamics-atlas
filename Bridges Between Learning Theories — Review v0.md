@@ -1,6 +1,6 @@
-# Unifying Theory — Review v0
+# Bridges Between Learning Theories — Review v0
 
-Independent adversarial review of `Unifying Theory — Draft v0.md` and `Unifying Theory — Open Problems and Tests.md`, written 2026-10-07. I edited neither file. All computations ran on CPU with numpy. The scripts are in this session's scratchpad: `rlct_mc_rerun.py`, `rlct_fiber.py` and `checks_b9_b11.py`.
+Independent adversarial review of `Bridges Between Learning Theories — Draft v0.md` and `Bridges Between Learning Theories — Open Problems and Tests.md`, written 2026-10-07. I edited neither file. All computations ran on CPU with numpy. The scripts are in this session's scratchpad: `rlct_mc_rerun.py`, `rlct_fiber.py` and `checks_b9_b11.py`.
 
 **Verdict labels:** CORRECT / CORRECT-WITH-CAVEATS / WRONG / UNVERIFIABLE-AS-STATED / MISLABELED. A bridge can carry more than one label when its parts differ.
 

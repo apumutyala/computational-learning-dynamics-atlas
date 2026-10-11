@@ -1,6 +1,6 @@
-# Unifying Theory — Open Problems and Tests
+# Bridges Between Learning Theories — Open Problems and Tests
 
-This is the companion to `Unifying Theory — Draft v0.md`. It contains:
+This is the companion to `Bridges Between Learning Theories — Draft v0.md`. It contains:
 
 - **A.** A claim ledger for the five source documents, with errors and overclaims;
 - **B.** The conjectures, each with a falsifiable test;

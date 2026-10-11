@@ -1,4 +1,4 @@
-# The Computational Learning Dynamics Atlas
+# Artificial Learning Dynamics Atlas
 
 An interactive 3D map of research topics in learning, signals, physics, control and capable AI systems, where every connection carries an evidence label.
 
@@ -114,9 +114,9 @@ These are the long-form notes the atlas was built from. Root files:
 - [Evidence Ledger: Learning, Dynamics, and Physical Systems](Evidence%20Ledger%20%20Learning%2C%20Dynamics%2C%20and%20Physical%20Systems.md): a retrieval audit of the source URLs behind the notes.
 - [Learning Geometry Meets System Control](Learning%20Geometry%20Meets%20System%20Control.md): separates the controlled system, the predictive model and the training process.
 - [Mathematical Foundations of Intentional Model Control](Mathematical%20Foundations%20of%20Intentional%20Model%20Control.md): the mathematical bridges for designing useful, correctable learning systems.
-- [Unifying Theory — Draft v0](Unifying%20Theory%20%E2%80%94%20Draft%20v0.md) and [Draft v0.1](Unifying%20Theory%20%E2%80%94%20Draft%20v0.1.md): a unifying account from statistical learning to deep, latent and recurrent learning. v0.1 applies the review.
-- [Unifying Theory — Open Problems and Tests](Unifying%20Theory%20%E2%80%94%20Open%20Problems%20and%20Tests.md) and [v0.1](Unifying%20Theory%20%E2%80%94%20Open%20Problems%20and%20Tests%20v0.1.md): the claim ledger, conjectures and falsification tests that go with each draft.
-- [Unifying Theory — Review v0](Unifying%20Theory%20%E2%80%94%20Review%20v0.md): an independent adversarial review of Draft v0.
+- [Bridges Between Learning Theories — Draft v0](Bridges%20Between%20Learning%20Theories%20%E2%80%94%20Draft%20v0.md) and [Draft v0.1](Bridges%20Between%20Learning%20Theories%20%E2%80%94%20Draft%20v0.1.md): status-labelled bridges between theories of learning, from statistical learning to deep, latent and recurrent learning, including where they do not connect. v0.1 applies the review.
+- [Bridges Between Learning Theories — Open Problems and Tests](Bridges%20Between%20Learning%20Theories%20%E2%80%94%20Open%20Problems%20and%20Tests.md) and [v0.1](Bridges%20Between%20Learning%20Theories%20%E2%80%94%20Open%20Problems%20and%20Tests%20v0.1.md): the claim ledger, conjectures and falsification tests that go with each draft.
+- [Bridges Between Learning Theories — Review v0](Bridges%20Between%20Learning%20Theories%20%E2%80%94%20Review%20v0.md): an independent adversarial review of Draft v0.
 
 In `docs/`:
 
@@ -131,4 +131,5 @@ These are working research notes. They are a synthesis with cited sources, not p
 ## Credits and licences
 
 - 3D rendering uses [three.js](https://threejs.org/) and its OrbitControls, vendored in `vendor/` under the MIT licence ([`vendor/LICENSE-three.txt`](vendor/LICENSE-three.txt)).
-- No licence has been chosen yet for this project's own code, data and notes.
+- This project's code (`*.js`, `*.html`, `*.css`, `backend/`, `tools/`) is under the [MIT licence](LICENSE).
+- Its content (`atlas.json`, `learning/`, `docs/`, the root research notes and `og.png`) is under [CC BY 4.0](LICENSE-CONTENT.md).

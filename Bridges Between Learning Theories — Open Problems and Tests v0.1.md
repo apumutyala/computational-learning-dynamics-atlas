@@ -1,6 +1,6 @@
-# Unifying Theory — Open Problems and Tests v0.1
+# Bridges Between Learning Theories — Open Problems and Tests v0.1
 
-This is the companion to `Unifying Theory — Draft v0.1.md`. It revises the v0 companion using `Unifying Theory — Review v0.md`. The v0 files were not edited.
+This is the companion to `Bridges Between Learning Theories — Draft v0.1.md`. It revises the v0 companion using `Bridges Between Learning Theories — Review v0.md`. The v0 files were not edited.
 
 The reviewer's scripts (`rlct_mc_rerun.py`, `rlct_fiber.py`, `checks_b9_b11.py`) are in the session scratchpad. They are referenced here and were not re-run by me, except where stated.
 
@@ -10,7 +10,7 @@ The reviewer's scripts (`rlct_mc_rerun.py`, `rlct_fiber.py`, `checks_b9_b11.py`)
 
 ### A.1 Source-document ledger
 
-The v0 ledger (`Unifying Theory — Open Problems and Tests.md`, §A.1, 26 claims) stands unchanged: no mathematical errors in the five source documents' derivations.
+The v0 ledger (`Bridges Between Learning Theories — Open Problems and Tests.md`, §A.1, 26 claims) stands unchanged: no mathematical errors in the five source documents' derivations.
 
 The source-document issues E1–E8 also stand. E1 and E2 (unlisted SLT conditions; WBIC matching F only through λ log n) are now addressed inside the draft (§4.1–4.2).
 
