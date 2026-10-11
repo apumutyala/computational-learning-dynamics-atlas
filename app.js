@@ -702,7 +702,7 @@ if (isMobile() && welcomeDismissed()) $('#welcome').classList.add('hide');
 const moreBtn = $('#t-more');
 function closeToolsMenu() { document.body.classList.remove('tools-open'); moreBtn?.setAttribute('aria-expanded', 'false'); }
 moreBtn?.addEventListener('click', () => { const open = !document.body.classList.contains('tools-open'); document.body.classList.toggle('tools-open', open); moreBtn.setAttribute('aria-expanded', String(open)); });
-document.addEventListener('pointerdown', e => { if (!e.target.closest('#t-more,.tools')) closeToolsMenu(); });
+document.addEventListener('pointerdown', e => { if (!e.target.closest('#t-more,.tools,#track-menu')) closeToolsMenu(); });
 $('#t-hyp').addEventListener('click', () => setTimeout(closeToolsMenu, 150));
 $('#t-drift').addEventListener('click', () => setTimeout(closeToolsMenu, 150));
 
@@ -765,4 +765,4 @@ addEventListener('hashchange', () => { const id = decodeURIComponent(location.ha
 window.__atlas = { S, travel, byId, project, enter };
 // Learning harness (learn.js) gets only this surface; the atlas keeps working if it fails to load.
 const learnAPI = { S, byId, edges, nodes, EV, enter, travel, showRoute, highlightRoute, clearRoute, closePanel, updateOffset, isMobile, esc, clusterColor: id => clusterOf.get(byId.get(id).group).color, edgeById: id => edges.find(e => e.id === id) || null, edgeBetween: (a, b) => adj.get(a)?.find(e => other(e, a) === b) || null };
-import('./learn.js?v=20261011b').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
+import('./learn.js?v=20261011c').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));

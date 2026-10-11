@@ -471,6 +471,35 @@ function renderWelcome() {
   c.dataset.path = p ? p.id : '';
 }
 
+/* ---------------- learning-track menu (☰) ---------------- */
+const TRACKS = [
+  ['Alignment thesis', p => p.id.startsWith('thesis-')],
+  ['Interpretable-ML researcher', p => p.id === 'interpretable-ml-to-thesis' || p.id.startsWith('mechinterp-')],
+  ['Forward-deployed research engineer', p => p.id.startsWith('fde-')],
+];
+// Reading order within a track; paths not listed fall back to title order (e.g. "· I", "· II", "· III").
+const TRACK_ORDER = ['interpretable-ml-to-thesis', 'mechinterp-circuits-causal-tests', 'mechinterp-features-representations', 'mechinterp-circuit-discovery-scale'];
+const trackRank = p => { const i = TRACK_ORDER.indexOf(p.id); return i < 0 ? TRACK_ORDER.length : i; };
+function renderTrackMenu() {
+  const used = new Set(), groups = [];
+  for (const [name, inTrack] of TRACKS) {
+    const ps = D.paths.filter(inTrack).sort((a, b) => trackRank(a) - trackRank(b) || a.title.localeCompare(b.title));
+    ps.forEach(p => used.add(p.id));
+    if (ps.length) groups.push([name, ps]);
+  }
+  const rest = D.paths.filter(p => !used.has(p.id));
+  if (rest.length) groups.push(['More learning paths', rest]);
+  const html = '<div class="tl-title">Learning tracks</div>' + groups.map(([name, ps]) => `<div role="group" aria-label="${esc(name)}"><div class="tl-h">${esc(name)}</div>${ps.map(p =>
+    `<button class="tl-btn" data-track-path="${esc(p.id)}"><b>${esc(p.title)}</b><small>${p.steps.length} steps · about ${p.estHours} h${st.progress?.[p.id]?.done?.length ? ' · in progress' : ''}</small></button>`).join('')}</div>`).join('');
+  document.querySelectorAll('.track-list').forEach(el => { el.innerHTML = html; });
+}
+async function startTrackPath(id) {
+  await loadData();
+  document.body.classList.remove('tools-open'); $('#t-more')?.setAttribute('aria-expanded', 'false');
+  if (ob) closeModal();
+  openPath(id);
+}
+
 export async function init(api) {
   A = api; esc = api.esc; st = load();
   // A stale cached index.html may lack the harness markup: do nothing rather than crash the atlas.
@@ -484,6 +513,8 @@ export async function init(api) {
   on('#learn-continue', 'click', async e => { await loadData(); openPath(e.currentTarget.dataset.path); });
   on('#learn-pill', 'click', () => { A.closePanel(); syncPill(); side().querySelector('.l-step[aria-expanded="true"]')?.focus(); });
   on('#t-overview', 'click', () => closeSide());
+  on('#t-more', 'click', async () => { await loadData(); renderTrackMenu(); });
+  document.addEventListener('click', ev => { const b = ev.target.closest('[data-track-path]'); if (b) startTrackPath(b.dataset.trackPath); });
   // Keep the path lit when the topic window closes or re-renders (closePanel/crossings clear S.route).
   new MutationObserver(() => {
     syncPill();
