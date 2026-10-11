@@ -3,7 +3,7 @@
  "about": "Content for tools/add_inference_track.py: the 'Inference & efficient systems' cluster and the inference/performance-engineer learning track.",
  "cluster": {
   "name": "Inference & efficient systems",
-  "color": "#d49ab0",
+  "color": "#e8c05a",
   "center": [
    130.0,
    -240.0,
