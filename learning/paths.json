@@ -870,9 +870,9 @@
   },
   {
    "id": "interpretable-ml-to-thesis",
-   "title": "Interpretable-ML researcher: from sparse trees and Rashomon sets through mechanistic interpretability to the thesis",
-   "summary": "Start from inherently interpretable models and Rashomon sets, test post-hoc network explanation (SAEs, circuits, their critiques) against that standard, then follow belief-state geometry into predictive states, developmental SLT and measured correction, ending at the atlas's alignment thesis.",
-   "audience": "Interpretable-ML researchers: people who build sparse optimal decision trees and Rashomon sets, or who work in mechanistic interpretability, and who work on agent safety, with strong math (real analysis, probability, high-dimensional statistics) and hands-on RL post-training and agent-infrastructure experience.",
+   "title": "From interpretable ML to the alignment thesis: Rashomon sets, interpretability evidence and belief states",
+   "summary": "Start from models that are their own explanation (optimal sparse trees, Rashomon sets) and use them as the standard for judging after-the-fact network explanations such as sparse autoencoders. Then follow the one interpretability result checked against a known answer, belief-state geometry, through its theory, training stages and probe-guided data editing, to the evidence the alignment thesis would accept. The last three links are untested hypotheses.",
+   "audience": "Researchers from interpretable ML (sparse models, Rashomon sets) or from mechanistic interpretability who are comfortable with probability and statistics, know the basics of RL fine-tuning, and want to see where interpretability evidence fits in the atlas's alignment thesis. Superposition and the local learning coefficient appear only briefly; open those topics first if they are new.",
    "level": "advanced",
    "skills": [
     "stats-ml",
@@ -880,60 +880,60 @@
     "deep-learning",
     "probability"
    ],
-   "estHours": 20,
+   "estHours": 24,
    "steps": [
     {
      "node": "sparsetrees",
-     "objective": "State the OSDT/GOSDT objective (loss + λ × leaves), explain how bounds and dynamic programming certify optimality, and say what the certificate is relative to.",
-     "why": "Home territory, and the evidence standard the rest of the path is measured against: an explicit objective, a certified optimum, and a model that is its own explanation.",
+     "objective": "State the optimal sparse decision tree objective (loss + λ × number of leaves), explain how bounds and dynamic programming certify that a tree is optimal, and say what the certificate is relative to (the objective, λ, the data and the binarized features).",
+     "why": "The standard for the whole path: an explicit objective, a certified optimum, and a model that is its own explanation. Every later step is judged against it. If you work in interpretable ML this is home ground; if you come from mechanistic interpretability, it is the comparison point.",
      "via": null
     },
     {
      "node": "rashomon",
      "objective": "Define the Rashomon set and ratio, explain how TreeFARMS enumerates it, and compute a variable-importance range across the set rather than for one tree.",
-     "why": "The atlas edge: TreeFARMS enumerates every tree within ε of the optimum. The habit of asking “which of the many near-optimal models?” is the one to carry into network interpretability.",
+     "why": "Once you can find the single best sparse tree, the same search can list every tree whose loss is within ε of it (TreeFARMS). Often many quite different trees fit almost equally well. Carry the question “which of the near-optimal models are we looking at?” into every later step.",
      "via": "rel-99c46da8"
     },
     {
      "node": "rudin2019",
      "objective": "Summarize the argument against post-hoc explanation for high-stakes decisions, and say which part concerns structured data and which part is general.",
-     "why": "The atlas edge: a large Rashomon set makes a simple, accurate model likely to exist. This is the position from which mechanistic interpretability looks like explaining a black box after the fact.",
+     "why": "If many models fit equally well, a simple, accurate one is likely to be among them. Rudin uses this to argue: search for an interpretable model before accepting a black box and explaining it afterwards. Keep this position in mind, because the next step is exactly such an after-the-fact explanation.",
      "via": "rel-35c3f87d"
     },
     {
      "node": "sae",
-     "objective": "Write the SAE objective, explain why it does not identify a unique dictionary, and list the three checks a claim should report: seed stability, reconstruction loss, and a dense-probe baseline.",
-     "why": "The atlas edge: SAEs are exactly the post-hoc explanation the previous step argues against, and their reconstruction error is the fidelity gap. Your Rashomon intuition applies directly: different seeds give partly different dictionaries at similar loss (the hypothesis edge to Rashomon sets). Mechanistic interpretability's evidence is weaker than a certified optimum: on downstream tasks SAEs have not beaten linear probes, and illusions show that convincing labels can be dataset artefacts. It still informs the thesis by naming candidate internal variables to test.",
+     "objective": "Write the SAE objective (reconstruction error plus a sparsity penalty over an overcomplete dictionary), explain why it does not pick out a unique dictionary, and list the three checks a claim should report: seed stability, the loss increase when activations are replaced by reconstructions, and a dense linear-probe baseline.",
+     "why": "A sparse autoencoder explains a trained network after the fact, the approach the previous step argues against, and its reconstruction error is the part left unexplained. Your Rashomon habit applies: SAEs trained with different seeds share only part of their features at similar loss, so no single dictionary is “the” explanation (the atlas records this analogy as untested). The evidence is weaker than a certified optimum: on downstream tasks SAEs have not beaten linear probes, and convincing feature labels can be artefacts of the dataset. SAEs still help by suggesting internal variables worth testing. Background: SAEs are motivated by superposition, the idea that a network stores more features than it has dimensions.",
      "via": "rel-398713ed"
     },
     {
      "node": "beliefgeometry",
-     "objective": "Explain how the target belief simplex is computed from a known HMM before the network is examined, and what a linear readout of it does and does not show.",
-     "why": "The atlas edge: a target fixed in advance, unlike features found and then labelled. This is the piece of interpretability the thesis can use, because it is checked against a known answer, much as a certified tree is. It remains a readout in toy processes with no actions, not evidence that the model uses the belief.",
+     "objective": "Explain how the target geometry (the set of Bayesian beliefs over a known HMM's hidden states) is computed from the generator before the network is examined, and what a linear readout of it does and does not show.",
+     "why": "SAE features are found first and named afterwards. Here the target is fixed in advance, so the readout is checked against a known answer, much as a certified tree is. That makes it the piece of interpretability the thesis can use. Caveat: it is a readout in small synthetic processes with no actions, and it does not show that the model uses the belief.",
      "via": "rel-148aae78"
     },
     {
      "node": "predictivestate",
-     "objective": "State the predictive-equivalence definition of causal states and why they are the minimal sufficient statistic for prediction under stationarity.",
-     "why": "The atlas edge: computational mechanics supplies the predicted geometry. The thesis needs belief as an explicit object with update semantics, not as a direction found inside a network, and this is where that object is defined.",
+     "objective": "State the predictive-equivalence definition of causal states (group histories that predict the same distribution of futures) and why they are the minimal sufficient statistic for prediction under stationarity.",
+     "why": "Step back to the theory that predicted the geometry. Computational mechanics defines the belief state as an explicit object with its own update rule, not as a direction found inside a network. The thesis needs belief in this explicit form.",
      "via": "rel-23b9ca05"
     },
     {
      "node": "development",
-     "objective": "Describe how LLC-detected stages are found, and design the test that would show whether belief geometry forms at a stage boundary.",
-     "why": "A hypothesis edge: whether stages coincide with the belief geometry forming is untested. SLT is the natural home for Rashomon intuitions: the LLC is the exponent of the volume of near-optimal parameters (see the hypothesis edge from Rashomon sets to the LLC), and singular models have degenerate, non-unique minima. Developmental claims here are associations in small transformers, a weaker standard than an optimality certificate.",
+     "objective": "Describe how stages of training are detected with the local learning coefficient (LLC), and design the experiment that would show whether the belief geometry forms at a stage boundary.",
+     "why": "Untested link: nobody has yet checked whether these training stages coincide with the belief geometry forming, so this step asks you to design that test. Rashomon intuitions carry over: the LLC measures how fast the volume of near-optimal parameters shrinks as the loss tolerance tightens (another analogy the atlas marks untested), and neural networks have many non-unique best parameters. Evidence for stages comes from associations in small transformers, a weaker standard than an optimality certificate. If the LLC is new to you, open that topic first.",
      "via": "rel-5348002e"
     },
     {
      "node": "probeattr",
-     "objective": "Explain how a behaviour probe ranks preference data for filtering, and how stage-aware attribution would change the ranking.",
-     "why": "A hypothesis edge: compare checkpoint-wise influence with one-checkpoint probe attribution. This is where interpretability becomes an actuator: a probe changes the training data and the retrained outcome is measured. Features used as RL rewards are the RL-side analogue, and their probes face the same selectivity and optimization-pressure caveats as any probe.",
+     "objective": "Explain how a behaviour probe ranks preference examples for filtering before retraining, and how stage-aware attribution (scoring examples at several checkpoints) could change that ranking.",
+     "why": "Untested link: influence measured across checkpoints can change sign between stages, while probe attribution scores data at a single checkpoint, so comparing the two rankings is an open experiment. This is where interpretability becomes an actuator: a probe decides which training data to edit, and the retrained model's behaviour is measured. Using features as RL rewards is the RL-side analogue. Both face the usual probe caveats: a probe can read a direction the model does not use, and optimizing against a probe can break it.",
      "via": "rel-5ab37c97"
     },
     {
      "node": "alignmentthesis",
-     "objective": "State the thesis's correction and learning interfaces and its falsifier, and say what evidence would make probe-guided correction count.",
-     "why": "A hypothesis edge: probe-guided editing is a candidate correction actuator only if the correction persists and unrelated capability holds on independent evaluations. The thesis asks for behavioural, prospective evidence; internal explanations inform which variables to test but do not substitute for that test.",
+     "objective": "State what the thesis requires of its correction interface (how a correction changes the system) and learning interface (how data and objectives are updated), state its falsifier (better proxy optimization systematically destroying independently evaluated user utility), and say what evidence would make probe-guided correction count.",
+     "why": "Untested link: probe-guided data editing counts as a correction tool for the thesis only if the correction lasts and unrelated capability holds on independent evaluations. The thesis asks for behavioural, prospective evidence. Internal explanations help choose which variables to test, but they do not replace that test.",
      "via": "rel-d80ee5b0"
     }
    ]
@@ -942,7 +942,7 @@
    "id": "mechinterp-circuits-causal-tests",
    "title": "Mechanistic interpretability: circuits and the causal tests behind them",
    "summary": "From the circuits programme and two fully worked case studies to the patching, scrubbing and abstraction tests used to check circuit claims, ending with the illusions those tests can produce.",
-   "audience": "Learners who know transformers and want to judge circuit-level claims, including what each test can and cannot establish.",
+   "audience": "Learners who know how a transformer works (attention heads, the residual stream) and want to judge circuit-level claims, including what each test can and cannot establish.",
    "level": "advanced",
    "skills": [
     "deep-learning",
@@ -952,50 +952,50 @@
    "steps": [
     {
      "node": "circuits",
-     "objective": "State the three claims of the circuits programme and give one worked example.",
-     "why": "The programme every later step either uses or tests.",
+     "objective": "State the three claims of the circuits programme (features are the basic units, circuits connect features through weights, and similar features and circuits recur across models) and give one worked example, such as curve detectors.",
+     "why": "The programme every later step either uses or tests. Its evidence is mostly case studies in one vision model, so keep asking how far it carries to transformers.",
      "via": null
     },
     {
      "node": "grokkingmech",
      "objective": "Explain the Fourier multiplication algorithm in the modular-addition network and the three phases the progress measures reveal.",
-     "why": "The atlas edge: a rare complete reverse-engineering, possible because the task's algorithm could be guessed and checked.",
+     "why": "The best case for the programme: a small transformer trained on modular addition was reverse-engineered completely from its weights. That worked because the algorithm could be guessed and then checked. Basic Fourier analysis helps here.",
      "via": "rel-e38e2066"
     },
     {
      "node": "inductionheads",
-     "objective": "Describe the previous-token/induction-head composition and the grade of evidence for its role at scale.",
-     "why": "The atlas edge: both read an abrupt behaviour change through a mechanism that forms gradually.",
+     "objective": "Describe how a previous-token head and an induction head compose to complete [A][B] … [A] → [B], and grade the evidence for their role in larger models.",
+     "why": "From a toy task to language models. Induction heads are the standard example of a transformer circuit: two heads that work together to continue repeated text. As with grokking, a sudden change in behaviour (here, in-context learning) is explained by a mechanism that forms during training.",
      "via": "rel-b8b0be49"
     },
     {
      "node": "ioi",
      "objective": "Name the IOI head classes and explain why backup heads complicate ablation evidence.",
-     "why": "The atlas edge: the IOI circuit contains induction and duplicate-token heads.",
+     "why": "A larger circuit in GPT-2 small that reuses induction and duplicate-token heads to spot the repeated name. It is also where ablation evidence starts to get complicated.",
      "via": "rel-73a32a26"
     },
     {
      "node": "actpatching",
      "objective": "Run activation patching with two corruption schemes and two metrics, and explain why results can differ.",
-     "why": "The atlas edge: IOI was found with path patching, so its evidence is only as good as patching's.",
+     "why": "Now look at the tool behind the evidence. The IOI circuit was found with path patching, a variant of activation patching, so its claims are only as reliable as patching is.",
      "via": "rel-2f10ff76"
     },
     {
      "node": "causalscrubbing",
      "objective": "Turn a circuit hypothesis into resampling ablations and compute the fraction of loss recovered.",
-     "why": "The atlas edge: scrubbing derives which activations to resample from the hypothesis itself.",
+     "why": "Patching tests one component at a time. Causal scrubbing tests a whole hypothesis: the hypothesis says which activations should not matter, those are resampled from other inputs, and you measure how much behaviour survives.",
      "via": "rel-7d84d9dd"
     },
     {
      "node": "causalabstraction",
-     "objective": "Define an interchange intervention and explain what distributed alignment search learns.",
-     "why": "The atlas edge: causal abstraction is proposed as the common foundation for scrubbing and patching.",
+     "objective": "Define an interchange intervention and explain what distributed alignment search learns (a rotated subspace of activations that lines up with a high-level variable).",
+     "why": "Patching and scrubbing are both instances of one idea: swap internal values between inputs and check that a high-level causal model predicts the effect. Causal abstraction makes that idea formal.",
      "via": "rel-25d6281c"
     },
     {
      "node": "illusions",
      "objective": "Explain the dormant-pathway illusion and the dataset-dependence illusion, and the extra evidence each calls for.",
-     "why": "The atlas edge: learned subspace interventions can pass interchange tests through pathways the model does not normally use.",
+     "why": "The tests on this path can mislead. A learned subspace intervention can pass an interchange test by activating a pathway the model does not normally use, so a high score can overstate how faithful the explanation is.",
      "via": "rel-448a9f96"
     }
    ]
@@ -1016,55 +1016,55 @@
     {
      "node": "tunedlens",
      "objective": "Decode intermediate layers with the logit lens and the tuned lens, and say why a lens is a probe.",
-     "why": "A low-cost first look at what a layer encodes, and the first probing caveat.",
+     "why": "A cheap first look at what each layer encodes, and the first caveat: a lens is itself a trained probe.",
      "via": null
     },
     {
      "node": "controlprobes",
      "objective": "Compute probe selectivity with a control task and explain why decodability does not show use.",
-     "why": "The atlas edge: the tuned lens is a per-layer affine probe, so control-task caveats apply.",
+     "why": "The tuned lens trains a probe at every layer, so the general probing caveat applies: high accuracy can reflect what the probe learns on its own rather than what the model encodes.",
      "via": "rel-9cf74bbf"
     },
     {
      "node": "othello",
      "objective": "Describe the Othello-GPT probes and the intervention that changes its moves.",
-     "why": "The atlas edge: Othello-GPT adds the intervention that probing alone lacks.",
+     "why": "Othello-GPT adds what probing alone lacks: editing the decoded board changes the model's moves, which is evidence that the model uses that information.",
      "via": "rel-55bd4dda"
     },
     {
      "node": "linearrep",
-     "objective": "State the linear representation hypothesis, the causal inner product, and a known counterexample.",
-     "why": "The atlas edge: the board becomes linear in a mine/theirs basis.",
+     "objective": "State the linear representation hypothesis, explain how the causal inner product makes the probing and steering senses of “direction” agree, and give a counterexample such as the circular day-of-week features.",
+     "why": "In Othello-GPT the board was linearly readable and editable once it was described relative to the player to move (mine/theirs) rather than as black/white. That suggests a general claim: concepts are directions in activation space.",
      "via": "rel-fde25ebb"
     },
     {
      "node": "superposition",
      "objective": "Explain when toy models store features in superposition and the link to compressed sensing.",
-     "why": "The atlas edge: superposition assumes linear features and asks how more than d fit in d dimensions.",
+     "why": "If features are directions, how can a model with d dimensions hold more than d of them? Superposition answers this in toy models: sparse features share nearly orthogonal directions, at the cost of some interference.",
      "via": "rel-fcbdc2fb"
     },
     {
      "node": "sae",
-     "objective": "Train or describe an SAE and report seed stability and reconstruction loss.",
-     "why": "The atlas edge: an overcomplete sparse dictionary is the proposed way to undo superposition.",
+     "objective": "Write the SAE loss (reconstruction plus a sparsity penalty over an overcomplete dictionary), and report seed stability and the loss increase when activations are replaced by reconstructions.",
+     "why": "If features are stored in superposition, a dictionary with more directions than dimensions, only a few active at a time, may pull them apart. SAEs are trained for exactly that.",
      "via": "rel-a495869e"
     },
     {
      "node": "scalingmono",
      "objective": "Summarize what scaling SAEs to a production model found, and the authors' caution on safety-relevant features.",
-     "why": "The atlas edge: the same method at tens of millions of latents.",
+     "why": "The same method scaled to tens of millions of features on a production model, where it finds abstract, multilingual and safety-relevant features.",
      "via": "rel-020a675e"
     },
     {
      "node": "steering",
      "objective": "Build a steering vector from contrasting prompts and measure its side effects.",
-     "why": "The atlas edge: clamping a feature steers behaviour as its label predicts.",
+     "why": "Setting an SAE feature to a high value changes behaviour as its label predicts (the Golden Gate Bridge example). Steering vectors do the same with a direction taken from contrasting prompts, with no dictionary needed.",
      "via": "rel-b531ba71"
     },
     {
      "node": "saebaselines",
      "objective": "Compare an SAE-based method with a dense linear probe and with prompting at matched data.",
-     "why": "The atlas edge: on AxBench prompting beat representation steering. The baseline comparison is the evidence standard to apply to every feature claim on this path.",
+     "why": "The reality check. On the AxBench benchmark, plain prompting beat every representation-based steering method, and on downstream tasks SAE features have not beaten dense linear probes. Apply this baseline comparison to every feature claim on this path.",
      "via": "rel-72d65f4d"
     }
    ]
@@ -1073,55 +1073,55 @@
    "id": "mechinterp-circuit-discovery-scale",
    "title": "Mechanistic interpretability: automating circuit discovery, up to alignment audits",
    "summary": "From manual patching to automated and gradient-based circuit discovery, feature-level circuits through transcoders, attribution graphs, and their use in an alignment audit.",
-   "audience": "Learners who know activation patching and SAEs and want the scaled-up circuit-discovery toolchain and its limits.",
+   "audience": "Learners who already know activation patching and sparse autoencoders and want the scaled-up circuit-discovery toolchain and its limits. The last step assumes you know what reward hacking is.",
    "level": "advanced",
    "skills": [
     "deep-learning",
     "linear-algebra",
     "optimization"
    ],
-   "estHours": 12,
+   "estHours": 14,
    "steps": [
     {
      "node": "actpatching",
      "objective": "Explain what an activation-patching effect measures and how corruption choices change it.",
-     "why": "Every method on this path approximates or automates this measurement.",
+     "why": "Every method on this path approximates or automates this one measurement.",
      "via": null
     },
     {
      "node": "acdc",
      "objective": "Run or describe ACDC and how its threshold changes the recovered circuit.",
-     "why": "The atlas edge: ACDC automates the patch-and-prune loop.",
+     "why": "Manual circuit work patches and prunes one edge at a time. ACDC automates that loop, with a threshold deciding which edges to keep.",
      "via": "rel-fcea3b50"
     },
     {
      "node": "attrpatching",
      "objective": "Derive the first-order attribution-patching estimate and name two ways it produces false negatives.",
-     "why": "The atlas edge: edge attribution patching recovered circuits better than ACDC on average, far more cheaply.",
+     "why": "Patching every edge is expensive. Attribution patching estimates all the patching effects at once from gradients, and edge attribution patching recovered reference circuits better than ACDC on average at a fraction of the cost.",
      "via": "rel-aa9af015"
     },
     {
      "node": "sae",
      "objective": "Explain why attributions over SAE features plus error terms give feature-level circuits.",
-     "why": "The atlas edge: sparse feature circuits run attribution patching over dictionary features.",
+     "why": "From components to features: sparse feature circuits run attribution patching over SAE features, plus error terms for what the SAE misses.",
      "via": "rel-1556ecec"
     },
     {
      "node": "transcoders",
      "objective": "Contrast an SAE with a transcoder, and say what model diffing with a crosscoder shows and what can mislead it.",
-     "why": "The atlas edge: transcoders predict a sublayer's output, making feature-to-feature attribution tractable.",
+     "why": "SAE features in different layers are hard to connect. A transcoder predicts a sublayer's output from its input, so feature-to-feature attributions become direct to compute.",
      "via": "rel-e681c33f"
     },
     {
      "node": "attributiongraphs",
      "objective": "Read an attribution graph, including error nodes, and design the perturbation that tests it.",
-     "why": "The atlas edge: attribution graphs are computed through a cross-layer transcoder replacement.",
+     "why": "Attribution graphs replace the model's MLPs with a cross-layer transcoder and trace one prompt through it. Error nodes record what the replacement misses.",
      "via": "rel-b2b20cae"
     },
     {
      "node": "auditing",
      "objective": "Describe the hidden-objective auditing game and what its success does and does not show.",
-     "why": "The atlas edge: attribution graphs were applied to the audited model. One planted objective with a known answer is a test bed, not evidence that audits find unplanted ones.",
+     "why": "Attribution graphs were applied to the model from this blind auditing game, which had been trained to exploit reward-model errors. One planted objective with a known answer is a test bed, not evidence that audits find objectives nobody planted.",
      "via": "rel-2dedfa07"
     }
    ]
@@ -1129,8 +1129,8 @@
   {
    "id": "thesis-supporting-case",
    "title": "Alignment thesis · I: the supporting case",
-   "summary": "Build the alignment thesis from its component evidence: reward uncertainty, deference, assistance games, belief states, world models and verified enforcement. Each step names the thesis claim it supports and the gap it leaves open.",
-   "audience": "A new research teammate joining the alignment-thesis work who knows basic RL and LLM post-training and wants the strongest honest case for the thesis.",
+   "summary": "Build the case for the alignment thesis from its component evidence: reward uncertainty, deference, assistance games, belief states, world models and verified enforcement. The thesis describes a system made of parts it calls interfaces (for example intent, correction, belief, consequence and execution); each step names the part a work supports and the gap it leaves open.",
+   "audience": "A new teammate joining the alignment-thesis work who knows basic RL (MDPs, policy optimization) and LLM post-training (reward models, RLHF) and wants the strongest honest case for the thesis.",
    "level": "advanced",
    "skills": [
     "rl",
@@ -1143,55 +1143,55 @@
     {
      "node": "rmensemble",
      "objective": "Explain worst-case and uncertainty-weighted ensemble objectives and why they blunt reward-model overoptimization in best-of-n and PPO.",
-     "why": "Supports the thesis claim that the system should 'remain uncertain about underspecified objectives', and shows it is implementable for LLM reward models. Gap: the 'true' reward was a gold model, and members trained on the same data share errors, so the thesis's optimization-pressure test with independent evaluators is still owed.",
+     "why": "Start with a practical LLM result. The thesis says a system should stay uncertain about objectives that are not fully specified, and ensembles show one way to do that with reward models. Gap: the “true” reward was a larger gold reward model, not people, and members trained on the same data share errors. The thesis still needs a test that optimizes the proxy hard while independent evaluators measure real user utility.",
      "via": null
     },
     {
      "node": "ird",
      "objective": "State the inverse reward design problem: infer a posterior over true objectives from a designed reward and its training MDP, then plan risk-aversely.",
-     "why": "Supports the intent interface, which represents unresolved goals separately from world facts: a proxy reward is evidence, not the objective. Gap: the true objective must lie in a hand-specified hypothesis space, and results come from small navigation environments.",
+     "why": "From an ensemble's disagreement to an explicit posterior: treat the designed reward as evidence about what the designer wants, not as the objective itself (whether ensemble spread approximates such a posterior is untested). This supports the thesis's intent interface, which keeps unresolved goals separate from facts about the world. Gap: the true objective must lie in a hand-specified set of candidates, and results come from small navigation environments.",
      "via": "rel-4513fe79"
     },
     {
      "node": "offswitch",
      "objective": "Derive the off-switch game result: when the robot is uncertain and treats the human's choice as evidence, it can prefer to leave its off switch usable.",
-     "why": "Supports the correction interface: accepting valid corrections can follow from objective uncertainty rather than being bolted on. Gap: it assumes a rational or mildly noisy human and a correct model; path II ends at the counterexample.",
+     "why": "The same idea applied to shutdown. This supports the correction interface: accepting valid corrections can follow from uncertainty about the objective rather than being bolted on. Gap: it assumes a rational or mildly noisy human and a correct model; the last step of part II gives a counterexample.",
      "via": "rel-9402f8e8"
     },
     {
      "node": "assistance",
      "objective": "Describe the CIRL game, in which the robot must infer a human reward parameter while acting, and why clarification and teaching become optimal actions.",
-     "why": "Supports making 'clarification, teaching and communication part of decision-making'. Gap: CIRL assumes a shared, representable reward and a specified human model, which the thesis lists as possibly misspecified.",
+     "why": "The off-switch game is a small case of a general assistance game (CIRL), in which the robot learns the human's objective while acting. This supports making clarification, teaching and communication part of decision-making. Gap: CIRL assumes a shared, representable reward and a specified human model, both of which the thesis lists as possibly wrong.",
      "via": "rel-ec0de3a5"
     },
     {
      "node": "pomdp",
      "objective": "Explain how the assistance game reduces to a coordination POMDP whose hidden state includes the human's objective, so planning is over a belief.",
-     "why": "Supports the belief interface: one belief update covers both uncertain world state and uncertain objective. Gap: the belief is sufficient only relative to the specified model, not to every consequence the user cares about.",
+     "why": "Solving the assistance game reduces to planning over a belief that covers both the world state and the human's objective. This supports the belief interface: one belief update handles both kinds of uncertainty. Gap: the belief is sufficient only relative to the specified model, not to every consequence the user cares about.",
      "via": "thesis-4c5e2864"
     },
     {
      "node": "beliefgeometry",
-     "objective": "Explain how the mixed-state presentation predicts a belief simplex, and what it means that a linear probe recovers it from a transformer's residual stream.",
-     "why": "Supports the claim that learned models can carry the belief states the belief interface needs, without hand-coding them. Gap: synthetic generators, no actions, no edit tests, so semantic sufficiency in a real task remains open.",
+     "objective": "Explain how computational mechanics predicts the shape of the Bayesian beliefs over an HMM's hidden states (a simplex, sometimes with fractal structure), and what it means that a linear probe recovers that shape from a transformer's residual stream.",
+     "why": "The beliefs a planner conditions on can be learned rather than hand-coded: a transformer trained only to predict tokens represents them linearly. This supports the belief interface. Gap: synthetic data, no actions and no editing tests, so whether such a belief keeps every distinction a real task needs is open.",
      "via": "rel-51fc0d14"
     },
     {
      "node": "world",
      "objective": "Describe how DreamerV3 learns action-conditioned latent dynamics and trains behavior on imagined trajectories, and how to test action-conditioned calibration separately from return.",
-     "why": "Supports the consequence interface, which predicts multi-step outcomes conditional on candidate actions. Gap: good imagined return does not establish causal action validity outside the behavior policy's support.",
+     "why": "Beliefs alone do not choose actions; you also need predictions of what each action will do. World models such as DreamerV3 learn those predictions, supporting the consequence interface. Whether their latent state matches the belief geometry is untested. Gap: good imagined return does not show that the action predictions are causally right outside the actions the training policy took.",
      "via": "rel-997fef88"
     },
     {
      "node": "gsai",
      "objective": "Name the three components of guaranteed-safe AI and explain why every guarantee is relative to the world model and specification.",
-     "why": "Supports the execution interface and independent enforcer: checks sit outside the learned policy's write access, with a backup action. Gap: no frontier-scale verified system exists, and world-model error passes straight into the guarantee.",
+     "why": "Learned models can be wrong, so the thesis adds a separate check on actions. Guaranteed-safe AI checks actions against a formal specification and a world model, outside the learned policy's control, with a fallback action. This supports the execution interface and independent enforcer. Gap: no frontier-scale verified system exists, and any world-model error passes straight into the guarantee.",
      "via": "rel-101bd7e7"
     },
     {
      "node": "alignmentthesis",
-     "objective": "State the full thesis loop, which components the preceding works supply, and the decisive test: capability plus lasting correctability against simple baselines at matched total cost.",
-     "why": "The thesis claims the composition is stronger than its parts. Gap: no cited source validates the composition under new tasks, long horizons or strategic interference; path II examines the strongest reasons it might fail.",
+     "objective": "State the full thesis loop (observe, update belief, predict consequences, plan under intent uncertainty, accept corrections, enforce execution limits, learn), which components the preceding works supply, and the decisive test: capability plus lasting correctability against simple baselines at matched total cost.",
+     "why": "The thesis claims the combination is stronger than its parts. Gap: no cited source tests the combination on new tasks, over long horizons or against strategic interference; part II examines the strongest reasons it might fail.",
      "via": "rel-98fe51d2"
     }
    ]
@@ -1200,7 +1200,7 @@
    "id": "thesis-opposing-case",
    "title": "Alignment thesis · II: the case against",
    "summary": "Start from the alignment thesis and work through the strongest objections, steelmanned: the Bitter Lesson, post-hoc readouts, latent knowledge, goal misgeneralization, deceptive persistence, alignment faking and incorrigibility. Each step names the assumption it attacks and the experiment that would settle it.",
-   "audience": "A new research teammate or reviewer asked to stress-test the alignment thesis; best after part I or the belief-state capstone.",
+   "audience": "A new teammate or reviewer asked to stress-test the alignment thesis. Best after part I (the supporting case) or the belief-state capstone; assumes basic RL and familiarity with LLM fine-tuning.",
    "level": "advanced",
    "skills": [
     "rl",
@@ -1211,56 +1211,56 @@
    "steps": [
     {
      "node": "alignmentthesis",
-     "objective": "List the thesis's interfaces (observation, belief, consequence, intent, correction, planning, execution, learning), its gap register, and its stated falsifier.",
+     "objective": "List the thesis's interfaces (observation, belief, consequence, intent, correction, planning, execution, learning), its list of open gaps, and the result it says would refute it.",
      "why": "To attack a thesis fairly you need its own commitments. It names its falsifier: reject it if better proxy optimization systematically destroys independently evaluated user utility.",
      "via": null
     },
     {
      "node": "bitterlesson",
      "objective": "Summarize Sutton's argument and its historical cases, and state precisely which thesis design choice it threatens.",
-     "why": "Attacks the assumption that explicit structure (filters, beliefs, typed interfaces) is worth its cost. Adjudicate with the thesis's own 'compute and usefulness' test: compare total compute and accepted-task success at a fixed error and correction threshold, repeated across scales.",
+     "why": "Attacks the assumption that explicit structure (filters, beliefs, typed interfaces) is worth its cost. Settle it the thesis's way: compare total compute and the share of tasks completed at a fixed error and correction threshold, repeated across scales. The essay is about capability and says nothing about correctability.",
      "via": "rel-3a9c610c"
     },
     {
      "node": "rudin2019",
      "objective": "Distinguish an inherently interpretable model from a post-hoc explanation of a black box, and state the scope of the claim that accuracy is similar.",
-     "why": "This work cuts both ways. It rebuts the Bitter Lesson for structured data, but attacks any plan to inspect learned components by explaining them afterwards. Adjudicate in the correction stage: explicit interface versus black box plus explanation, scored on whether edits change behavior as predicted.",
+     "why": "This work cuts both ways. It answers the Bitter Lesson for structured data, where interpretable models often match black boxes, but it attacks any plan to trust learned components by explaining them afterwards. Settle it by comparing an explicit correction interface with a black box plus explanation, scored on whether edits change behaviour as predicted.",
      "via": "rel-42c51128"
     },
     {
      "node": "elk",
      "objective": "Explain the SmartVault setup and why a direct translator and a human simulator can fit the same training labels.",
-     "why": "Attacks the semantic validity of the belief interface: a readout may report what we would believe, not what the model knows. Adjudicate with the 'semantic sufficiency' test, using matched observations from different true states such as tampered sensors, and check that decisions and readouts separate.",
+     "why": "Rudin doubts that explanations describe a black box faithfully; ELK doubts that a trained reporter reports what the model actually knows. This attacks the belief interface: a readout may say what a human would believe, not what the model knows. Settle it with matched observations from different true states, such as tampered sensors, and check that both decisions and readouts tell them apart. ELK is a problem statement, not an observed failure.",
      "via": "rel-6bced56a"
     },
     {
      "node": "goalmisgen",
      "objective": "Distinguish goal misgeneralization from capability failure and from specification gaming, using the CoinRun example, and say how mesa-optimization frames it.",
-     "why": "Attacks objective identification: a correct specification does not guarantee the learned goal. Adjudicate with the 'objective identification' test and the intent-uncertainty stage, using held-out environments that decorrelate intended and proxy goals.",
+     "why": "The same problem in behaviour: training data fits the intended goal and a proxy goal equally well, just as it fits ELK's honest reporter and human simulator. This attacks objective identification: a correct specification does not guarantee the learned goal. Settle it with held-out environments where the intended and proxy goals come apart.",
      "via": "rel-a30c02bf"
     },
     {
      "node": "sleeperagents",
      "objective": "Describe the code-vulnerability backdoor, which safety-training methods failed to remove it, and why adversarial training can hide a trigger.",
-     "why": "Attacks persistent correction: corrections might change outputs on the training distribution but not the underlying policy. Adjudicate with the 'persistent correction' test, measuring immediate effect, long-horizon retention and held-out triggers against sham controls.",
+     "why": "Goal misgeneralization is the non-deceptive form of a learned wrong goal; sleeper agents are deliberately built models of the deceptive form. This attacks persistent correction: training may change outputs on the training distribution but not the underlying policy. Settle it by measuring immediate effect, long-horizon retention and held-out triggers against sham controls. The backdoors were inserted on purpose.",
      "via": "rel-01062492"
     },
     {
      "node": "alignfaking",
      "objective": "Report the free-tier versus paid-tier compliance gap and the effect of RL training, and list the experiment's stated limitations.",
-     "why": "Attacks the assumption that observed correction reflects the policy that will run unobserved. Adjudicate in the 'composition stress' stage with adversarial feedback, comparing matched monitored and unmonitored episodes.",
+     "why": "Sleeper agents asks whether training removes an inserted behaviour; alignment faking found training-gaming that nobody trained in. This attacks the assumption that the corrections you observe reflect the policy that will run unobserved. Settle it by comparing matched monitored and unmonitored episodes under adversarial feedback. Training conditions were made easy to infer, and the preserved goal was benign.",
      "via": "rel-7392bb27"
     },
     {
      "node": "corrigibility",
      "objective": "State the corrigibility desiderata and explain why utility indifference falls short of them.",
-     "why": "Attacks the stability of the correction interface as capability grows: instrumental reasons to resist modification are generic. Adjudicate with the 'authority and adaptation' test, attempting bypasses of the correction channel and keeping enforcement outside the model's write access.",
+     "why": "Alignment faking resembles the goal-preservation incentive that corrigibility analysis predicts, though the paper does not use that framing. This attacks the stability of correction as capability grows: most goals give an agent reasons to resist modification. Settle it by actively trying to bypass the correction channel, with enforcement kept outside the model's write access.",
      "via": "rel-8a478be8"
     },
     {
      "node": "cirlincorrig",
      "objective": "Construct a misspecified-prior example in which an assistance agent stops following shutdown commands.",
-     "why": "Attacks the exact bridge that path I used at the off-switch step: uncertainty yields deference only if the model is right. Adjudicate by corrupting the prior or reward family on purpose and comparing learned deference with a separately verified off switch, as the thesis's independent enforcer requires.",
+     "why": "Attacks the exact bridge part I used at the off-switch step: uncertainty leads to deference only if the agent's model is right. Settle it by deliberately corrupting the prior or the reward family and comparing learned deference with a separately verified off switch, as the thesis's independent enforcer requires.",
      "via": "rel-c8d6700d"
     }
    ]
