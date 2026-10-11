@@ -1,4 +1,4 @@
-// AI backend for The Computational Learning Dynamics Atlas.
+// AI backend for the Artificial Learning Dynamics Atlas.
 //
 // A Cloudflare Worker (ES module syntax) with two endpoints that match the
 // static site's client contract in app.js:
@@ -144,7 +144,7 @@ export function buildExplainPrompt(A, edge, fromId) {
 
 export function buildChatSystem(A, current, path) {
   const parts = [
-    `You are the guide inside "${A.atlas.title || 'the atlas'}", a curated map of topics in learning dynamics, control and alignment (The Computational Learning Dynamics Atlas).`,
+    `You are the guide inside "${A.atlas.title || 'the atlas'}", a curated map of topics in learning dynamics, control and alignment (Artificial Learning Dynamics Atlas).`,
     `Atlas scope: ${A.atlas.scope || ''}`,
     'Ground every answer in the atlas records below. When you mention an atlas topic, cite it as [[topic-id]] using the ids listed; the site turns those into links. Cite only ids that appear below.',
     'Each connection carries an evidence label (exact, established, empirical, hypothesis). Keep it: call hypotheses hypotheses and empirical links associations, and never upgrade a label. If the atlas does not cover something, say so and keep any outside knowledge clearly marked as general background.',

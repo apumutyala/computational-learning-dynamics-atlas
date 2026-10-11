@@ -78,9 +78,11 @@
     {"id": "goal-capable", "label": "Understand LLMs, VLMs and robot VLAs as engineered systems", "sets": {}, "goal": "capable-systems-llm-to-vla"},
     {"id": "goal-geometry", "label": "See the synthesis: where system-theoretic and statistical-learning quantities connect", "sets": {}, "goal": "capstone-learning-geometry-meets-control"},
     {"id": "goal-alignment", "label": "Study alignment: reward misspecification, preferences and correctable agents", "sets": {}, "goal": "capstone-alignment-belief-state"},
+    {"id": "goal-thesis", "label": "I'm joining the team to work on (or stress-test) our alignment thesis", "sets": {}, "goal": "thesis-supporting-case"},
     {"id": "goal-forecasting", "label": "Forecast time series and quantify uncertainty: ARIMA/ETS, backtesting, scoring rules, conformal intervals", "sets": {}, "goal": "forecasting-evaluation-uncertainty"},
     {"id": "goal-slt", "label": "Run singular learning theory measurements: WBIC, LLC estimation with SGLD, susceptibilities, data interventions", "sets": {}, "goal": "slt-in-practice"},
-    {"id": "goal-sampling", "label": "Implement and diagnose posterior samplers: Gibbs and blocked Gibbs, particle MCMC, Metropolis–Hastings and Langevin/SGLD", "sets": {}, "goal": "bayesian-computation-sampling"}
+    {"id": "goal-sampling", "label": "Implement and diagnose posterior samplers: Gibbs and blocked Gibbs, particle MCMC, Metropolis–Hastings and Langevin/SGLD", "sets": {}, "goal": "bayesian-computation-sampling"},
+    {"id": "goal-interp", "label": "I come from interpretability research (inherently interpretable models such as sparse trees and Rashomon sets, or mechanistic interpretability) and want to see how it connects to the alignment thesis", "sets": {}, "goal": "interpretable-ml-to-thesis"}
    ]
   }
  ]

@@ -3,26 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Computational Learning Dynamics Atlas</title>
-<meta name="description" content="A 3D navigator for 191 research topics and 408 typed connections across learning, signal processing, physics, control and capable AI systems.">
+<title>Artificial Learning Dynamics Atlas</title>
+<meta name="description" content="A 3D navigator for 230 research topics and 524 typed connections across learning, signal processing, physics, control and capable AI systems.">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Computational Learning Dynamics Atlas">
-<meta property="og:title" content="The Computational Learning Dynamics Atlas">
-<meta property="og:description" content="Explore 191 research topics and 408 evidence-labelled connections across learning, dynamics, control and capable AI systems, in an interactive 3D map.">
+<meta property="og:site_name" content="Artificial Learning Dynamics Atlas">
+<meta property="og:title" content="Artificial Learning Dynamics Atlas">
+<meta property="og:description" content="Explore 230 research topics and 524 evidence-labelled connections across learning, dynamics, control and capable AI systems, in an interactive 3D map.">
 <meta property="og:url" content="https://apumutyala.github.io/computational-learning-dynamics-atlas/">
-<meta property="og:image" content="https://apumutyala.github.io/computational-learning-dynamics-atlas/og.png">
+<meta property="og:image" content="https://apumutyala.github.io/computational-learning-dynamics-atlas/og.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="A 3D constellation of research topics, coloured by field">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Computational Learning Dynamics Atlas">
-<meta name="twitter:description" content="Explore 191 research topics and 408 evidence-labelled connections across learning, dynamics, control and capable AI systems, in an interactive 3D map.">
-<meta name="twitter:image" content="https://apumutyala.github.io/computational-learning-dynamics-atlas/og.png">
+<meta name="twitter:title" content="Artificial Learning Dynamics Atlas">
+<meta name="twitter:description" content="Explore 230 research topics and 524 evidence-labelled connections across learning, dynamics, control and capable AI systems, in an interactive 3D map.">
+<meta name="twitter:image" content="https://apumutyala.github.io/computational-learning-dynamics-atlas/og.png?v=2">
 <meta name="theme-color" content="#080b10">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23080b10'/%3E%3Cpath d='M9 12 21 10 18 22Z' fill='none' stroke='%239fd6c1' stroke-width='1.6'/%3E%3Ccircle cx='9' cy='12' r='2.6' fill='%239fd6c1'/%3E%3Ccircle cx='21' cy='10' r='2' fill='%239fd6c1'/%3E%3Ccircle cx='18' cy='22' r='3' fill='%239fd6c1'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://api.fontshare.com">
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&f[]=zodiak@400,500&display=swap">
-<link rel="stylesheet" href="style.css?v=20261010g">
+<link rel="stylesheet" href="style.css?v=20261011b">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
 </head>
 <body>
@@ -31,8 +31,8 @@
 
 <header id="topbar">
   <div class="brand">
-    <svg viewBox="0 0 26 26" fill="none" aria-label="Atlas Navigator logo" role="img"><circle cx="13" cy="13" r="11.2" stroke="currentColor" stroke-opacity=".35" stroke-width="1"/><path d="M7.5 10.5 17.5 8.5 15.5 18.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="7.5" cy="10.5" r="2" fill="currentColor"/><circle cx="17.5" cy="8.5" r="1.5" fill="currentColor"/><circle cx="15.5" cy="18.5" r="2.4" fill="currentColor"/></svg>
-    <span>Atlas Navigator</span>
+    <svg viewBox="0 0 26 26" fill="none" aria-label="Artificial Learning Dynamics Atlas logo" role="img"><circle cx="13" cy="13" r="11.2" stroke="currentColor" stroke-opacity=".35" stroke-width="1"/><path d="M7.5 10.5 17.5 8.5 15.5 18.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="7.5" cy="10.5" r="2" fill="currentColor"/><circle cx="17.5" cy="8.5" r="1.5" fill="currentColor"/><circle cx="15.5" cy="18.5" r="2.4" fill="currentColor"/></svg>
+    <span>Artificial Learning Dynamics Atlas</span>
   </div>
   <div class="search" role="search">
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.4"/><path d="m11 11 3.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -54,8 +54,8 @@
 
 <section id="welcome" class="glass" aria-labelledby="welcome-title">
   <button class="icon-btn" id="welcome-close" aria-label="Close welcome"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
-  <span class="eyebrow">191 topics · 408 typed connections</span>
-  <h1 id="welcome-title">The Computational Learning Dynamics Atlas</h1>
+  <span class="eyebrow">230 topics · 524 typed connections</span>
+  <h1 id="welcome-title">Artificial Learning Dynamics Atlas</h1>
   <p>Each point is a research topic. Each line is a recorded connection with its evidence level. Move between topics to see why they connect.</p>
   <div class="learn-cta"><button class="btn primary" id="personalize-btn"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5 9.6 6.4 14.5 8 9.6 9.6 8 14.5 6.4 9.6 1.5 8 6.4 6.4Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Personalize my path</button><button class="btn" id="learn-continue" hidden data-path=""></button></div>
   <ul class="howto">
@@ -108,7 +108,7 @@
 // If the app fails to start (e.g. a stale cached file), say so instead of hanging on "Assembling".
 addEventListener("error", () => { const l = document.getElementById("loading"); if (l && !l.classList.contains("done")) { l.innerHTML = 'Couldn’t load the atlas. <a href="?r=' + Date.now() + '" style="color:#9fd6c1">Tap to reload</a>'; l.style.pointerEvents = "auto"; } });
 </script>
-<script type="module" src="app.js?v=20261010g"></script>
+<script type="module" src="app.js?v=20261011b"></script>
 <script data-pplx-inline-edit>
 (function () {
   if (window === window.top) return;

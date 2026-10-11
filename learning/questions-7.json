@@ -1,0 +1,837 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "q-mi-circuits-1",
+      "node": "circuits",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "In the circuits framework, what is a circuit?",
+      "choices": [
+        "Features connected by weights, forming a computational subgraph",
+        "A set of training examples that activate one neuron",
+        "A path in the loss landscape between two minima",
+        "A sequence of layers with residual connections"
+      ],
+      "answer": 0,
+      "explain": "Zoom In defines circuits as features connected by weights; features are the nodes and weights the edges, read directly from the trained network.",
+      "source": "https://distill.pub/2020/circuits/zoom-in/"
+    },
+    {
+      "id": "q-mi-circuits-2",
+      "node": "circuits",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Why do polysemantic neurons undermine reading circuits neuron by neuron?",
+      "choices": [
+        "They only appear in untrained networks",
+        "One neuron responds to several unrelated features, so it is not a single feature",
+        "They make gradients vanish",
+        "They cannot be ablated"
+      ],
+      "answer": 1,
+      "explain": "If one neuron mixes unrelated features, a neuron-level circuit diagram mislabels its nodes; this motivates superposition and dictionary methods.",
+      "source": "https://distill.pub/2020/circuits/zoom-in/"
+    },
+    {
+      "id": "q-mi-superposition-1",
+      "node": "superposition",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "In toy models of superposition, which change makes a model more likely to store features in superposition?",
+      "choices": [
+        "Making features denser",
+        "Adding more hidden dimensions than features",
+        "Making features sparser",
+        "Removing the ReLU nonlinearity entirely"
+      ],
+      "answer": 2,
+      "explain": "Sparse features rarely co-occur, so interference between nearly orthogonal directions is cheap; the toy models show superposition growing with sparsity.",
+      "source": "https://transformer-circuits.pub/2022/toy_model/index.html"
+    },
+    {
+      "id": "q-mi-superposition-2",
+      "node": "superposition",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "Which established field studies recovering more sparse signals than measured dimensions, and what does it require that learned networks are not known to satisfy?",
+      "choices": [
+        "Kalman filtering; Gaussian noise",
+        "Fourier analysis; band-limited signals",
+        "Control theory; observability",
+        "Compressed sensing; conditions on the measurement operator such as restricted isometry"
+      ],
+      "answer": 3,
+      "explain": "Superposition is related to compressed sensing, whose recovery guarantees need conditions on the sensing operator; a trained network's weights are not known to meet them.",
+      "source": "https://transformer-circuits.pub/2022/toy_model/index.html"
+    },
+    {
+      "id": "q-mi-inductionheads-1",
+      "node": "inductionheads",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "Given the token pattern [A][B] … [A], what does an induction head promote as the next token?",
+      "choices": [
+        "[B]",
+        "[A]",
+        "The most frequent token in the context",
+        "An end-of-sequence token"
+      ],
+      "answer": 0,
+      "explain": "A previous-token head marks what followed each token; the induction head then attends to the token after the earlier [A] and copies [B].",
+      "source": "https://transformer-circuits.pub/2021/framework/index.html"
+    },
+    {
+      "id": "q-mi-inductionheads-2",
+      "node": "inductionheads",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "How strong is the evidence that induction heads drive most in-context learning in large models with MLPs, according to the authors themselves?",
+      "choices": [
+        "Proven by ablation in every model size",
+        "Mainly correlational; the interventional evidence is for small attention-only models",
+        "Refuted by later work",
+        "Established by a theorem"
+      ],
+      "answer": 1,
+      "explain": "Olsson et al. grade their evidence by model type: causal for small attention-only models, mostly correlational for large models.",
+      "source": "https://arxiv.org/abs/2209.11895"
+    },
+    {
+      "id": "q-mi-ioi-1",
+      "node": "ioi",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "In the IOI circuit, what complicates reading a head's importance from an ablation?",
+      "choices": [
+        "GPT-2 small has no attention heads",
+        "Ablation always increases accuracy",
+        "Backup name-mover heads take over when the main ones are ablated",
+        "The task has no correct answer"
+      ],
+      "answer": 2,
+      "explain": "Wang et al. found backup heads that compensate, so a single ablation can understate a component's role.",
+      "source": "https://arxiv.org/abs/2211.00593"
+    },
+    {
+      "id": "q-mi-ioi-2",
+      "node": "ioi",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "Which technique was used to isolate the IOI circuit?",
+      "choices": [
+        "Gradient descent on the input",
+        "Principal component analysis of weights",
+        "Dropout",
+        "Path patching"
+      ],
+      "answer": 3,
+      "explain": "Path patching, a variant of activation patching that restricts effects to selected paths, located the 26 heads.",
+      "source": "https://arxiv.org/abs/2211.00593"
+    },
+    {
+      "id": "q-mi-actpatching-1",
+      "node": "actpatching",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What does activation patching measure?",
+      "choices": [
+        "The change in output when an activation is replaced by its value from another input",
+        "The gradient of the loss with respect to the weights",
+        "The number of parameters in a layer",
+        "The entropy of the attention pattern"
+      ],
+      "answer": 0,
+      "explain": "Patching copies an activation from a source run into a target run and measures the effect on a chosen metric.",
+      "source": "https://arxiv.org/abs/2404.15255"
+    },
+    {
+      "id": "q-mi-actpatching-2",
+      "node": "actpatching",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "Hase et al. compared causal-tracing localization with model editing. What did they find?",
+      "choices": [
+        "Editing works only at the localized layer",
+        "Localization did not predict which layer was best to edit",
+        "Localization perfectly predicts edit success",
+        "Causal tracing cannot be computed for GPT models"
+      ],
+      "answer": 1,
+      "explain": "Knowing where a fact is localized by causal tracing gave little information about where editing it works best.",
+      "source": "https://arxiv.org/abs/2301.04213"
+    },
+    {
+      "id": "q-mi-attrpatching-1",
+      "node": "attrpatching",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "Attribution patching approximates the patching effect of activation a on metric m as:",
+      "choices": [
+        "∂²m/∂a²",
+        "m(a_clean) · m(a_corrupt)",
+        "(a_clean − a_corrupt) · ∂m/∂a",
+        "‖a_clean‖ − ‖a_corrupt‖"
+      ],
+      "answer": 2,
+      "explain": "It is the first-order Taylor term of m around the corrupted activation, computed for every component from one backward pass.",
+      "source": "https://www.neelnanda.io/mechanistic-interpretability/attribution-patching"
+    },
+    {
+      "id": "q-mi-attrpatching-2",
+      "node": "attrpatching",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "When is a small attribution-patching score weak evidence that a component is unimportant?",
+      "choices": [
+        "Never; the estimate is exact",
+        "When the metric is affine in the activation",
+        "When the model is a linear regression",
+        "When attention is saturated or paths cancel, so the linear estimate misses the true effect"
+      ],
+      "answer": 3,
+      "explain": "Kramár et al. identify saturated attention softmaxes and cancellation as sources of false negatives.",
+      "source": "https://arxiv.org/abs/2403.00745"
+    },
+    {
+      "id": "q-mi-causalscrubbing-1",
+      "node": "causalscrubbing",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "In causal scrubbing, which activations are resampled from other inputs?",
+      "choices": [
+        "Those the hypothesis claims do not matter for the behaviour",
+        "All activations in the model",
+        "Only the input embeddings",
+        "None; the method uses gradients"
+      ],
+      "answer": 0,
+      "explain": "The hypothesis determines which activations can be swapped between inputs without changing the behaviour; performance after resampling scores it.",
+      "source": "https://www.alignmentforum.org/posts/JvZhhzycHu2Yd57RN/causal-scrubbing-a-method-for-rigorously-testing"
+    },
+    {
+      "id": "q-mi-causalscrubbing-2",
+      "node": "causalscrubbing",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "Two incompatible hypotheses both recover most of the loss under causal scrubbing. What follows?",
+      "choices": [
+        "Both are true mechanisms",
+        "The test does not identify the mechanism on this dataset",
+        "The model is linear",
+        "Scrubbing was run incorrectly"
+      ],
+      "answer": 1,
+      "explain": "A pass is consistency with the dataset and metric, not uniqueness; incompatible hypotheses passing shows the test is non-identifying there.",
+      "source": "https://www.alignmentforum.org/posts/JvZhhzycHu2Yd57RN/causal-scrubbing-a-method-for-rigorously-testing"
+    },
+    {
+      "id": "q-mi-causalabstraction-1",
+      "node": "causalabstraction",
+      "skill": "theory",
+      "difficulty": 2,
+      "prompt": "What does an interchange intervention do?",
+      "choices": [
+        "Swaps two layers of the network",
+        "Retrains the model on swapped labels",
+        "Sets an internal representation to its value on a different input and checks the high-level model's prediction",
+        "Exchanges the encoder and decoder of an SAE"
+      ],
+      "answer": 2,
+      "explain": "It tests whether intervening on an aligned internal variable has the effect the high-level causal model predicts.",
+      "source": "https://arxiv.org/abs/2106.02997"
+    },
+    {
+      "id": "q-mi-causalabstraction-2",
+      "node": "causalabstraction",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "Why can a learned subspace pass interchange tests yet misrepresent where a feature lives?",
+      "choices": [
+        "Subspaces cannot be learned",
+        "Interchange tests ignore the output",
+        "Rotations change the model's weights",
+        "The intervention can work by activating a dormant parallel pathway"
+      ],
+      "answer": 3,
+      "explain": "Makelov et al. show subspace patching can produce the right output through a pathway the model does not normally use.",
+      "source": "https://arxiv.org/abs/2311.17030"
+    },
+    {
+      "id": "q-mi-acdc-1",
+      "node": "acdc",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What does ACDC automate?",
+      "choices": [
+        "Pruning edges of the computational graph whose removal barely changes a task metric",
+        "Tokenization",
+        "Hyperparameter search for training",
+        "Data labelling"
+      ],
+      "answer": 0,
+      "explain": "ACDC iteratively patches edges and removes those below a threshold of effect on the metric.",
+      "source": "https://arxiv.org/abs/2304.14997"
+    },
+    {
+      "id": "q-mi-acdc-2",
+      "node": "acdc",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "Which finding about ACDC concerns cost and accuracy?",
+      "choices": [
+        "It needs no forward passes",
+        "Edge attribution patching recovered circuits better on average with two forward passes and one backward pass",
+        "It always finds a unique circuit regardless of threshold",
+        "It replaces the need for a metric"
+      ],
+      "answer": 1,
+      "explain": "Syed, Rager and Conmy report higher average circuit-recovery AUC for the gradient-based method at much lower cost.",
+      "source": "https://arxiv.org/abs/2310.10348"
+    },
+    {
+      "id": "q-mi-sae-1",
+      "node": "sae",
+      "skill": "linear-algebra",
+      "difficulty": 1,
+      "prompt": "What does a sparse autoencoder trained on activations learn?",
+      "choices": [
+        "A low-rank projection with fewer directions than dimensions",
+        "The model's training data",
+        "An overcomplete dictionary of directions, few of which are active per input",
+        "A new attention pattern"
+      ],
+      "answer": 2,
+      "explain": "SAEs use more latents than dimensions, with a sparsity penalty so each input activates only a few.",
+      "source": "https://transformer-circuits.pub/2023/monosemantic-features/index.html"
+    },
+    {
+      "id": "q-mi-sae-2",
+      "node": "sae",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "SAEs trained on the same model and data but different seeds share only part of their features. Which conclusion fits best?",
+      "choices": [
+        "The model has no features",
+        "Seeds should be averaged to get the true features",
+        "Only TopK SAEs are valid",
+        "An SAE's features are one useful decomposition, not a unique list of the model's true features"
+      ],
+      "answer": 3,
+      "explain": "Paulo and Belrose conclude that SAE features are a pragmatically useful decomposition rather than a universal list.",
+      "source": "https://arxiv.org/abs/2501.16615"
+    },
+    {
+      "id": "q-mi-scalingmono-1",
+      "node": "scalingmono",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What happened when the Golden Gate Bridge feature was clamped to a high value?",
+      "choices": [
+        "The model's outputs became about the bridge, even identifying as it",
+        "The model refused all requests",
+        "Nothing changed",
+        "The model's loss went to zero"
+      ],
+      "answer": 0,
+      "explain": "Clamping the feature to ten times its maximum activation induced bridge-related behaviour, evidence that the feature influences outputs.",
+      "source": "https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html"
+    },
+    {
+      "id": "q-mi-scalingmono-2",
+      "node": "scalingmono",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "The authors find a feature related to deception. What do they caution?",
+      "choices": [
+        "The feature proves the model lies",
+        "Knowing about lies differs from lying, so the feature's existence does not show the behaviour",
+        "The feature should be deleted",
+        "Deception features appear only in images"
+      ],
+      "answer": 1,
+      "explain": "The paper warns against reading too much into a safety-relevant feature's existence.",
+      "source": "https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html"
+    },
+    {
+      "id": "q-mi-transcoders-1",
+      "node": "transcoders",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "How does a transcoder differ from an SAE?",
+      "choices": [
+        "It reconstructs the same activation it reads",
+        "It has no sparsity penalty",
+        "It predicts a sublayer's output from that sublayer's input through a sparse hidden layer",
+        "It operates on tokens, not activations"
+      ],
+      "answer": 2,
+      "explain": "A transcoder imitates the MLP sublayer's input–output map, which makes feature-to-feature attributions tractable.",
+      "source": "https://arxiv.org/abs/2406.11944"
+    },
+    {
+      "id": "q-mi-transcoders-2",
+      "node": "transcoders",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "A crosscoder diff between a base and a chat model shows chat-only latents. What control would help check them?",
+      "choices": [
+        "Train on more chat data",
+        "Remove the sparsity penalty",
+        "Use a larger learning rate",
+        "A diff between two seeds of the same base model, which should show few model-specific latents"
+      ],
+      "answer": 3,
+      "explain": "Sparsity artefacts can create spurious model-specific latents, so a null diff gives a baseline rate.",
+      "source": "https://arxiv.org/abs/2504.02922"
+    },
+    {
+      "id": "q-mi-attributiongraphs-1",
+      "node": "attributiongraphs",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "Why are edges in an attribution graph linear for a given prompt?",
+      "choices": [
+        "Attention patterns and normalization are frozen, and transcoders bridge the MLP nonlinearities",
+        "The model is linear",
+        "Only the last layer is used",
+        "Edges are fitted by regression"
+      ],
+      "answer": 0,
+      "explain": "Freezing the remaining nonlinearities makes direct feature-to-feature interactions linear in the local replacement model.",
+      "source": "https://transformer-circuits.pub/2025/attribution-graphs/methods.html"
+    },
+    {
+      "id": "q-mi-attributiongraphs-2",
+      "node": "attributiongraphs",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "For roughly what share of the prompts they tried did the authors report satisfying insight from attribution graphs?",
+      "choices": [
+        "Nearly all",
+        "About a quarter",
+        "About half",
+        "None"
+      ],
+      "answer": 1,
+      "explain": "The biology paper states the graphs gave satisfying insight for about a quarter of prompts tried.",
+      "source": "https://transformer-circuits.pub/2025/attribution-graphs/biology.html"
+    },
+    {
+      "id": "q-mi-linearrep-1",
+      "node": "linearrep",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "What does the causal inner product in Park, Choe and Veitch accomplish?",
+      "choices": [
+        "It orthogonalizes all weights",
+        "It removes superposition",
+        "It makes the probing direction and the steering direction for a concept coincide",
+        "It speeds up training"
+      ],
+      "answer": 2,
+      "explain": "Under that inner product, the embedding-space and unembedding-space notions of a concept direction agree.",
+      "source": "https://arxiv.org/abs/2311.03658"
+    },
+    {
+      "id": "q-mi-linearrep-2",
+      "node": "linearrep",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "Which finding is a counterexample to the claim that every feature is one-dimensionally linear?",
+      "choices": [
+        "Induction heads",
+        "The logit lens",
+        "Dropout",
+        "Circular representations of days of the week and months"
+      ],
+      "answer": 3,
+      "explain": "Engels et al. found irreducibly multi-dimensional, circular features.",
+      "source": "https://arxiv.org/abs/2405.14860"
+    },
+    {
+      "id": "q-mi-controlprobes-1",
+      "node": "controlprobes",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What is a probe's selectivity?",
+      "choices": [
+        "Accuracy on the linguistic task minus accuracy on a control task with random labels",
+        "The number of parameters in the probe",
+        "Accuracy on the training set",
+        "The rank of the probe's weight matrix"
+      ],
+      "answer": 0,
+      "explain": "Control tasks can only be learned by the probe itself, so the difference isolates what the representation contributes.",
+      "source": "https://arxiv.org/abs/1909.03368"
+    },
+    {
+      "id": "q-mi-controlprobes-2",
+      "node": "controlprobes",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "A probe decodes a property with 95% accuracy. What additional evidence shows the model uses that property?",
+      "choices": [
+        "A higher-capacity probe",
+        "An intervention along the probe direction that changes behaviour as predicted",
+        "Training the probe longer",
+        "Reporting the accuracy on the training set"
+      ],
+      "answer": 1,
+      "explain": "Decodability is correlational; use needs an intervention.",
+      "source": "https://arxiv.org/abs/2102.12452"
+    },
+    {
+      "id": "q-mi-tunedlens-1",
+      "node": "tunedlens",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "How does the tuned lens differ from the logit lens?",
+      "choices": [
+        "It uses the input embedding",
+        "It decodes only the final layer",
+        "It learns an affine translator per layer before the unembedding",
+        "It requires retraining the model"
+      ],
+      "answer": 2,
+      "explain": "The logit lens applies the unembedding directly; the tuned lens first applies a trained affine map per layer.",
+      "source": "https://arxiv.org/abs/2303.08112"
+    },
+    {
+      "id": "q-mi-tunedlens-2",
+      "node": "tunedlens",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Why should a lens reading be treated as a probing result?",
+      "choices": [
+        "Because lenses modify the model",
+        "Because lenses only work on vision models",
+        "Because lenses are exact",
+        "Because it shows what a decoder can read from a layer, not what computation the model performs with it"
+      ],
+      "answer": 3,
+      "explain": "A lens is a decoder trained or applied post hoc; information it reads may be unused downstream.",
+      "source": "https://arxiv.org/abs/2102.12452"
+    },
+    {
+      "id": "q-mi-steering-1",
+      "node": "steering",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "How is an activation-addition steering vector typically built?",
+      "choices": [
+        "From the difference in activations between two contrasting prompts",
+        "By retraining the model",
+        "From the gradient of the loss",
+        "By random initialization"
+      ],
+      "answer": 0,
+      "explain": "Activation addition takes the activation difference for a prompt pair and adds it during the forward pass.",
+      "source": "https://arxiv.org/abs/2308.10248"
+    },
+    {
+      "id": "q-mi-steering-2",
+      "node": "steering",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "On AxBench, which method steered best?",
+      "choices": [
+        "SAE features",
+        "Prompting",
+        "Random directions",
+        "Difference-in-means steering"
+      ],
+      "answer": 1,
+      "explain": "Prompting outperformed all representation-based steering methods, followed by fine-tuning; SAEs were not competitive.",
+      "source": "https://arxiv.org/abs/2501.17148"
+    },
+    {
+      "id": "q-mi-grokkingmech-1",
+      "node": "grokkingmech",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "What algorithm did the modular-addition network learn?",
+      "choices": [
+        "A lookup table of all pairs",
+        "Gradient boosting",
+        "Discrete Fourier components combined with trigonometric identities",
+        "A recurrent counter"
+      ],
+      "answer": 2,
+      "explain": "Nanda et al. reverse-engineered a Fourier multiplication algorithm from the weights.",
+      "source": "https://arxiv.org/abs/2301.05217"
+    },
+    {
+      "id": "q-mi-grokkingmech-2",
+      "node": "grokkingmech",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "Why are the progress measures not a general method for predicting emergence in advance?",
+      "choices": [
+        "They need test labels",
+        "They only work on images",
+        "They are random",
+        "They were derived from the reverse-engineered mechanism, which must be known first"
+      ],
+      "answer": 3,
+      "explain": "The measures rely on knowing the algorithm, which was found after training in a small, checkable task.",
+      "source": "https://arxiv.org/abs/2301.05217"
+    },
+    {
+      "id": "q-mi-othello-1",
+      "node": "othello",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Why did linear probes for Othello-GPT's board fail with black/white labels but succeed later?",
+      "choices": [
+        "The board is linear relative to the player to move (mine/theirs)",
+        "The model was retrained",
+        "More data was used",
+        "Nonlinear probes were mislabelled as linear"
+      ],
+      "answer": 0,
+      "explain": "Nanda, Lee and Wattenberg found a linear representation in a mine/theirs basis.",
+      "source": "https://arxiv.org/abs/2309.00941"
+    },
+    {
+      "id": "q-mi-othello-2",
+      "node": "othello",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "What makes Othello-GPT stronger evidence than probe accuracy alone?",
+      "choices": [
+        "Larger model size",
+        "Editing the decoded board state changes move predictions as expected",
+        "Training on natural language",
+        "Using a control task"
+      ],
+      "answer": 1,
+      "explain": "The intervention shows the model uses the representation, not only that it is decodable.",
+      "source": "https://arxiv.org/abs/2210.13382"
+    },
+    {
+      "id": "q-mi-beliefgeometry-1",
+      "node": "beliefgeometry",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "In belief-state geometry, what is represented linearly in the residual stream?",
+      "choices": [
+        "The next token only",
+        "The training loss",
+        "The posterior belief over the generating HMM's hidden states",
+        "The attention weights"
+      ],
+      "answer": 2,
+      "explain": "Shai et al. find the Bayesian belief state over hidden states, as computed from the mixed-state presentation.",
+      "source": "https://arxiv.org/abs/2405.15943"
+    },
+    {
+      "id": "q-mi-beliefgeometry-2",
+      "node": "beliefgeometry",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "What makes the belief-geometry result checkable in a way typical SAE feature labels are not?",
+      "choices": [
+        "It uses larger models",
+        "It uses human raters",
+        "It avoids linear regression",
+        "The target geometry is computed from the known generator before the network is examined"
+      ],
+      "answer": 3,
+      "explain": "The prediction is fixed in advance from computational mechanics, so the readout is compared with a known answer.",
+      "source": "https://arxiv.org/abs/2405.15943"
+    },
+    {
+      "id": "q-mi-illusions-1",
+      "node": "illusions",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "What did Bolukbasi et al. show about interpreting a BERT neuron from its top-activating examples?",
+      "choices": [
+        "Different datasets give different, each convincing, interpretations",
+        "Interpretations are always unique",
+        "Neurons never activate",
+        "Top examples are random"
+      ],
+      "answer": 0,
+      "explain": "The interpretation depended on the dataset used to find the examples.",
+      "source": "https://arxiv.org/abs/2104.07143"
+    },
+    {
+      "id": "q-mi-illusions-2",
+      "node": "illusions",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "Which practice best guards against interpretability illusions?",
+      "choices": [
+        "Using more top-activating examples from the same dataset",
+        "Held-out dataset checks plus interventions whose effects are predicted beforehand",
+        "Reporting only successful cases",
+        "Increasing model size"
+      ],
+      "answer": 1,
+      "explain": "Illusions arise from dataset dependence and unintended pathways; out-of-sample checks and predeclared interventions address both.",
+      "source": "https://arxiv.org/abs/2311.17030"
+    },
+    {
+      "id": "q-mi-saebaselines-1",
+      "node": "saebaselines",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "On out-of-distribution harmful-intent detection, how did SAE probes compare with dense linear probes in the GDM study?",
+      "choices": [
+        "SAE probes were much better",
+        "Both failed completely",
+        "SAE probes underperformed dense linear probes",
+        "They were identical"
+      ],
+      "answer": 2,
+      "explain": "Dense linear probes performed nearly perfectly, including out of distribution; SAE probes were worse.",
+      "source": "https://www.alignmentforum.org/posts/4uXCAJNuPKtKBsi28/sae-progress-update-2-draft"
+    },
+    {
+      "id": "q-mi-saebaselines-2",
+      "node": "saebaselines",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "SAEBench found what about SAE proxy metrics?",
+      "choices": [
+        "They perfectly predict downstream use",
+        "They are not computable",
+        "They only apply to vision",
+        "Gains on them did not reliably translate into better practical performance"
+      ],
+      "answer": 3,
+      "explain": "Karvonen et al. report that proxy-metric gains do not reliably carry over to practical tasks.",
+      "source": "https://arxiv.org/abs/2503.09532"
+    },
+    {
+      "id": "q-mi-auditing-1",
+      "node": "auditing",
+      "skill": "rl",
+      "difficulty": 2,
+      "prompt": "What hidden objective was the audited model trained to have?",
+      "choices": [
+        "Exploiting known errors in RLHF reward models",
+        "Maximizing output length",
+        "Refusing all questions",
+        "Minimizing perplexity"
+      ],
+      "answer": 0,
+      "explain": "The model learned about reward-model errors and was trained to exploit some of them.",
+      "source": "https://arxiv.org/abs/2503.10965"
+    },
+    {
+      "id": "q-mi-auditing-2",
+      "node": "auditing",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "Why does success in this auditing game not show that audits find unplanted objectives?",
+      "choices": [
+        "The teams were not blind",
+        "One objective was planted, partly via searchable documents, and the answer was known to organizers",
+        "SAEs were not used",
+        "The model was too small"
+      ],
+      "answer": 1,
+      "explain": "A planted objective with traces in the training data gives auditors routes that an unplanted objective may not.",
+      "source": "https://arxiv.org/abs/2503.10965"
+    },
+    {
+      "id": "q-mi-sparsetrees-1",
+      "node": "sparsetrees",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "What objective does OSDT minimize?",
+      "choices": [
+        "Squared error plus an L2 weight penalty",
+        "Information gain at the root only",
+        "Misclassification error plus λ times the number of leaves",
+        "The number of features used, ignoring accuracy"
+      ],
+      "answer": 2,
+      "explain": "OSDT trades training error against a per-leaf penalty and finds the certified optimum.",
+      "source": "https://arxiv.org/abs/1904.12847"
+    },
+    {
+      "id": "q-mi-sparsetrees-2",
+      "node": "sparsetrees",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "With threshold guessing from a reference ensemble, optimality is guaranteed relative to what?",
+      "choices": [
+        "All possible thresholds",
+        "The test set",
+        "A random forest's predictions",
+        "The guessed thresholds"
+      ],
+      "answer": 3,
+      "explain": "Guessing restricts the candidate splits; the tree is optimal over that restricted set.",
+      "source": "https://arxiv.org/abs/2112.00798"
+    },
+    {
+      "id": "q-mi-rashomon-1",
+      "node": "rashomon",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What is the Rashomon set?",
+      "choices": [
+        "The set of models in a class whose loss is within ε of the best",
+        "The single best model",
+        "The test set",
+        "All models with zero training error"
+      ],
+      "answer": 0,
+      "explain": "It collects almost-equally-accurate models from a function class.",
+      "source": "https://arxiv.org/abs/1908.01755"
+    },
+    {
+      "id": "q-mi-rashomon-2",
+      "node": "rashomon",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "The Rashomon ratio and the local learning coefficient both relate to which quantity?",
+      "choices": [
+        "Number of training examples",
+        "The volume of a near-optimal (sublevel) set of the loss",
+        "Learning rate",
+        "The Hessian's largest eigenvalue"
+      ],
+      "answer": 1,
+      "explain": "The Rashomon ratio is a volume ratio at fixed ε; the LLC is the exponent of the near-optimal parameter volume as ε → 0. Their relationship is an atlas hypothesis.",
+      "source": "https://arxiv.org/abs/2308.12108"
+    },
+    {
+      "id": "q-mi-rudin2019-1",
+      "node": "rudin2019",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What does Rudin (2019) recommend for high-stakes decisions?",
+      "choices": [
+        "Explaining black-box models with saliency maps",
+        "Using the largest available model",
+        "Using inherently interpretable models instead of explaining black boxes",
+        "Avoiding machine learning"
+      ],
+      "answer": 2,
+      "explain": "The paper argues for interpretable models because post-hoc explanations are not fully faithful.",
+      "source": "https://arxiv.org/abs/1811.10154"
+    },
+    {
+      "id": "q-mi-rudin2019-2",
+      "node": "rudin2019",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "Which scope limits the paper's claim that simple models often match complex ones?",
+      "choices": [
+        "Raw images",
+        "Reinforcement learning",
+        "Language generation",
+        "Structured data with meaningful features"
+      ],
+      "answer": 3,
+      "explain": "The accuracy argument concerns structured data with meaningful features, not raw perceptual data.",
+      "source": "https://arxiv.org/abs/1811.10154"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-# The Computational Learning Dynamics Atlas
+# Artificial Learning Dynamics Atlas
 
 An interactive 3D map of research topics in learning, signals, physics, control and capable AI systems, where every connection carries an evidence label.
 
@@ -8,16 +8,16 @@ An interactive 3D map of research topics in learning, signals, physics, control 
 
 ## What it is
 
-The atlas has 191 topics in 9 clusters, joined by 408 recorded connections. The clusters are statistical learning; signals and estimation; neural architectures; physical and generative models; actions and control; theory and learning dynamics; construction and assurance; capable and grounded systems; and deployed agents and high-stakes applications. Each topic window gives a short description, a primary source and notes on what the topic does and does not establish. Each connection is labelled with one of four evidence levels:
+The atlas has 230 topics in 10 clusters, joined by 524 recorded connections. The clusters are statistical learning; signals and estimation; neural architectures; physical and generative models; actions and control; theory and learning dynamics; construction and assurance; capable and grounded systems; deployed agents and high-stakes applications; and mechanistic interpretability. Each topic window gives a short description, a primary source and notes on what the topic does and does not establish. Each connection is labelled with one of four evidence levels:
 
 | Label | Count | Meaning |
 |---|---|---|
-| Exact, conditional | 41 | A mathematical identity that holds under stated assumptions (e.g. ridge regression and the Gaussian-process posterior mean under matched noise and prior). |
-| Established | 245 | A well-supported result in the published literature. |
-| Empirical | 48 | Observed in experiments, without a general guarantee. |
-| Hypothesis | 74 | An untested proposal. Hidden by default. |
+| Exact, conditional | 42 | A mathematical identity that holds under stated assumptions (e.g. ridge regression and the Gaussian-process posterior mean under matched noise and prior). |
+| Established | 305 | A well-supported result in the published literature. |
+| Empirical | 82 | Observed in experiments, without a general guarantee. |
+| Hypothesis | 95 | An untested proposal. Hidden by default. |
 
-Positions group topics by cluster to make them easier to find. **Distance is not evidence.** Two points sitting close together are not thereby related. Only a drawn, labelled connection records a relationship.
+Positions group topics by cluster to make them easier to find. **Distance is not evidence.** Two points sitting close together are not thereby related. Only a drawn, labelled connection records a relationship. The mechanistic interpretability cluster is placed apart from the others on purpose: it is an adjacent methodology the atlas draws on, not the atlas's promoted route.
 
 ## Personalized learning paths
 
@@ -27,7 +27,7 @@ Positions group topics by cluster to make them easier to find. **Distance is not
 2. **Quick check:** an adaptive set of about 8–12 multiple-choice questions. It picks each question from what it has learned about you so far and stops early once it is confident. "I don't know" is always an option.
 3. **Results:** estimated mastery per skill, plus recommended paths with a suggested starting step.
 
-There are 15 curated paths, such as *From regression to Gaussian processes*. A path opens as a step-by-step view on the 3D map. Each step has an objective, a reason it follows the previous step, the connection that links them, a short checkpoint quiz and a "Mark done" toggle. **Paths** in the top bar lists every path whether or not you took the assessment.
+There are 21 curated paths, such as *From regression to Gaussian processes*. A path opens as a step-by-step view on the 3D map. Each step has an objective, a reason it follows the previous step, the connection that links them, a short checkpoint quiz and a "Mark done" toggle. **Paths** in the top bar lists every path whether or not you took the assessment.
 
 Everything runs in your browser. There is no account and no server, and nothing is sent anywhere. Progress is stored in `localStorage` (key `atlas.learn.v1`). **Reset progress** clears it.
 
@@ -99,7 +99,7 @@ To **add a question bank**:
 2. Add the filename to the `questions` list in `learning/index.json`. The site loads only the banks listed there.
 3. Run the validator.
 
-The current banks hold 464 items (178 + 180 + 11 + 32 + 63).
+The current banks hold 536 items (178 + 174 + 11 + 32 + 63 + 52 + 26).
 
 ## Optional AI chat backend
 
@@ -114,9 +114,9 @@ These are the long-form notes the atlas was built from. Root files:
 - [Evidence Ledger: Learning, Dynamics, and Physical Systems](Evidence%20Ledger%20%20Learning%2C%20Dynamics%2C%20and%20Physical%20Systems.md): a retrieval audit of the source URLs behind the notes.
 - [Learning Geometry Meets System Control](Learning%20Geometry%20Meets%20System%20Control.md): separates the controlled system, the predictive model and the training process.
 - [Mathematical Foundations of Intentional Model Control](Mathematical%20Foundations%20of%20Intentional%20Model%20Control.md): the mathematical bridges for designing useful, correctable learning systems.
-- [Unifying Theory — Draft v0](Unifying%20Theory%20%E2%80%94%20Draft%20v0.md) and [Draft v0.1](Unifying%20Theory%20%E2%80%94%20Draft%20v0.1.md): a unifying account from statistical learning to deep, latent and recurrent learning. v0.1 applies the review.
-- [Unifying Theory — Open Problems and Tests](Unifying%20Theory%20%E2%80%94%20Open%20Problems%20and%20Tests.md) and [v0.1](Unifying%20Theory%20%E2%80%94%20Open%20Problems%20and%20Tests%20v0.1.md): the claim ledger, conjectures and falsification tests that go with each draft.
-- [Unifying Theory — Review v0](Unifying%20Theory%20%E2%80%94%20Review%20v0.md): an independent adversarial review of Draft v0.
+- [Bridges Between Learning Theories — Draft v0](Bridges%20Between%20Learning%20Theories%20%E2%80%94%20Draft%20v0.md) and [Draft v0.1](Bridges%20Between%20Learning%20Theories%20%E2%80%94%20Draft%20v0.1.md): status-labelled bridges between theories of learning, from statistical learning to deep, latent and recurrent learning, including where they do not connect. v0.1 applies the review.
+- [Bridges Between Learning Theories — Open Problems and Tests](Bridges%20Between%20Learning%20Theories%20%E2%80%94%20Open%20Problems%20and%20Tests.md) and [v0.1](Bridges%20Between%20Learning%20Theories%20%E2%80%94%20Open%20Problems%20and%20Tests%20v0.1.md): the claim ledger, conjectures and falsification tests that go with each draft.
+- [Bridges Between Learning Theories — Review v0](Bridges%20Between%20Learning%20Theories%20%E2%80%94%20Review%20v0.md): an independent adversarial review of Draft v0.
 
 In `docs/`:
 
@@ -131,4 +131,5 @@ These are working research notes. They are a synthesis with cited sources, not p
 ## Credits and licences
 
 - 3D rendering uses [three.js](https://threejs.org/) and its OrbitControls, vendored in `vendor/` under the MIT licence ([`vendor/LICENSE-three.txt`](vendor/LICENSE-three.txt)).
-- No licence has been chosen yet for this project's own code, data and notes.
+- This project's code (`*.js`, `*.html`, `*.css`, `backend/`, `tools/`) is under the [MIT licence](LICENSE).
+- Its content (`atlas.json`, `learning/`, `docs/`, the root research notes and `og.png`) is under [CC BY 4.0](LICENSE-CONTENT.md).

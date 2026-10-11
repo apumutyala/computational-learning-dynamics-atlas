@@ -1,8 +1,8 @@
-# Unifying Theory — Draft v0.1
+# Bridges Between Learning Theories — Draft v0.1
 
 *From statistical learning to deep, latent and recurrent learning, with training control, developmental interpretability and singular learning theory used only where they apply.*
 
-Written 2026-10-07. This revises `Unifying Theory — Draft v0.md` in response to the independent mathematical review `Unifying Theory — Review v0.md`. Every finding of the review is applied. **§11 (Changes from v0)** maps each change to the review item it answers. The v0 files, the Review and the five source documents were not modified. The companion file is `Unifying Theory — Open Problems and Tests v0.1.md`.
+Written 2026-10-07. This revises `Bridges Between Learning Theories — Draft v0.md` in response to the independent mathematical review `Bridges Between Learning Theories — Review v0.md`. Every finding of the review is applied. **§11 (Changes from v0)** maps each change to the review item it answers. The v0 files, the Review and the five source documents were not modified. The companion file is `Bridges Between Learning Theories — Open Problems and Tests v0.1.md`.
 
 ---
 
@@ -16,7 +16,7 @@ No single theorem unifies these fields, and this draft does not claim one. What 
 - a **geometry**, which comes from the loss landscape and the parameterization;
 - **actuators**, the training choices an engineer controls.
 
-Each theory considered here is a statement about one *functional of the law of this process*, valid in one *limit or regime*. Unifying them means two things:
+Each theory considered here is a statement about one *functional of the law of this process*, valid in one *limit or regime*. Connecting them means two things:
 
 1. one notation in which every theory's object can be written down;
 2. a **regime map** (§9) that says when two theories' objects coincide, and what the error is when they don't.

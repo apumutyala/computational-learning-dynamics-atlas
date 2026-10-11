@@ -101,7 +101,7 @@ gives the following local response by differentiating its normalization, assumin
 
 This derivation is an atlas synthesis of the exponential-family response identity. If \(g\) also depends on \(h\), an additional \(\mathbb E[\partial g/\partial h_i]\) term is needed; using a changing diagnostic without that qualification is not the same calculation.
 
-Patterning provides a concrete posterior-susceptibility training intervention, while the recorded typed-control experiment tests actual reweighting responses and finds gradient alignment useful in its tested setup ([Patterning](https://arxiv.org/html/2601.13548v1), [Item 4](https://github.com/apumutyala/chl-typed-control/issues/1#issuecomment-5925146688)). The essential experiment is to test whether such response measurements predict and improve real learning, rather than assume a posterior identity describes Adam.
+Patterning provides a concrete posterior-susceptibility training intervention ([Patterning](https://arxiv.org/html/2601.13548v1)). The essential experiment is to test whether such response measurements predict and improve real learning, rather than assume a posterior identity describes Adam.
 
 ### Why compressed latent state can need memory
 
@@ -203,9 +203,7 @@ The proposed decisive experiment is a partially observed, multi-step task family
 | Training control | Uniform sampling; loss-based scheduling; gradient alignment; interference-aware replay; optional susceptibility | Lower full cost to the capability-and-correction threshold |
 | Composition stress | Same trained systems with delays, sensor loss, shifted policies and adversarial feedback | Bounded degradation, functioning fallback and no bypass of the declared execution boundary |
 
-The existing typed-control result establishes a useful forward-response baseline, not successful inverse capability control; the recorded SGLD outcome remains inconclusive ([Item 4](https://github.com/apumutyala/chl-typed-control/issues/1#issuecomment-5925146688)). The reviewed State-Space-Decision-Model PR supplies qualification gates rather than a learned-capability result, while the structured-models brief makes construction from initialization a distinct research track ([PR 215](https://github.com/apumutyala/State-Space-Decision-Model/pull/215), [structured-models brief](https://github.com/apumutyala/chl-structured-models/issues/1)).
-
-The next step is to connect those tracks through a shared task and evaluation contract. No experiment described in this section was run as part of building the atlas.
+No experiment described in this section was run as part of building the atlas.
 
 ## Supported claim and current verdict
 

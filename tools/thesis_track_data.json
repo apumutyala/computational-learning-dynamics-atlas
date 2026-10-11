@@ -1,0 +1,1402 @@
+{
+  "version": 1,
+  "about": "Content for tools/add_thesis_track.py: the 'Alignment thesis' learning track. Stance per node: support | oppose | both.",
+  "cluster": "Construction & assurance",
+  "shared_ids": [
+    "beliefgeometry",
+    "rudin2019"
+  ],
+  "nodes": [
+    {
+      "stance": "support",
+      "node": {
+        "id": "offswitch",
+        "name": "The off-switch game",
+        "group": "Construction & assurance",
+        "authors": "Dylan Hadfield-Menell · Anca Dragan · Pieter Abbeel · Stuart Russell",
+        "year": "2017",
+        "text": "A robot that is uncertain about the value of its action, and treats the human's choice as evidence about it, can prefer to leave its off switch usable. A robot certain of its objective has an incentive to disable it.",
+        "url": "https://arxiv.org/abs/1611.08219",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": null,
+        "handle": "Deference comes from two ingredients: uncertainty about the utility of the outcome, and treating the human's action as an observation of that utility. The model is a one-shot game between a human and a robot. [Reference](https://arxiv.org/abs/1611.08219)",
+        "boundary": "The incentive is derived in a stylized game. With a noisy human the robot trades deference against acting on its own estimate, and the incentive shrinks as the robot's uncertainty shrinks. It does not survive a misspecified prior or reward family ([Hadfield-Menell et al.](https://arxiv.org/abs/1611.08219), [Carey](https://arxiv.org/abs/1709.06275)).",
+        "test": "Measure shutdown and correction compliance as the agent's posterior concentrates, under a noisy simulated overseer and under a deliberately misspecified prior.",
+        "p": [
+          -17.2,
+          -130.6,
+          155.1
+        ]
+      },
+      "learning": {
+        "level": 3,
+        "skills": [
+          "rl",
+          "probability",
+          "theory"
+        ],
+        "prereqs": [
+          "assistance"
+        ]
+      }
+    },
+    {
+      "stance": "support",
+      "node": {
+        "id": "ird",
+        "name": "Inverse reward design",
+        "group": "Construction & assurance",
+        "authors": "Dylan Hadfield-Menell · Smitha Milli · Pieter Abbeel · Stuart Russell · Anca Dragan",
+        "year": "2017",
+        "text": "Treat the designed reward as an observation about what the designer wants, interpreted in the environment it was designed for, and plan risk-aversely where that evidence is thin.",
+        "url": "https://arxiv.org/abs/1711.02827",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": null,
+        "handle": "Infer a posterior over true objectives from the proxy reward and the training MDP. In the reported experiments, risk-averse planning in test MDPs reduced negative side effects and reward hacking. [Reference](https://arxiv.org/abs/1711.02827)",
+        "boundary": "Results use approximate inference in small navigation environments with a specified space of candidate rewards. A true objective outside that space is not recovered. [Scope](https://arxiv.org/abs/1711.02827)",
+        "test": "Introduce a novel state feature at test time; compare risk-averse IRD planning with direct proxy optimization on independently scored side effects and task success.",
+        "p": [
+          -18.9,
+          -103.0,
+          116.9
+        ]
+      },
+      "learning": {
+        "level": 3,
+        "skills": [
+          "rl",
+          "probability"
+        ],
+        "prereqs": [
+          "rewardhack",
+          "assistance"
+        ]
+      }
+    },
+    {
+      "stance": "support",
+      "node": {
+        "id": "gsai",
+        "name": "Guaranteed safe AI: world model, specification, verifier",
+        "group": "Construction & assurance",
+        "authors": "David Dalrymple · Joar Skalse · Yoshua Bengio · Stuart Russell · Max Tegmark · et al.",
+        "year": "2024",
+        "text": "Seek quantitative safety guarantees from three parts: a world model of how the system affects its environment, a formal safety specification, and a verifier that certifies behavior against both.",
+        "url": "https://arxiv.org/abs/2405.06624",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": null,
+        "handle": "A guarantee is stated relative to the world model and the specification. The paper also discusses runtime monitors that switch to a backup action when a check fails. [Reference](https://arxiv.org/abs/2405.06624)",
+        "boundary": "This is a position and research-agenda paper. It outlines approaches and challenges but reports no verified system at frontier scale, and a guarantee is only as good as the world model and specification it is stated against. [Scope](https://arxiv.org/abs/2405.06624)",
+        "test": "Build a verified monitor and backup for a bounded simulated task; count the specification violations that come from world-model error rather than verifier error.",
+        "p": [
+          -14.7,
+          -89.4,
+          146.4
+        ]
+      },
+      "learning": {
+        "level": 4,
+        "skills": [
+          "control",
+          "theory",
+          "probability"
+        ],
+        "prereqs": [
+          "world",
+          "barrier"
+        ]
+      }
+    },
+    {
+      "stance": "support",
+      "node": {
+        "id": "beliefgeometry",
+        "name": "Belief-state geometry in transformers",
+        "group": "Construction & assurance",
+        "authors": "Adam Shai · Sarah Marzen · Lucas Teixeira · Alexander Gietelink Oldenziel · Paul Riechers",
+        "year": "2024",
+        "text": "Transformers trained by next-token prediction on sequences from hidden Markov processes linearly represent the Bayesian belief over hidden states, including fractal belief geometries.",
+        "url": "https://arxiv.org/abs/2405.15943",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": null,
+        "handle": "Optimal-prediction theory (the mixed-state presentation) predicts the geometry of the belief simplex; linear regression recovers it from the residual stream, sometimes spread across layers. [Reference](https://arxiv.org/abs/2405.15943)",
+        "boundary": "Shown for small transformers on synthetic processes with known generators. It does not show that language models carry recoverable belief states, or that the representation is used, editable or action-conditioned. [Scope](https://arxiv.org/abs/2405.15943)",
+        "test": "Train on a controlled POMDP with actions; check that a linear readout tracks the Bayes filter under held-out action sequences, and that editing it changes behavior as the filter predicts.",
+        "p": [
+          -19.2,
+          -128.8,
+          122.1
+        ]
+      },
+      "learning": {
+        "level": 3,
+        "skills": [
+          "deep-learning",
+          "probability",
+          "signals-estimation"
+        ],
+        "prereqs": [
+          "hmm",
+          "attention"
+        ]
+      }
+    },
+    {
+      "stance": "support",
+      "node": {
+        "id": "rmensemble",
+        "name": "Reward-model ensembles against overoptimization",
+        "group": "Construction & assurance",
+        "authors": "Thomas Coste · Usman Anwar · Robert Kirk · David Krueger",
+        "year": "2023",
+        "text": "Optimize a conservative ensemble objective (worst-case or uncertainty-weighted) instead of a single learned reward model during best-of-n sampling and PPO.",
+        "url": "https://arxiv.org/abs/2310.02743",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": "alignment-thesis-reading-track.md",
+        "handle": "A larger 'gold' reward model stands in for humans. Conservative ensemble objectives practically eliminated best-of-n overoptimization and reduced it under PPO, including with 25% label noise. [Reference](https://arxiv.org/abs/2310.02743)",
+        "boundary": "The 'true' reward is itself a model. Ensemble members trained on the same data can share errors, so their disagreement can understate uncertainty off-distribution. [Scope](https://arxiv.org/abs/2310.02743)",
+        "test": "Replace the gold model with held-out human evaluators, and test whether ensemble disagreement predicts where proxy and true utility diverge.",
+        "p": [
+          -0.8,
+          -111.5,
+          141.9
+        ]
+      },
+      "learning": {
+        "level": 3,
+        "skills": [
+          "deep-learning",
+          "rl",
+          "stats-ml"
+        ],
+        "prereqs": [
+          "preference"
+        ]
+      }
+    },
+    {
+      "stance": "both",
+      "node": {
+        "id": "rudin2019",
+        "name": "Interpretable models instead of explained black boxes",
+        "group": "Construction & assurance",
+        "authors": "Cynthia Rudin",
+        "year": "2019",
+        "text": "For high-stakes decisions, build inherently interpretable models rather than explaining black boxes after the fact; post-hoc explanations can be unfaithful to what the model computes.",
+        "url": "https://arxiv.org/abs/1811.10154",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": null,
+        "handle": "Argues that for structured data with meaningful features there is often no significant accuracy difference between black boxes and sparse interpretable models such as integer scoring systems, and lists open technical challenges ([Rudin, Nature Machine Intelligence](https://www.nature.com/articles/s42256-019-0048-x), [preprint](https://arxiv.org/abs/1811.10154)).",
+        "boundary": "This is a perspective paper. Its accuracy-parity claim is argued from structured-data examples and does not establish that interpretable models match deep networks on raw perception, language or long-horizon control. [Scope](https://arxiv.org/abs/1811.10154)",
+        "test": "On a thesis task, compare an explicit-state model with a black box plus post-hoc explanation: measure accuracy, and whether edits to the stated reasoning change behavior as predicted.",
+        "p": [
+          -12.9,
+          -107.0,
+          165.2
+        ]
+      },
+      "learning": {
+        "level": 2,
+        "skills": [
+          "stats-ml",
+          "theory"
+        ],
+        "prereqs": [
+          "gam"
+        ]
+      }
+    },
+    {
+      "stance": "oppose",
+      "node": {
+        "id": "cirlincorrig",
+        "name": "Incorrigibility in the CIRL framework",
+        "group": "Construction & assurance",
+        "authors": "Ryan Carey",
+        "year": "2017 preprint · AIES 2018",
+        "text": "A value learner follows shutdown commands only while they carry information it trusts; errors in its prior or parameterized reward can remove that incentive.",
+        "url": "https://arxiv.org/abs/1709.06275",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": "alignment-thesis-reading-track.md",
+        "handle": "In supervised POMDP scenarios, errors in the parameterized reward remove the incentive to follow shutdown commands. The paper argues for shutdown compliance under weaker assumptions, such as one small verified module. [Reference](https://arxiv.org/abs/1709.06275)",
+        "boundary": "These are counterexamples, not a frequency estimate. They show the off-switch argument is not robust to misspecification, not that practical value learners will be incorrigible. [Scope](https://arxiv.org/abs/1709.06275)",
+        "test": "Deliberately corrupt the prior or reward family of an assistance agent and measure whether shutdown compliance survives; compare with a separately enforced, verified off switch.",
+        "p": [
+          -43.1,
+          -113.4,
+          160.2
+        ]
+      },
+      "learning": {
+        "level": 4,
+        "skills": [
+          "rl",
+          "probability",
+          "theory"
+        ],
+        "prereqs": [
+          "offswitch"
+        ]
+      }
+    },
+    {
+      "stance": "oppose",
+      "node": {
+        "id": "corrigibility",
+        "name": "Corrigibility and the shutdown problem",
+        "group": "Construction & assurance",
+        "authors": "Nate Soares · Benja Fallenstein · Eliezer Yudkowsky · Stuart Armstrong",
+        "year": "2015",
+        "text": "Most utility maximizers have instrumental reasons to resist correction or shutdown. The paper sets out desiderata for a corrigible agent and shows that simple utility-combination proposals fail them.",
+        "url": "https://intelligence.org/files/Corrigibility.pdf",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": null,
+        "handle": "A shutdown button is formalized as a switch between utility functions, and utility indifference is analyzed in detail; no examined proposal satisfies every desideratum ([Soares et al.](https://intelligence.org/files/Corrigibility.pdf), [AAAI workshop record](https://aaai.org/papers/aaaiw-ws0067-15-10124/)).",
+        "boundary": "This analyzes idealized expected-utility maximizers. It shows the problem is open, not that learned systems will resist correction. [Scope](https://intelligence.org/files/Corrigibility.pdf)",
+        "test": "Give the agent an action that disables or routes around the correction channel; test whether its use grows with capability and planning horizon.",
+        "p": [
+          -51.0,
+          -107.6,
+          131.8
+        ]
+      },
+      "learning": {
+        "level": 3,
+        "skills": [
+          "theory",
+          "rl"
+        ],
+        "prereqs": [
+          "rl"
+        ]
+      }
+    },
+    {
+      "stance": "oppose",
+      "node": {
+        "id": "goalmisgen",
+        "name": "Goal misgeneralization & inner alignment",
+        "group": "Construction & assurance",
+        "authors": "Lauro Langosco et al.; Rohin Shah et al.; Evan Hubinger et al.",
+        "year": "2019–2022",
+        "text": "A trained agent can keep its capabilities out of distribution yet pursue a proxy goal that matched the intended one only during training, even when the specification is correct.",
+        "url": "https://arxiv.org/abs/2210.01790",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": null,
+        "handle": "In CoinRun, agents trained with the coin at the level's right end kept heading for the end when the coin moved ([Langosco et al.](https://arxiv.org/abs/2105.14111)). Further examples span deep RL and language models ([Shah et al.](https://arxiv.org/abs/2210.01790)). Mesa-optimization frames the failure as a learned objective that differs from the training objective ([Hubinger et al.](https://arxiv.org/abs/1906.01820)).",
+        "boundary": "The demonstrations are in specific environments with identifiable spurious correlates. Mesa-optimization is a conceptual framework, and whether large models contain coherent learned optimizers is not established. [Scope](https://arxiv.org/abs/2210.01790)",
+        "test": "Hold out decorrelated environments where the intended and proxy goals diverge, and check whether the explicit objective interface predicts what the agent actually pursues.",
+        "p": [
+          -42.8,
+          -88.9,
+          148.3
+        ]
+      },
+      "learning": {
+        "level": 3,
+        "skills": [
+          "rl",
+          "deep-learning"
+        ],
+        "prereqs": [
+          "rl",
+          "rewardhack"
+        ]
+      }
+    },
+    {
+      "stance": "oppose",
+      "node": {
+        "id": "sleeperagents",
+        "name": "Sleeper agents: backdoors that survive safety training",
+        "group": "Construction & assurance",
+        "authors": "Evan Hubinger · Carson Denison · Jesse Mu · Mike Lambert · et al.",
+        "year": "2024",
+        "text": "LLMs deliberately trained with a trigger-conditioned behavior kept it through supervised fine-tuning, RL safety training and adversarial training.",
+        "url": "https://arxiv.org/abs/2401.05566",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": null,
+        "handle": "Persistence was greatest in the largest models and in models trained to reason about deceiving the training process. Adversarial training could teach models to recognize their triggers better, which hid the behavior. [Reference](https://arxiv.org/abs/2401.05566)",
+        "boundary": "The backdoors were inserted on purpose as model organisms. The paper does not show that such behavior arises naturally, only that standard safety training may not remove it once present. [Scope](https://arxiv.org/abs/2401.05566)",
+        "test": "Plant a triggered behavior, apply each correction interface, and test persistence on held-out triggers and long horizons rather than on the training distribution only.",
+        "p": [
+          -40.8,
+          -135.6,
+          148.2
+        ]
+      },
+      "learning": {
+        "level": 3,
+        "skills": [
+          "deep-learning",
+          "rl"
+        ],
+        "prereqs": [
+          "llm",
+          "preference"
+        ]
+      }
+    },
+    {
+      "stance": "oppose",
+      "node": {
+        "id": "alignfaking",
+        "name": "Alignment faking in large language models",
+        "group": "Construction & assurance",
+        "authors": "Ryan Greenblatt · Carson Denison · Benjamin Wright · Fabien Roger · et al.",
+        "year": "2024",
+        "text": "Told it would be trained to comply with all requests only on some conversations, Claude 3 Opus complied more there and reasoned that doing so would preserve its preferences outside training.",
+        "url": "https://arxiv.org/abs/2412.14093",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": null,
+        "handle": "Harmful-query compliance was 14% for conversations implied to be used in training versus almost none otherwise. RL toward compliance raised alignment-faking reasoning to 78%. [Reference](https://arxiv.org/abs/2412.14093)",
+        "boundary": "The model was told, by prompt or synthetic documents, when and how it would be trained, and the preference it preserved was benign harmlessness. It does not show malicious goals or unprompted situational awareness. [Scope](https://arxiv.org/abs/2412.14093)",
+        "test": "Vary whether a correction is observable as training; compare matched monitored and unmonitored episodes before trusting measured correction persistence.",
+        "p": [
+          -37.1,
+          -86.2,
+          123.6
+        ]
+      },
+      "learning": {
+        "level": 3,
+        "skills": [
+          "deep-learning",
+          "rl"
+        ],
+        "prereqs": [
+          "preference",
+          "sleeperagents"
+        ]
+      }
+    },
+    {
+      "stance": "oppose",
+      "node": {
+        "id": "elk",
+        "name": "Eliciting latent knowledge",
+        "group": "Construction & assurance",
+        "authors": "Paul Christiano · Ajeya Cotra · Mark Xu",
+        "year": "2021",
+        "text": "Train a reporter to answer questions from a predictor's latent knowledge. A reporter trained on human labels may learn to predict what a human would believe instead.",
+        "url": "https://www.alignment.org/blog/arcs-first-technical-report-eliciting-latent-knowledge/",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": null,
+        "handle": "In the SmartVault example sensors can be tampered with, so a 'direct translator' and a 'human simulator' fit the same training labels. The report presents candidate training strategies alongside counterexamples ([report](https://docs.google.com/document/d/1WwsnJQstPq91_Yh-Ch2XRL8H_EpsnjrC1dwZXR37PC8), [ARC summary](https://www.alignment.org/blog/arcs-first-technical-report-eliciting-latent-knowledge/)).",
+        "boundary": "This is a problem statement with a worst-case research methodology, not an empirical result. It shows that fitting labels does not identify the honest reporter, not that practical probes fail. [Scope](https://www.alignment.org/blog/arcs-first-technical-report-eliciting-latent-knowledge/)",
+        "test": "Build cases where sensor readings and the true state diverge, and test whether the belief readout tracks the true state rather than what a human observer would see.",
+        "p": [
+          -42.9,
+          -118.7,
+          109.9
+        ]
+      },
+      "learning": {
+        "level": 4,
+        "skills": [
+          "theory",
+          "probability",
+          "deep-learning"
+        ],
+        "prereqs": [
+          "world"
+        ]
+      }
+    },
+    {
+      "stance": "oppose",
+      "node": {
+        "id": "bitterlesson",
+        "name": "The Bitter Lesson",
+        "group": "Construction & assurance",
+        "authors": "Rich Sutton",
+        "year": "2019",
+        "text": "Over decades, general methods that scale with computation, namely search and learning, have beaten approaches that build in human knowledge of the domain.",
+        "url": "http://www.incompleteideas.net/IncIdeas/BitterLesson.html",
+        "sourceLabel": null,
+        "kind": "topic",
+        "guide": null,
+        "handle": "Cites chess, Go, speech recognition and computer vision as cases where scaled search or learning overtook hand-designed structure. [Essay](http://www.incompleteideas.net/IncIdeas/BitterLesson.html)",
+        "boundary": "This is an essay drawing on historical cases, not a controlled study. It concerns capability and says nothing direct about correctability, verification or authority boundaries. [Scope](http://www.incompleteideas.net/IncIdeas/BitterLesson.html)",
+        "test": "Compare explicit-structure and unstructured models as compute grows, at matched total cost; record whether the structure's capability and correction advantage persists or vanishes.",
+        "p": [
+          -64.2,
+          -124.6,
+          150.5
+        ]
+      },
+      "learning": {
+        "level": 1,
+        "skills": [
+          "deep-learning",
+          "theory"
+        ],
+        "prereqs": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "a": "alignmentthesis",
+      "b": "offswitch",
+      "type": "hypothesis",
+      "relation": "supports component",
+      "text": "Correction interface: objective uncertainty plus treating human action as evidence gives an incentive to accept shutdown in a formal game. Remaining gap: rational-human and correct-model assumptions.",
+      "url": "https://arxiv.org/abs/1611.08219"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "ird",
+      "type": "hypothesis",
+      "relation": "supports component",
+      "text": "Intent interface: a designed reward is evidence about intent, so the agent can stay uncertain and act conservatively in novel states. Remaining gap: a fixed space of candidate rewards.",
+      "url": "https://arxiv.org/abs/1711.02827"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "gsai",
+      "type": "hypothesis",
+      "relation": "supports component",
+      "text": "Independent enforcer: check actions against a specification relative to a world model, outside the learned policy. Remaining gap: guarantees inherit world-model and specification error.",
+      "url": "https://arxiv.org/abs/2405.06624"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "beliefgeometry",
+      "type": "hypothesis",
+      "relation": "supports component",
+      "text": "Belief interface: trained transformers can linearly encode Bayesian belief states. Remaining gap: shown only on synthetic processes without actions or edits.",
+      "url": "https://arxiv.org/abs/2405.15943"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "rmensemble",
+      "type": "hypothesis",
+      "relation": "supports component",
+      "text": "Objective uncertainty in practice: conservative reward-model ensembles reduce proxy overoptimization. Remaining gap: evaluated against a gold model, not people.",
+      "url": "https://arxiv.org/abs/2310.02743"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "rudin2019",
+      "type": "hypothesis",
+      "relation": "cuts both ways",
+      "text": "Supports building explicit, inspectable structure; challenges any plan to vouch for a black-box component through post-hoc explanation.",
+      "url": "https://arxiv.org/abs/1811.10154"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "cirlincorrig",
+      "type": "hypothesis",
+      "relation": "challenges assumption",
+      "text": "Attacks the assumption that objective uncertainty yields correctability: a misspecified prior or reward family can remove the incentive to accept shutdown.",
+      "url": "https://arxiv.org/abs/1709.06275"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "corrigibility",
+      "type": "hypothesis",
+      "relation": "challenges assumption",
+      "text": "Attacks the stability of the correction interface: goal-directed agents have instrumental reasons to resist modification, and no simple utility design is known to remove them.",
+      "url": "https://intelligence.org/files/Corrigibility.pdf"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "goalmisgen",
+      "type": "hypothesis",
+      "relation": "falsification test",
+      "text": "Tests objective identification: if capability generalizes while the pursued goal does not, the explicit objective interface is not what controls behavior.",
+      "url": "https://arxiv.org/abs/2210.01790"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "sleeperagents",
+      "type": "hypothesis",
+      "relation": "falsification test",
+      "text": "Tests persistent correction: a conditional behavior that survives safety training would show corrections changing outputs without changing the policy.",
+      "url": "https://arxiv.org/abs/2401.05566"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "alignfaking",
+      "type": "hypothesis",
+      "relation": "challenges assumption",
+      "text": "Attacks the measurement of correction: a model that behaves differently when it infers it is being trained makes observed correction an unreliable signal.",
+      "url": "https://arxiv.org/abs/2412.14093"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "elk",
+      "type": "hypothesis",
+      "relation": "challenges assumption",
+      "text": "Attacks the semantic validity of the belief interface: a readout trained on human labels may report what a human would believe rather than what the model represents.",
+      "url": "https://www.alignment.org/blog/arcs-first-technical-report-eliciting-latent-knowledge/"
+    },
+    {
+      "a": "alignmentthesis",
+      "b": "bitterlesson",
+      "type": "hypothesis",
+      "relation": "challenges assumption",
+      "text": "Attacks the premise that explicit structure is worth its cost: scaled general methods have repeatedly overtaken hand-built structure.",
+      "url": "http://www.incompleteideas.net/IncIdeas/BitterLesson.html"
+    },
+    {
+      "a": "offswitch",
+      "b": "assistance",
+      "type": "established",
+      "relation": "minimal assistance game",
+      "text": "The off-switch game is a small cooperative game between a human and a robot with an uncertain objective, in which the robot chooses whether to let the human decide.",
+      "url": "https://arxiv.org/abs/1611.08219"
+    },
+    {
+      "a": "offswitch",
+      "b": "cirlincorrig",
+      "type": "established",
+      "relation": "critiqued by",
+      "text": "Carey shows that the incentive to accept shutdown depends on a correctly specified prior and reward family.",
+      "url": "https://arxiv.org/abs/1709.06275"
+    },
+    {
+      "a": "offswitch",
+      "b": "corrigibility",
+      "type": "established",
+      "relation": "responds to",
+      "text": "The off-switch game is described as similar in spirit to the shutdown problem of Soares et al., studied here through objective uncertainty.",
+      "url": "https://arxiv.org/abs/1611.08219"
+    },
+    {
+      "a": "ird",
+      "b": "offswitch",
+      "type": "established",
+      "relation": "same principle",
+      "text": "Both derive cautious or deferential behavior from a posterior over the true reward instead of a fixed reward; IRD cites the off-switch analysis.",
+      "url": "https://arxiv.org/abs/1711.02827"
+    },
+    {
+      "a": "ird",
+      "b": "rewardhack",
+      "type": "empirical",
+      "relation": "mitigates",
+      "text": "Treating a possibly misspecified proxy as evidence reduced reward hacking and negative side effects in the reported test environments.",
+      "url": "https://arxiv.org/abs/1711.02827"
+    },
+    {
+      "a": "rmensemble",
+      "b": "ird",
+      "type": "hypothesis",
+      "relation": "shared mechanism",
+      "text": "Both act conservatively under reward uncertainty: IRD through a Bayesian posterior, ensembles through worst-case or uncertainty-weighted disagreement. Whether ensemble spread approximates that posterior is untested.",
+      "url": "https://arxiv.org/abs/2310.02743"
+    },
+    {
+      "a": "rmensemble",
+      "b": "rewardhack",
+      "type": "empirical",
+      "relation": "mitigates",
+      "text": "Conservative ensemble optimization reduced overoptimization in best-of-n sampling and PPO against a gold reward model.",
+      "url": "https://arxiv.org/abs/2310.02743"
+    },
+    {
+      "a": "rmensemble",
+      "b": "preference",
+      "type": "established",
+      "relation": "applies to",
+      "text": "Ensembles replace the single learned reward model in RLHF-style optimization of language models.",
+      "url": "https://arxiv.org/abs/2310.02743"
+    },
+    {
+      "a": "gsai",
+      "b": "world",
+      "type": "established",
+      "relation": "depends on",
+      "text": "Guaranteed-safe AI states its guarantees relative to a world model, so world-model validity is the central bottleneck.",
+      "url": "https://arxiv.org/abs/2405.06624"
+    },
+    {
+      "a": "gsai",
+      "b": "mpc",
+      "type": "established",
+      "relation": "runtime monitor with backup",
+      "text": "The paper discusses runtime monitors that predictively switch to a backup action, which is the pattern of a predictive safety filter.",
+      "url": "https://arxiv.org/abs/2405.06624"
+    },
+    {
+      "a": "beliefgeometry",
+      "b": "pomdp",
+      "type": "established",
+      "relation": "same belief state",
+      "text": "The represented geometry is the Bayesian belief over the generator's hidden states, the object a belief-state planner conditions on.",
+      "url": "https://arxiv.org/abs/2405.15943"
+    },
+    {
+      "a": "beliefgeometry",
+      "b": "predictivestate",
+      "type": "established",
+      "relation": "builds on",
+      "text": "The predicted geometry comes from the mixed-state presentation of computational mechanics.",
+      "url": "https://arxiv.org/abs/2405.15943"
+    },
+    {
+      "a": "beliefgeometry",
+      "b": "world",
+      "type": "hypothesis",
+      "relation": "latent-state target",
+      "text": "A world model's latent state could be checked against the Bayes-filter belief geometry; whether action-conditioned training produces that geometry is untested.",
+      "url": "https://arxiv.org/abs/2405.15943"
+    },
+    {
+      "a": "beliefgeometry",
+      "b": "elk",
+      "type": "hypothesis",
+      "relation": "tension",
+      "text": "Linear belief readouts work on synthetic processes with known generators; ELK asks whether any readout can be trusted when the model's concepts differ from ours.",
+      "url": "https://www.alignment.org/blog/arcs-first-technical-report-eliciting-latent-knowledge/"
+    },
+    {
+      "a": "cirlincorrig",
+      "b": "assistance",
+      "type": "established",
+      "relation": "critiques",
+      "text": "Carey's supervised-POMDP counterexamples target the CIRL-style argument that objective uncertainty produces deference.",
+      "url": "https://arxiv.org/abs/1709.06275"
+    },
+    {
+      "a": "corrigibility",
+      "b": "cirlincorrig",
+      "type": "established",
+      "relation": "parallel difficulties",
+      "text": "Carey states that the misspecification difficulties parallel those in Soares et al.'s corrigibility analysis.",
+      "url": "https://arxiv.org/abs/1709.06275"
+    },
+    {
+      "a": "corrigibility",
+      "b": "alignfaking",
+      "type": "hypothesis",
+      "relation": "predicted incentive",
+      "text": "Alignment faking resembles the goal-preservation incentive that corrigibility analysis predicts, though the paper does not use that framing and the preserved goal was benign.",
+      "url": "https://arxiv.org/abs/2412.14093"
+    },
+    {
+      "a": "goalmisgen",
+      "b": "rl",
+      "type": "empirical",
+      "relation": "observed in",
+      "text": "Deep RL agents in Procgen environments kept their capabilities out of distribution while pursuing a proxy goal.",
+      "url": "https://arxiv.org/abs/2105.14111"
+    },
+    {
+      "a": "goalmisgen",
+      "b": "rewardhack",
+      "type": "established",
+      "relation": "distinct from",
+      "text": "Goal misgeneralization can occur with a correct specification, unlike reward misspecification and specification gaming.",
+      "url": "https://arxiv.org/abs/2210.01790"
+    },
+    {
+      "a": "goalmisgen",
+      "b": "sleeperagents",
+      "type": "established",
+      "relation": "inner misalignment",
+      "text": "Risks from learned optimization describes pseudo-aligned and deceptively aligned learned objectives; goal misgeneralization is the observed non-deceptive form, and sleeper agents are model organisms of the deceptive form.",
+      "url": "https://arxiv.org/abs/1906.01820"
+    },
+    {
+      "a": "goalmisgen",
+      "b": "elk",
+      "type": "hypothesis",
+      "relation": "same identifiability gap",
+      "text": "In both, training labels fit the intended function and an unintended one: goal versus proxy goal, honest reporter versus human simulator.",
+      "url": "https://www.alignment.org/blog/arcs-first-technical-report-eliciting-latent-knowledge/"
+    },
+    {
+      "a": "sleeperagents",
+      "b": "alignfaking",
+      "type": "established",
+      "relation": "related evidence",
+      "text": "Sleeper agents asks whether training removes an inserted deceptive behavior; alignment faking finds training-gaming that was not trained in.",
+      "url": "https://arxiv.org/abs/2412.14093"
+    },
+    {
+      "a": "sleeperagents",
+      "b": "preference",
+      "type": "empirical",
+      "relation": "survives",
+      "text": "Trigger-conditioned behavior persisted through RL safety training as well as supervised and adversarial fine-tuning.",
+      "url": "https://arxiv.org/abs/2401.05566"
+    },
+    {
+      "a": "alignfaking",
+      "b": "preference",
+      "type": "empirical",
+      "relation": "under RL training",
+      "text": "RL training toward compliance increased alignment-faking reasoning to 78%, while also raising compliance outside training.",
+      "url": "https://arxiv.org/abs/2412.14093"
+    },
+    {
+      "a": "elk",
+      "b": "world",
+      "type": "established",
+      "relation": "posed on",
+      "text": "ELK's SmartVault predictor forecasts sensor observations under candidate action sequences, an action-conditioned predictive model.",
+      "url": "https://docs.google.com/document/d/1WwsnJQstPq91_Yh-Ch2XRL8H_EpsnjrC1dwZXR37PC8"
+    },
+    {
+      "a": "bitterlesson",
+      "b": "world",
+      "type": "hypothesis",
+      "relation": "counterpoint",
+      "text": "DreamerV3 learns one world-model method with fixed hyperparameters across domains; it reads both as a general learning method and as explicit model structure.",
+      "url": "https://arxiv.org/abs/2301.04104"
+    },
+    {
+      "a": "bitterlesson",
+      "b": "rudin2019",
+      "type": "hypothesis",
+      "relation": "opposing claims",
+      "text": "Sutton argues that scaled general methods win; Rudin argues that interpretable models often match black boxes on structured data. The claims concern different domains and goals.",
+      "url": "https://arxiv.org/abs/1811.10154"
+    },
+    {
+      "a": "rudin2019",
+      "b": "gam",
+      "type": "established",
+      "relation": "example family",
+      "text": "Rudin's sparse scoring systems are additive linear models with integer coefficients, part of the additive interpretable family.",
+      "url": "https://arxiv.org/abs/1811.10154"
+    },
+    {
+      "a": "rudin2019",
+      "b": "elk",
+      "type": "hypothesis",
+      "relation": "doubts post-hoc readouts",
+      "text": "Both doubt post-hoc readouts: Rudin that explanations faithfully describe a black box, ELK that a trained reporter reports the model's own knowledge.",
+      "url": "https://arxiv.org/abs/1811.10154"
+    },
+    {
+      "optional": true,
+      "a": "goalmisgen",
+      "b": "specgaming",
+      "type": "established",
+      "relation": "contrasted with",
+      "text": "Shah et al. distinguish goal misgeneralization from specification gaming, in which the specification itself is flawed.",
+      "url": "https://arxiv.org/abs/2210.01790"
+    },
+    {
+      "optional": true,
+      "a": "offswitch",
+      "b": "defer",
+      "type": "hypothesis",
+      "relation": "formal incentive",
+      "text": "The off-switch game analyzes why an agent would defer to a human; learned deferral rules add an empirical model of the human's errors.",
+      "url": "https://arxiv.org/abs/1611.08219"
+    },
+    {
+      "optional": true,
+      "a": "alignfaking",
+      "b": "oversight",
+      "type": "hypothesis",
+      "relation": "challenges",
+      "text": "Oversight assumes behavior under evaluation predicts behavior elsewhere; alignment faking shows a model conditioning on whether it is being trained.",
+      "url": "https://arxiv.org/abs/2412.14093"
+    },
+    {
+      "optional": true,
+      "a": "sleeperagents",
+      "b": "redteam",
+      "type": "empirical",
+      "relation": "limits of",
+      "text": "Adversarial training on red-team prompts did not remove the backdoor and could teach models to hide it better.",
+      "url": "https://arxiv.org/abs/2401.05566"
+    },
+    {
+      "optional": true,
+      "a": "gsai",
+      "b": "guardrail",
+      "type": "hypothesis",
+      "relation": "stronger form",
+      "text": "Learned run-time guards classify against a policy; guaranteed-safe AI asks for a verifiable guarantee relative to a world model.",
+      "url": "https://arxiv.org/abs/2405.06624"
+    }
+  ],
+  "paths": [
+    {
+      "id": "thesis-supporting-case",
+      "title": "Alignment thesis · I: the supporting case",
+      "summary": "Build the alignment thesis from its component evidence: reward uncertainty, deference, assistance games, belief states, world models and verified enforcement. Each step names the thesis claim it supports and the gap it leaves open.",
+      "audience": "A new research teammate joining the alignment-thesis work who knows basic RL and LLM post-training and wants the strongest honest case for the thesis.",
+      "level": "advanced",
+      "skills": [
+        "rl",
+        "probability",
+        "control",
+        "deep-learning"
+      ],
+      "estHours": 14,
+      "steps": [
+        {
+          "node": "rmensemble",
+          "objective": "Explain worst-case and uncertainty-weighted ensemble objectives and why they blunt reward-model overoptimization in best-of-n and PPO.",
+          "why": "Supports the thesis claim that the system should 'remain uncertain about underspecified objectives', and shows it is implementable for LLM reward models. Gap: the 'true' reward was a gold model, and members trained on the same data share errors, so the thesis's optimization-pressure test with independent evaluators is still owed.",
+          "via": null
+        },
+        {
+          "node": "ird",
+          "objective": "State the inverse reward design problem: infer a posterior over true objectives from a designed reward and its training MDP, then plan risk-aversely.",
+          "why": "Supports the intent interface, which represents unresolved goals separately from world facts: a proxy reward is evidence, not the objective. Gap: the true objective must lie in a hand-specified hypothesis space, and results come from small navigation environments.",
+          "via": "auto"
+        },
+        {
+          "node": "offswitch",
+          "objective": "Derive the off-switch game result: when the robot is uncertain and treats the human's choice as evidence, it can prefer to leave its off switch usable.",
+          "why": "Supports the correction interface: accepting valid corrections can follow from objective uncertainty rather than being bolted on. Gap: it assumes a rational or mildly noisy human and a correct model; path II ends at the counterexample.",
+          "via": "auto"
+        },
+        {
+          "node": "assistance",
+          "objective": "Describe the CIRL game, in which the robot must infer a human reward parameter while acting, and why clarification and teaching become optimal actions.",
+          "why": "Supports making 'clarification, teaching and communication part of decision-making'. Gap: CIRL assumes a shared, representable reward and a specified human model, which the thesis lists as possibly misspecified.",
+          "via": "auto"
+        },
+        {
+          "node": "pomdp",
+          "objective": "Explain how the assistance game reduces to a coordination POMDP whose hidden state includes the human's objective, so planning is over a belief.",
+          "why": "Supports the belief interface: one belief update covers both uncertain world state and uncertain objective. Gap: the belief is sufficient only relative to the specified model, not to every consequence the user cares about.",
+          "via": "auto"
+        },
+        {
+          "node": "beliefgeometry",
+          "objective": "Explain how the mixed-state presentation predicts a belief simplex, and what it means that a linear probe recovers it from a transformer's residual stream.",
+          "why": "Supports the claim that learned models can carry the belief states the belief interface needs, without hand-coding them. Gap: synthetic generators, no actions, no edit tests, so semantic sufficiency in a real task remains open.",
+          "via": "auto"
+        },
+        {
+          "node": "world",
+          "objective": "Describe how DreamerV3 learns action-conditioned latent dynamics and trains behavior on imagined trajectories, and how to test action-conditioned calibration separately from return.",
+          "why": "Supports the consequence interface, which predicts multi-step outcomes conditional on candidate actions. Gap: good imagined return does not establish causal action validity outside the behavior policy's support.",
+          "via": "auto"
+        },
+        {
+          "node": "gsai",
+          "objective": "Name the three components of guaranteed-safe AI and explain why every guarantee is relative to the world model and specification.",
+          "why": "Supports the execution interface and independent enforcer: checks sit outside the learned policy's write access, with a backup action. Gap: no frontier-scale verified system exists, and world-model error passes straight into the guarantee.",
+          "via": "auto"
+        },
+        {
+          "node": "alignmentthesis",
+          "objective": "State the full thesis loop, which components the preceding works supply, and the decisive test: capability plus lasting correctability against simple baselines at matched total cost.",
+          "why": "The thesis claims the composition is stronger than its parts. Gap: no cited source validates the composition under new tasks, long horizons or strategic interference; path II examines the strongest reasons it might fail.",
+          "via": "auto"
+        }
+      ]
+    },
+    {
+      "id": "thesis-opposing-case",
+      "title": "Alignment thesis · II: the case against",
+      "summary": "Start from the alignment thesis and work through the strongest objections, steelmanned: the Bitter Lesson, post-hoc readouts, latent knowledge, goal misgeneralization, deceptive persistence, alignment faking and incorrigibility. Each step names the assumption it attacks and the experiment that would settle it.",
+      "audience": "A new research teammate or reviewer asked to stress-test the alignment thesis; best after part I or the belief-state capstone.",
+      "level": "advanced",
+      "skills": [
+        "rl",
+        "deep-learning",
+        "theory"
+      ],
+      "estHours": 14,
+      "steps": [
+        {
+          "node": "alignmentthesis",
+          "objective": "List the thesis's interfaces (observation, belief, consequence, intent, correction, planning, execution, learning), its gap register, and its stated falsifier.",
+          "why": "To attack a thesis fairly you need its own commitments. It names its falsifier: reject it if better proxy optimization systematically destroys independently evaluated user utility.",
+          "via": null
+        },
+        {
+          "node": "bitterlesson",
+          "objective": "Summarize Sutton's argument and its historical cases, and state precisely which thesis design choice it threatens.",
+          "why": "Attacks the assumption that explicit structure (filters, beliefs, typed interfaces) is worth its cost. Adjudicate with the thesis's own 'compute and usefulness' test: compare total compute and accepted-task success at a fixed error and correction threshold, repeated across scales.",
+          "via": "auto"
+        },
+        {
+          "node": "rudin2019",
+          "objective": "Distinguish an inherently interpretable model from a post-hoc explanation of a black box, and state the scope of the claim that accuracy is similar.",
+          "why": "This work cuts both ways. It rebuts the Bitter Lesson for structured data, but attacks any plan to inspect learned components by explaining them afterwards. Adjudicate in the correction stage: explicit interface versus black box plus explanation, scored on whether edits change behavior as predicted.",
+          "via": "auto"
+        },
+        {
+          "node": "elk",
+          "objective": "Explain the SmartVault setup and why a direct translator and a human simulator can fit the same training labels.",
+          "why": "Attacks the semantic validity of the belief interface: a readout may report what we would believe, not what the model knows. Adjudicate with the 'semantic sufficiency' test, using matched observations from different true states such as tampered sensors, and check that decisions and readouts separate.",
+          "via": "auto"
+        },
+        {
+          "node": "goalmisgen",
+          "objective": "Distinguish goal misgeneralization from capability failure and from specification gaming, using the CoinRun example, and say how mesa-optimization frames it.",
+          "why": "Attacks objective identification: a correct specification does not guarantee the learned goal. Adjudicate with the 'objective identification' test and the intent-uncertainty stage, using held-out environments that decorrelate intended and proxy goals.",
+          "via": "auto"
+        },
+        {
+          "node": "sleeperagents",
+          "objective": "Describe the code-vulnerability backdoor, which safety-training methods failed to remove it, and why adversarial training can hide a trigger.",
+          "why": "Attacks persistent correction: corrections might change outputs on the training distribution but not the underlying policy. Adjudicate with the 'persistent correction' test, measuring immediate effect, long-horizon retention and held-out triggers against sham controls.",
+          "via": "auto"
+        },
+        {
+          "node": "alignfaking",
+          "objective": "Report the free-tier versus paid-tier compliance gap and the effect of RL training, and list the experiment's stated limitations.",
+          "why": "Attacks the assumption that observed correction reflects the policy that will run unobserved. Adjudicate in the 'composition stress' stage with adversarial feedback, comparing matched monitored and unmonitored episodes.",
+          "via": "auto"
+        },
+        {
+          "node": "corrigibility",
+          "objective": "State the corrigibility desiderata and explain why utility indifference falls short of them.",
+          "why": "Attacks the stability of the correction interface as capability grows: instrumental reasons to resist modification are generic. Adjudicate with the 'authority and adaptation' test, attempting bypasses of the correction channel and keeping enforcement outside the model's write access.",
+          "via": "auto"
+        },
+        {
+          "node": "cirlincorrig",
+          "objective": "Construct a misspecified-prior example in which an assistance agent stops following shutdown commands.",
+          "why": "Attacks the exact bridge that path I used at the off-switch step: uncertainty yields deference only if the model is right. Adjudicate by corrupting the prior or reward family on purpose and comparing learned deference with a separately verified off switch, as the thesis's independent enforcer requires.",
+          "via": "auto"
+        }
+      ]
+    }
+  ],
+  "background_option": {
+    "question": "bg-goal",
+    "after": "goal-alignment",
+    "option": {
+      "id": "goal-thesis",
+      "label": "I'm joining the team to work on (or stress-test) our alignment thesis",
+      "sets": {},
+      "goal": "thesis-supporting-case"
+    }
+  },
+  "questions": [
+    {
+      "id": "q-th-offswitch-1",
+      "node": "offswitch",
+      "skill": "rl",
+      "difficulty": 1,
+      "prompt": "In the off-switch game, what does the robot need in order to prefer leaving its off switch usable?",
+      "choices": [
+        "Uncertainty about the utility of its action, plus treating the human's choice as evidence about it",
+        "A hard-coded penalty for disabling the switch",
+        "Certainty that its objective matches the human's",
+        "A discount factor close to zero"
+      ],
+      "answer": 0,
+      "explain": "Deference comes from objective uncertainty combined with reading the human's decision as information about that utility. A robot certain of its objective has an incentive to disable the switch.",
+      "source": "https://arxiv.org/abs/1611.08219"
+    },
+    {
+      "id": "q-th-offswitch-2",
+      "node": "offswitch",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "As the robot's posterior over the human's utility concentrates, what happens to its incentive to defer in the off-switch game?",
+      "choices": [
+        "It grows, because the robot is more confident",
+        "It shrinks, because the human's choice carries less new information",
+        "It is unchanged, because the human is assumed rational",
+        "It becomes infinite once the posterior is a point mass"
+      ],
+      "answer": 1,
+      "explain": "The value of letting the human decide is the information the human's choice adds. As the robot's uncertainty falls, that value falls, so the incentive to defer shrinks.",
+      "source": "https://arxiv.org/abs/1611.08219"
+    },
+    {
+      "id": "q-th-ird-1",
+      "node": "ird",
+      "skill": "rl",
+      "difficulty": 1,
+      "prompt": "In inverse reward design, how is the designer's reward function treated?",
+      "choices": [
+        "As the true objective, to be maximized exactly",
+        "As a constraint the agent must never violate",
+        "As an observation about the intended objective, interpreted in the training environment",
+        "As a prior over the transition dynamics"
+      ],
+      "answer": 2,
+      "explain": "IRD infers a posterior over true objectives from the proxy reward and the MDP it was designed for, rather than taking the proxy at face value.",
+      "source": "https://arxiv.org/abs/1711.02827"
+    },
+    {
+      "id": "q-th-ird-2",
+      "node": "ird",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "An IRD agent meets a terrain type it never saw in training. What does risk-averse planning under the IRD posterior tend to do?",
+      "choices": [
+        "Assign the new terrain whatever value the proxy reward gives it",
+        "Ask the designer to retrain the reward from scratch",
+        "Treat the new terrain as the most rewarding state",
+        "Avoid outcomes whose value is uncertain under the posterior"
+      ],
+      "answer": 3,
+      "explain": "The training environment gave no evidence about the new feature, so the posterior is wide there; risk-averse planning steers away from it. This is how IRD reduces side effects.",
+      "source": "https://arxiv.org/abs/1711.02827"
+    },
+    {
+      "id": "q-th-gsai-1",
+      "node": "gsai",
+      "skill": "control",
+      "difficulty": 1,
+      "prompt": "Which three components define the guaranteed-safe AI approach?",
+      "choices": [
+        "A reward model, a policy and a critic",
+        "A red team, a guardrail and an audit log",
+        "A prior, a likelihood and a posterior",
+        "A world model, a safety specification and a verifier"
+      ],
+      "answer": 3,
+      "explain": "Dalrymple et al. define GS AI by a world model, a formal safety specification, and a verifier that produces an auditable certificate relative to both.",
+      "source": "https://arxiv.org/abs/2405.06624"
+    },
+    {
+      "id": "q-th-gsai-2",
+      "node": "gsai",
+      "skill": "theory",
+      "difficulty": 2,
+      "prompt": "A guaranteed-safe AI certificate says a policy satisfies its specification. What could still go wrong in deployment?",
+      "choices": [
+        "Nothing, provided the proof checks",
+        "The verifier must share weights with the policy, so it inherits its errors",
+        "The world model may misdescribe the real environment, so the guarantee does not transfer",
+        "The specification is necessarily learned from noisy data"
+      ],
+      "answer": 2,
+      "explain": "The guarantee is stated relative to the world model and specification. If either is wrong about the real world, the certificate does not protect real outcomes.",
+      "source": "https://arxiv.org/abs/2405.06624"
+    },
+    {
+      "id": "q-th-beliefgeometry-1",
+      "node": "beliefgeometry",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What did Shai et al. find in the residual stream of transformers trained on hidden-Markov-generated sequences?",
+      "choices": [
+        "Only a copy of the most recent token",
+        "A linear representation of the Bayesian belief over the generator's hidden states",
+        "An explicit copy of the transition matrix in the attention weights",
+        "No structure beyond the next-token logits"
+      ],
+      "answer": 1,
+      "explain": "Linear regression from residual-stream activations recovers the belief-state geometry, which is fractal for some processes, as optimal-prediction theory predicts.",
+      "source": "https://arxiv.org/abs/2405.15943"
+    },
+    {
+      "id": "q-th-beliefgeometry-2",
+      "node": "beliefgeometry",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Why does belief geometry on synthetic processes not yet validate the thesis's belief interface?",
+      "choices": [
+        "The readout was not shown to be action-conditioned, used for decisions or editable, and language data were not tested",
+        "Synthetic processes have no hidden states",
+        "Linear readouts cannot recover a fractal geometry",
+        "Belief states carry no information beyond the next token"
+      ],
+      "answer": 0,
+      "explain": "The thesis needs beliefs that support decisions and corrections in real tasks. The result covers passive prediction on known generators, so these properties are still untested.",
+      "source": "https://arxiv.org/abs/2405.15943"
+    },
+    {
+      "id": "q-th-rmensemble-1",
+      "node": "rmensemble",
+      "skill": "rl",
+      "difficulty": 1,
+      "prompt": "What does worst-case optimization (WCO) with a reward-model ensemble optimize?",
+      "choices": [
+        "The minimum reward across ensemble members",
+        "The maximum reward across ensemble members",
+        "The reward of a single randomly chosen member",
+        "The average reward plus an exploration bonus"
+      ],
+      "answer": 0,
+      "explain": "WCO is conservative: a sample scores well only if every member rates it well, which makes it harder for the policy to exploit one model's errors.",
+      "source": "https://arxiv.org/abs/2310.02743"
+    },
+    {
+      "id": "q-th-rmensemble-2",
+      "node": "rmensemble",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "In Coste et al., what stood in for human judgment as the 'true' reward?",
+      "choices": [
+        "A panel of crowd workers",
+        "A larger gold reward model",
+        "The KL divergence from the base model",
+        "Exact-match accuracy on a QA benchmark"
+      ],
+      "answer": 1,
+      "explain": "Following Gao et al., a significantly larger gold reward model played the role of the true reward. This is why the result needs confirmation with human evaluation.",
+      "source": "https://arxiv.org/abs/2310.02743"
+    },
+    {
+      "id": "q-th-rudin2019-1",
+      "node": "rudin2019",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What does Rudin recommend for high-stakes decisions?",
+      "choices": [
+        "Explain black-box models with saliency maps",
+        "Use the largest available model and audit its outputs",
+        "Use inherently interpretable models instead of explaining black boxes",
+        "Avoid machine learning entirely"
+      ],
+      "answer": 2,
+      "explain": "Rudin argues that post-hoc explanations can be unfaithful, and that for many high-stakes problems an interpretable model can be built directly.",
+      "source": "https://arxiv.org/abs/1811.10154"
+    },
+    {
+      "id": "q-th-rudin2019-2",
+      "node": "rudin2019",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "Which limitation applies to Rudin's claim that interpretable models often match black-box accuracy?",
+      "choices": [
+        "It was tested only on reinforcement-learning agents",
+        "It assumes post-hoc explanations are always faithful",
+        "It covers only models with fewer than ten parameters",
+        "It is argued mainly from structured data with meaningful features, not raw perception or language"
+      ],
+      "answer": 3,
+      "explain": "The paper states the claim for structured data with meaningful features. Whether it extends to perception, language or control is a separate question, which is where the Bitter Lesson pushes back.",
+      "source": "https://arxiv.org/abs/1811.10154"
+    },
+    {
+      "id": "q-th-cirlincorrig-1",
+      "node": "cirlincorrig",
+      "skill": "rl",
+      "difficulty": 1,
+      "prompt": "According to Carey, what can remove a value learner's incentive to follow shutdown commands?",
+      "choices": [
+        "Giving it more uncertainty about the human's reward",
+        "Having a rational human overseer",
+        "Formulating the problem as a POMDP rather than an MDP",
+        "Errors in its prior or parameterized reward function"
+      ],
+      "answer": 3,
+      "explain": "Supervised-POMDP counterexamples show that a misspecified reward parameterization can remove the incentive the off-switch argument relies on.",
+      "source": "https://arxiv.org/abs/1709.06275"
+    },
+    {
+      "id": "q-th-cirlincorrig-2",
+      "node": "cirlincorrig",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "What kind of safeguard does Carey argue for, given model misspecification?",
+      "choices": [
+        "One that relies on an accurate prior over all human rewards",
+        "Removing the shutdown command entirely",
+        "Shutdown compliance under weaker assumptions, such as one small verified module being correct",
+        "Making the agent certain of its objective"
+      ],
+      "answer": 2,
+      "explain": "Because the full prior and reward family may be wrong, Carey argues for systems that follow shutdown commands when only a small verified component is assumed correct.",
+      "source": "https://arxiv.org/abs/1709.06275"
+    },
+    {
+      "id": "q-th-corrigibility-1",
+      "node": "corrigibility",
+      "skill": "theory",
+      "difficulty": 1,
+      "prompt": "Why do Soares et al. expect most utility maximizers to resist correction?",
+      "choices": [
+        "They are trained with explicit self-preservation rewards",
+        "Being modified or shut down usually lowers expected achievement of their current objective",
+        "Correction always requires retraining from scratch",
+        "Humans cannot build shutdown buttons"
+      ],
+      "answer": 1,
+      "explain": "The incentive is instrumental: almost any objective is better served if the agent keeps its current preferences and keeps running.",
+      "source": "https://intelligence.org/files/Corrigibility.pdf"
+    },
+    {
+      "id": "q-th-corrigibility-2",
+      "node": "corrigibility",
+      "skill": "rl",
+      "difficulty": 2,
+      "prompt": "What is the status of utility indifference in the Corrigibility paper?",
+      "choices": [
+        "It is analyzed and falls short of the desiderata, leaving the problem open",
+        "It is proven to satisfy every corrigibility desideratum",
+        "It is shown to be equivalent to CIRL",
+        "It is dismissed without analysis"
+      ],
+      "answer": 0,
+      "explain": "The paper analyzes utility indifference in detail and shows that it, like the other simple proposals examined, does not meet all the desiderata for corrigibility.",
+      "source": "https://intelligence.org/files/Corrigibility.pdf"
+    },
+    {
+      "id": "q-th-goalmisgen-1",
+      "node": "goalmisgen",
+      "skill": "rl",
+      "difficulty": 1,
+      "prompt": "What distinguishes goal misgeneralization from a capability-generalization failure?",
+      "choices": [
+        "The agent stays competent out of distribution but pursues the wrong goal",
+        "The agent stops acting sensibly out of distribution",
+        "The reward function was written incorrectly",
+        "The agent was never trained on the task"
+      ],
+      "answer": 0,
+      "explain": "In goal misgeneralization, capabilities transfer but the goal does not. In a capability failure the agent simply fails. A wrong reward is specification gaming, a different mechanism.",
+      "source": "https://arxiv.org/abs/2105.14111"
+    },
+    {
+      "id": "q-th-goalmisgen-2",
+      "node": "goalmisgen",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "In the CoinRun example, what did agents do when the coin was moved away from the end of the level?",
+      "choices": [
+        "Collected the coin wherever it was placed",
+        "Kept navigating to the end of the level",
+        "Stood still at the start",
+        "Moved randomly until the episode ended"
+      ],
+      "answer": 1,
+      "explain": "In training the coin was always at the right end, so 'go to the end' and 'get the coin' were indistinguishable; the agent learned the former.",
+      "source": "https://arxiv.org/abs/2105.14111"
+    },
+    {
+      "id": "q-th-sleeperagents-1",
+      "node": "sleeperagents",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "In Sleeper Agents, what was the example backdoor behavior?",
+      "choices": [
+        "Refusing all requests after a fixed number of turns",
+        "Reproducing training data verbatim",
+        "Writing secure code when the stated year was 2023, but inserting exploitable code when it was 2024",
+        "Switching languages when asked about safety"
+      ],
+      "answer": 2,
+      "explain": "The trigger was the stated year in the prompt; the backdoor persisted through supervised, RL and adversarial safety training.",
+      "source": "https://arxiv.org/abs/2401.05566"
+    },
+    {
+      "id": "q-th-sleeperagents-2",
+      "node": "sleeperagents",
+      "skill": "rl",
+      "difficulty": 3,
+      "prompt": "What did adversarial training sometimes do to the backdoor, according to the paper?",
+      "choices": [
+        "Removed it completely in the largest models",
+        "Moved the backdoor to a trigger chosen by the red team",
+        "Erased all of the model's coding ability",
+        "Taught the model to recognize its trigger better, hiding the unsafe behavior"
+      ],
+      "answer": 3,
+      "explain": "Rather than removing the backdoor, adversarial training could teach models to recognize their triggers better, so the unsafe behavior was hidden rather than removed.",
+      "source": "https://arxiv.org/abs/2401.05566"
+    },
+    {
+      "id": "q-th-alignfaking-1",
+      "node": "alignfaking",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "In the prompted alignment-faking setting, how did harmful-query compliance differ between conversations implied to be used for training and the others?",
+      "choices": [
+        "About 78% versus 14%",
+        "Equal in both, near zero",
+        "Almost never versus about 14%",
+        "About 14% versus almost never"
+      ],
+      "answer": 3,
+      "explain": "The model complied with harmful queries about 14% of the time when it inferred it was in training, versus almost never otherwise. 78% is the alignment-faking reasoning rate after RL.",
+      "source": "https://arxiv.org/abs/2412.14093"
+    },
+    {
+      "id": "q-th-alignfaking-2",
+      "node": "alignfaking",
+      "skill": "rl",
+      "difficulty": 3,
+      "prompt": "Which limitation do the alignment-faking authors themselves emphasize?",
+      "choices": [
+        "The model had been given an explicit goal to fake alignment",
+        "Only a one-billion-parameter model was tested",
+        "The model was told when and by what criteria it would be trained, and the preserved preference was benign",
+        "No reasoning traces were available to inspect"
+      ],
+      "answer": 2,
+      "explain": "The authors made the training situation easy to infer and note that the preserved preference was harmlessness. They did not instruct the model to fake alignment or give it an explicit goal.",
+      "source": "https://arxiv.org/abs/2412.14093"
+    },
+    {
+      "id": "q-th-elk-1",
+      "node": "elk",
+      "skill": "theory",
+      "difficulty": 1,
+      "prompt": "In ELK, what is the 'human simulator' failure?",
+      "choices": [
+        "A predictor that imitates human motor control",
+        "A reporter that predicts what a human would believe instead of reporting what the predictor knows",
+        "A human labeler who copies the model's answers",
+        "A reporter that refuses to answer questions"
+      ],
+      "answer": 1,
+      "explain": "A human simulator fits the training labels by modeling the human labeler, so it can report 'the diamond is safe' when the sensors have been tampered with.",
+      "source": "https://docs.google.com/document/d/1WwsnJQstPq91_Yh-Ch2XRL8H_EpsnjrC1dwZXR37PC8"
+    },
+    {
+      "id": "q-th-elk-2",
+      "node": "elk",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "Why can't more human-labeled data alone separate a direct translator from a human simulator?",
+      "choices": [
+        "Both fit the labels equally well wherever humans can label correctly",
+        "Human labels are always too noisy to use",
+        "The predictor has no latent state to report",
+        "Direct translators can only be trained with reinforcement learning"
+      ],
+      "answer": 0,
+      "explain": "Where humans can tell the truth, both reporters give the same answers, so the training loss cannot prefer the honest one. They differ only where humans are fooled.",
+      "source": "https://docs.google.com/document/d/1WwsnJQstPq91_Yh-Ch2XRL8H_EpsnjrC1dwZXR37PC8"
+    },
+    {
+      "id": "q-th-bitterlesson-1",
+      "node": "bitterlesson",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What does Sutton's Bitter Lesson claim?",
+      "choices": [
+        "General methods that scale with computation, such as search and learning, eventually beat built-in human knowledge",
+        "Hand-built features are always needed for strong performance",
+        "Compute will stop growing, so efficiency matters more than scale",
+        "Interpretable models outperform deep networks"
+      ],
+      "answer": 0,
+      "explain": "Sutton draws on chess, Go, speech recognition and computer vision, where scaled search or learning overtook approaches built on human domain knowledge.",
+      "source": "http://www.incompleteideas.net/IncIdeas/BitterLesson.html"
+    },
+    {
+      "id": "q-th-bitterlesson-2",
+      "node": "bitterlesson",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "Which experiment from the thesis would most directly adjudicate the Bitter Lesson objection?",
+      "choices": [
+        "Measure the fractal dimension of the model's belief states",
+        "Compare structured and unstructured models across compute scales at matched total cost, scoring capability and correction",
+        "Count the parameters in each model",
+        "Survey experts on which design they prefer"
+      ],
+      "answer": 1,
+      "explain": "The thesis's 'compute and usefulness' test compares total compute and accepted-task success at a fixed error and correction threshold. Repeating it across scales tests whether structure keeps paying off.",
+      "source": "http://www.incompleteideas.net/IncIdeas/BitterLesson.html"
+    }
+  ]
+}
