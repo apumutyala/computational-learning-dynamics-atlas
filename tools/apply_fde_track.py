@@ -68,7 +68,7 @@ WHY = {  # (path, step node) -> new why
 
 
 def main():
-    raw = PATHS.read_text(encoding='utf-8')
+    raw = PATHS.open(encoding='utf-8', newline='').read()  # no newline translation
     d = json.loads(raw)
     ps = d['paths']
     if not any(p['id'] == FLAGSHIP['id'] for p in ps):
@@ -80,9 +80,10 @@ def main():
         for s in p['steps']:
             if (p['id'], s['node']) in WHY:
                 s['why'] = WHY[(p['id'], s['node'])]
-    out = json.dumps(d, indent=1, ensure_ascii=False).replace('\n', '\r\n')
+    nl = '\r\n' if '\r\n' in raw else '\n'  # keep whatever line ending the checkout uses
+    out = json.dumps(d, indent=1, ensure_ascii=False).replace('\n', nl)
     if raw.endswith('\n'):
-        out += '\r\n'
+        out += nl
     PATHS.write_text(out, encoding='utf-8', newline='')
     print('ok', len(ps), 'paths')
 
