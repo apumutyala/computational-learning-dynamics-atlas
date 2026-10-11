@@ -475,10 +475,11 @@ function renderWelcome() {
 const TRACKS = [
   ['Alignment thesis', p => p.id.startsWith('thesis-')],
   ['Interpretable-ML researcher', p => p.id === 'interpretable-ml-to-thesis' || p.id.startsWith('mechinterp-')],
+  ['Inference & performance engineer', p => p.id.startsWith('inference-')],
   ['Forward-deployed research engineer', p => p.id.startsWith('fde-')],
 ];
 // Reading order within a track; paths not listed fall back to title order (e.g. titles).
-const TRACK_ORDER = ['fde-harness-to-thesis', 'fde-agent-reliability', 'fde-verticals', 'fde-foundations', 'interpretable-ml-to-thesis', 'mechinterp-circuits-causal-tests', 'mechinterp-features-representations', 'mechinterp-circuit-discovery-scale'];
+const TRACK_ORDER = ['fde-harness-to-thesis', 'fde-agent-reliability', 'fde-verticals', 'fde-foundations', 'interpretable-ml-to-thesis', 'mechinterp-circuits-causal-tests', 'mechinterp-features-representations', 'mechinterp-circuit-discovery-scale', 'inference-to-thesis', 'inference-serving-systems', 'inference-compression-and-decoding'];
 const trackRank = p => { const i = TRACK_ORDER.indexOf(p.id); return i < 0 ? TRACK_ORDER.length : i; };
 function renderTrackMenu() {
   const used = new Set(), groups = [];

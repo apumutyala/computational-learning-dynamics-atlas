@@ -1,0 +1,1633 @@
+{
+ "version": 1,
+ "about": "Content for tools/add_inference_track.py: the 'Inference & efficient systems' cluster and the inference/performance-engineer learning track.",
+ "cluster": {
+  "name": "Inference & efficient systems",
+  "color": "#d49ab0",
+  "center": [
+   130.0,
+   -240.0,
+   100.0
+  ],
+  "readme_phrase": "inference and efficient systems"
+ },
+ "nodes": [
+  {
+   "node": {
+    "id": "roofline",
+    "name": "Roofline model & arithmetic intensity",
+    "group": "Inference & efficient systems",
+    "authors": "Samuel Williams · Andrew Waterman · David Patterson",
+    "year": "2008 report / 2009 CACM",
+    "text": "Attainable throughput is bounded by min(peak compute, memory bandwidth × arithmetic intensity), where intensity is FLOPs per byte moved. The ridge point separates memory-bound from compute-bound kernels.",
+    "url": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2008/EECS-2008-134.html",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Place a kernel's FLOPs per byte against the machine's ridge point to see which ceiling binds. Batch-1 autoregressive decoding of a large model sits far below the ridge, because every new token rereads every weight ([Williams, Waterman and Patterson](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2008/EECS-2008-134.html), [Yuan et al.](https://arxiv.org/abs/2402.16363)).",
+    "boundary": "A bound, not a prediction: it ignores latency, scheduling, communication and cache effects beyond the chosen memory level. Intensity depends on batch size, sequence length and precision, so one model can be memory-bound in decode and compute-bound in prefill. [Scope](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2008/EECS-2008-134.html)",
+    "test": "Measure achieved FLOP/s and bandwidth for prefill and decode across batch sizes, place each point on the roofline, and check whether the binding ceiling predicts the speedup from batching or quantization.",
+    "p": [
+     104.5,
+     -206.0,
+     91.5
+    ]
+   },
+   "learning": {
+    "level": 1,
+    "skills": [
+     "deep-learning",
+     "linear-algebra"
+    ],
+    "prereqs": []
+   }
+  },
+  {
+   "node": {
+    "id": "flashattention",
+    "name": "FlashAttention: IO-aware exact attention",
+    "group": "Inference & efficient systems",
+    "authors": "Tri Dao · Daniel Y. Fu · Stefano Ermon · Atri Rudra · Christopher Ré",
+    "year": "2022",
+    "text": "Compute exact softmax attention in tiles held in on-chip SRAM, rescaling a running softmax, so the N×N score matrix is never written to GPU high-bandwidth memory (HBM).",
+    "url": "https://arxiv.org/abs/2205.14135",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "The speedup comes from fewer HBM reads and writes, not fewer FLOPs. The paper reports 3× faster GPT-2 training, 15% end-to-end on BERT-large, and extra memory linear in sequence length, which made 16K- and 64K-token Path-X and Path-256 runs possible. [Reference](https://arxiv.org/abs/2205.14135)",
+    "boundary": "FLOPs remain quadratic in sequence length: it removes a memory bottleneck, not the quadratic compute. Speedups are specific to the GPU memory hierarchy. It does not shrink the KV cache at inference. [Scope](https://arxiv.org/abs/2205.14135)",
+    "test": "Profile standard and IO-aware attention across sequence lengths and head sizes; check that the speedup tracks the predicted reduction in HBM traffic and that outputs agree to floating-point tolerance.",
+    "p": [
+     77.3,
+     -221.3,
+     115.3
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "linear-algebra"
+    ],
+    "prereqs": [
+     "attention",
+     "roofline"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "pagedkv",
+    "name": "KV cache & PagedAttention (vLLM)",
+    "group": "Inference & efficient systems",
+    "authors": "Woosuk Kwon · Zhuohan Li · Siyuan Zhuang · Ying Sheng · Lianmin Zheng · Cody Hao Yu · Joseph E. Gonzalez · Hao Zhang · Ion Stoica",
+    "year": "2023",
+    "text": "Autoregressive decoding caches every past token's keys and values so they are not recomputed. The cache grows linearly with context length and batch; PagedAttention stores it in fixed-size blocks, like virtual-memory pages.",
+    "url": "https://arxiv.org/abs/2309.06180",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Per token the cache holds 2 × layers × KV heads × head dimension values. Block tables nearly remove fragmentation and let parallel samples and beams share prefix blocks; vLLM reports 2–4× throughput over FasterTransformer and Orca at the same latency. [Reference](https://arxiv.org/abs/2309.06180)",
+    "boundary": "Paging changes how the cache is allocated, not how much state each token needs: memory still grows without bound in context length. Throughput gains depend on the workload (length spread, sampling method). [Scope](https://arxiv.org/abs/2309.06180)",
+    "test": "Compute KV bytes per token for a given model, compare with measured GPU memory at fixed batch, and measure throughput against contiguous allocation across sequence-length distributions.",
+    "p": [
+     113.0,
+     -224.7,
+     132.3
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning"
+    ],
+    "prereqs": [
+     "attention",
+     "roofline"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "contbatch",
+    "name": "Continuous (iteration-level) batching",
+    "group": "Inference & efficient systems",
+    "authors": "Gyeong-In Yu · Joo Seong Jeong · Geon-Woo Kim · Soojeong Kim · Byung-Gon Chun",
+    "year": "OSDI 2022",
+    "text": "Schedule the batch per decoding iteration instead of per request: finished sequences leave and new ones join every step. Selective batching batches the non-attention operations across sequences of different lengths.",
+    "url": "https://www.usenix.org/conference/osdi22/presentation/yu",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Batching raises decode's arithmetic intensity because one weight read serves many sequences. Orca reports 36.9× throughput over NVIDIA FasterTransformer at the same latency on GPT-3 175B. [Reference](https://www.usenix.org/conference/osdi22/presentation/yu)",
+    "boundary": "Throughput and per-request latency still trade off; gains depend on the request mix and on free KV memory, which is why it pairs with paged allocation. It does not change model outputs or quality. [Scope](https://www.usenix.org/conference/osdi22/presentation/yu)",
+    "test": "Replay a realistic arrival trace and plot time-to-first-token and inter-token latency against throughput for request-level and iteration-level batching on the same hardware.",
+    "p": [
+     80.7,
+     -248.5,
+     81.3
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "optimization"
+    ],
+    "prereqs": [
+     "pagedkv"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "kvcompress",
+    "name": "Long-context KV compression & attention sinks",
+    "group": "Inference & efficient systems",
+    "authors": "Guangxuan Xiao · Yuandong Tian · Beidi Chen · Song Han · Mike Lewis; Zhenyu Zhang et al.",
+    "year": "2023",
+    "text": "Bound the KV cache by keeping a few initial “attention sink” tokens plus a recent window (StreamingLLM), or by keeping only heavy-hitter tokens that receive most attention (H2O).",
+    "url": "https://arxiv.org/abs/2309.17453",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "StreamingLLM ran stable language modelling over up to 4 million tokens with a fixed-size cache and reported up to 22.2× speedup over sliding-window recomputation ([Xiao et al.](https://arxiv.org/abs/2309.17453), [Zhang et al.](https://arxiv.org/abs/2306.14048)).",
+    "boundary": "Stable perplexity is not long-range recall: evicted tokens are gone, and the model cannot use information outside the kept set. The model's trained context window is not extended. [Scope](https://arxiv.org/abs/2309.17453)",
+    "test": "Run needle-in-a-haystack and multi-hop retrieval with full and compressed caches at matched memory, and record which evicted facts the model loses.",
+    "p": [
+     89.2,
+     -195.8,
+     134.0
+    ]
+   },
+   "learning": {
+    "level": 3,
+    "skills": [
+     "deep-learning"
+    ],
+    "prereqs": [
+     "pagedkv"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "inferencecost",
+    "name": "Inference cost, latency & energy budgets",
+    "group": "Inference & efficient systems",
+    "authors": "Alexandra Sasha Luccioni · Yacine Jernite · Emma Strubell; Nikhil Sardana · Jacob Portes · Sasha Doubov · Jonathan Frankle",
+    "year": "2023 / 2024",
+    "text": "Count deployment cost per query (energy, latency, money) over the model's lifetime, not only training FLOPs. Lifetime inference can outweigh training, which moves the cost-optimal model size.",
+    "url": "https://arxiv.org/abs/2311.16863",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Measured per 1,000 inferences, multi-purpose generative models were orders of magnitude more energy-hungry than task-specific ones, even at matched parameter count. With large expected inference demand, the cost-optimal model is smaller and trained longer than Chinchilla-optimal ([Luccioni et al.](https://arxiv.org/abs/2311.16863), [Sardana et al.](https://arxiv.org/abs/2401.00448)).",
+    "boundary": "Energy figures depend on hardware, batch size and software stack and do not transfer between deployments. Inference-aware optima assume a known demand forecast and a quality target expressed as loss. [Scope](https://arxiv.org/abs/2311.16863)",
+    "test": "Instrument a serving stack for energy per accepted answer at a fixed quality threshold, and compare models and decoding strategies on that metric instead of tokens per second.",
+    "p": [
+     117.2,
+     -261.2,
+     57.5
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "optimization"
+    ],
+    "prereqs": [
+     "roofline"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "quantization",
+    "name": "Post-training quantization (LLM.int8, GPTQ, AWQ)",
+    "group": "Inference & efficient systems",
+    "authors": "Tim Dettmers et al.; Elias Frantar · Saleh Ashkboos · Torsten Hoefler · Dan Alistarh; Ji Lin et al.",
+    "year": "2022 / 2022 / 2023",
+    "text": "Store weights (and sometimes activations) in 8, 4 or 3 bits. LLM.int8 keeps outlier feature dimensions in 16-bit; GPTQ quantizes weights in one shot using approximate second-order information; AWQ protects salient channels chosen from activation statistics.",
+    "url": "https://arxiv.org/abs/2210.17323",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "GPTQ quantizes 175B-parameter models to 3–4 bits in about four GPU hours with small perplexity increases. Because decoding is memory-bound, fewer bytes per weight become real speedups; AWQ's 4-bit kernels report more than 3× over FP16 ([Dettmers et al.](https://arxiv.org/abs/2208.07339), [Frantar et al.](https://arxiv.org/abs/2210.17323), [Lin et al.](https://arxiv.org/abs/2306.00978)).",
+    "boundary": "Reported losses are mostly perplexity and standard zero-shot tasks; a small average loss can hide larger losses on particular capabilities, long contexts or rare inputs. Speedups need kernels for the format. [Scope](https://arxiv.org/abs/2210.17323)",
+    "test": "Quantize one model at several bit widths and report perplexity, task accuracy and rare-task behaviour separately, with measured decode latency, to see whether averages hide capability-specific damage.",
+    "p": [
+     147.0,
+     -214.5,
+     108.5
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "linear-algebra",
+     "optimization"
+    ],
+    "prereqs": [
+     "roofline"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "specdecode",
+    "name": "Speculative decoding",
+    "group": "Inference & efficient systems",
+    "authors": "Yaniv Leviathan · Matan Kalman · Yossi Matias; Charlie Chen · Sebastian Borgeaud · Geoffrey Irving · Jean-Baptiste Lespiau · Laurent Sifre · John Jumper",
+    "year": "2022 / 2023",
+    "text": "A cheap draft model proposes several tokens; the target model scores them in one parallel pass and accepts each with probability min(1, p(x)/q(x)), resampling from the normalized residual max(0, p − q) at the first rejection.",
+    "url": "https://arxiv.org/abs/2211.17192",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "The acceptance rule is a form of rejection sampling, so the output distribution is the target model's. Reported speedups: 2–3× on T5-XXL and 2–2.5× on Chinchilla 70B ([Leviathan et al.](https://arxiv.org/abs/2211.17192), [Chen et al.](https://arxiv.org/abs/2302.01318)).",
+    "boundary": "The speedup depends on the acceptance rate (how often draft and target agree) and on spare compute in memory-bound decoding; at large batch the extra verification work can erase it. Exactness holds for the stated rule; lenient-acceptance variants give it up. [Scope](https://arxiv.org/abs/2211.17192)",
+    "test": "Compare token statistics of speculative and plain sampling on fixed prompts to check exactness, then measure speedup against batch size and acceptance rate.",
+    "p": [
+     172.5,
+     -195.8,
+     87.2
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "probability",
+     "deep-learning"
+    ],
+    "prereqs": [
+     "llm"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "distillation",
+    "name": "Knowledge distillation",
+    "group": "Inference & efficient systems",
+    "authors": "Geoffrey Hinton · Oriol Vinyals · Jeff Dean",
+    "year": "2015",
+    "text": "Train a smaller student to match a teacher's softened output distribution (softmax at temperature T), usually mixed with the ordinary hard-label loss.",
+    "url": "https://arxiv.org/abs/1503.02531",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Soft targets carry the teacher's relative probabilities over wrong answers. The soft-loss gradients scale as 1/T², so the paper multiplies that term by T² to keep the two losses balanced. [Reference](https://arxiv.org/abs/1503.02531)",
+    "boundary": "Matching the teacher on the transfer set does not guarantee matching it elsewhere: students often fail to match their teachers even when they have the capacity to, and fidelity to the teacher is not the same as accuracy ([Stanton et al.](https://arxiv.org/abs/2106.05945)).",
+    "test": "Measure student–teacher agreement separately on in-distribution, shifted and rare-task inputs, alongside student accuracy, to separate fidelity from generalization.",
+    "p": [
+     182.7,
+     -227.2,
+     121.2
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "probability",
+     "stats-ml"
+    ],
+    "prereqs": []
+   }
+  },
+  {
+   "node": {
+    "id": "pruning",
+    "name": "Pruning & lottery tickets",
+    "group": "Inference & efficient systems",
+    "authors": "Jonathan Frankle · Michael Carbin",
+    "year": "2018 / ICLR 2019",
+    "text": "Remove individual weights (unstructured) or whole channels, heads or layers (structured). The lottery-ticket hypothesis: dense networks contain sparse subnetworks that, reset to their original initialization, train in isolation to comparable accuracy.",
+    "url": "https://arxiv.org/abs/1803.03635",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Iterative magnitude pruning found such winning tickets at 10–20% of the original size for fully connected and convolutional networks on MNIST and CIFAR-10. [Reference](https://arxiv.org/abs/1803.03635)",
+    "boundary": "The original results are small vision networks; in larger networks the subnetworks had to be rewound to an early training checkpoint rather than initialization ([Frankle et al.](https://arxiv.org/abs/1912.05671)). Unstructured sparsity rarely speeds up GPUs without kernel support, and structured pruning usually needs retraining.",
+    "test": "Prune a trained model at increasing sparsity, with and without retraining, and report accuracy, measured speedup and which capabilities degrade first.",
+    "p": [
+     164.0,
+     -240.0,
+     144.2
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "optimization"
+    ],
+    "prereqs": []
+   }
+  },
+  {
+   "node": {
+    "id": "moe",
+    "name": "Mixture-of-experts & sparse routing",
+    "group": "Inference & efficient systems",
+    "authors": "William Fedus · Barret Zoph · Noam Shazeer",
+    "year": "2021 / JMLR 2022",
+    "text": "Replace a dense feed-forward block with many expert blocks and a learned router that sends each token to one (Switch) or a few experts, so parameter count grows without growing FLOPs per token.",
+    "url": "https://arxiv.org/abs/2101.03961",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Conditional computation: Switch Transformers report up to 7× faster pre-training than T5 baselines at the same compute, trillion-parameter models, and distillation into dense models that keeps about 30% of the sparse model's quality gain. [Reference](https://arxiv.org/abs/2101.03961)",
+    "boundary": "FLOPs per token stay fixed, but memory and communication do not: every expert must be stored and moved, and small-batch serving can be bandwidth-bound. Routing can be unstable and unbalanced, and expert specialization is not evidence of interpretable modules. [Scope](https://arxiv.org/abs/2101.03961)",
+    "test": "Compare a dense and a mixture-of-experts model at matched training FLOPs and at matched serving memory, reporting quality, tokens per second and per-expert load.",
+    "p": [
+     189.5,
+     -255.3,
+     89.8
+    ]
+   },
+   "learning": {
+    "level": 3,
+    "skills": [
+     "deep-learning"
+    ],
+    "prereqs": [
+     "attention"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "lora",
+    "name": "LoRA: low-rank adaptation",
+    "group": "Inference & efficient systems",
+    "authors": "Edward J. Hu · Yelong Shen · Phillip Wallis · Zeyuan Allen-Zhu · Yuanzhi Li · Shean Wang · Lu Wang · Weizhu Chen",
+    "year": "2021",
+    "text": "Freeze the pretrained weights and learn a low-rank update ΔW = BA (rank r much smaller than the layer width) in selected layers; the update can be merged into W for inference.",
+    "url": "https://arxiv.org/abs/2106.09685",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "On GPT-3 175B, LoRA cut trainable parameters about 10,000× and GPU memory 3× compared with full fine-tuning, with no added latency once merged. QLoRA trains the adapters on a frozen 4-bit base ([Hu et al.](https://arxiv.org/abs/2106.09685), [Dettmers et al.](https://arxiv.org/abs/2305.14314)).",
+    "boundary": "A low-rank update is a restriction: on code and maths LoRA learned less than full fine-tuning, while forgetting less ([Biderman et al.](https://arxiv.org/abs/2405.09673)). The atlas's low-rank RNN topic is about recurrent connectivity, a different use of low rank.",
+    "test": "Compare LoRA at several ranks with full fine-tuning on a target task and on held-out base-model tasks, and plot the learning–forgetting trade-off.",
+    "p": [
+     138.5,
+     -227.2,
+     155.2
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "linear-algebra"
+    ],
+    "prereqs": []
+   }
+  },
+  {
+   "node": {
+    "id": "scalinglaws",
+    "name": "Compute-optimal scaling laws",
+    "group": "Inference & efficient systems",
+    "authors": "Jared Kaplan et al.; Jordan Hoffmann et al.",
+    "year": "2020 / 2022",
+    "text": "Pretraining loss falls as a smooth power law in parameters, data and compute; for a fixed training budget there is an optimal split between model size and training tokens.",
+    "url": "https://arxiv.org/abs/2203.15556",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Kaplan et al. fit trends spanning more than seven orders of magnitude. Hoffmann et al. found parameters and tokens should grow in equal proportion: Chinchilla (70B parameters, 1.4T tokens) beat the 280B Gopher at the same compute ([Kaplan et al.](https://arxiv.org/abs/2001.08361), [Hoffmann et al.](https://arxiv.org/abs/2203.15556)).",
+    "boundary": "These are empirical fits of pretraining loss for given architectures, data and recipes; the two papers disagree on the optimal ratio, and loss does not map one-to-one to downstream capability. “Compute-optimal” counts training FLOPs only. [Scope](https://arxiv.org/abs/2203.15556)",
+    "test": "Fit the law on your own family of small models, predict a larger run's loss before training it, and report the prediction error and whether downstream metrics follow the loss.",
+    "p": [
+     151.2,
+     -269.8,
+     66.0
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "stats-ml"
+    ],
+    "prereqs": []
+   }
+  },
+  {
+   "node": {
+    "id": "testtime",
+    "name": "Test-time compute scaling",
+    "group": "Inference & efficient systems",
+    "authors": "Charlie Snell · Jaehoon Lee · Kelvin Xu · Aviral Kumar",
+    "year": "2024",
+    "text": "Spend more inference compute per query, by searching against a process verifier or by letting the model revise its answer, and allocate that compute per prompt according to estimated difficulty.",
+    "url": "https://arxiv.org/abs/2408.03314",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Compute-optimal allocation made test-time scaling more than 4× more efficient than a best-of-N baseline. In FLOPs-matched comparisons, on problems where the smaller model already had non-trivial success, test-time compute beat a 14× larger model. [Reference](https://arxiv.org/abs/2408.03314)",
+    "boundary": "Shown on MATH with PaLM 2 models and particular verifiers and revision models; on the hardest problems extra pretraining was the better use of compute. Gains depend on verifier reliability, and the cost is paid on every query. [Scope](https://arxiv.org/abs/2408.03314)",
+    "test": "On a held-out task, plot accuracy against total FLOPs (training plus expected inference volume) for a larger model and for a smaller model with search, and find where they cross as difficulty changes.",
+    "p": [
+     130.0,
+     -284.2,
+     108.5
+    ]
+   },
+   "learning": {
+    "level": 3,
+    "skills": [
+     "deep-learning",
+     "probability"
+    ],
+    "prereqs": [
+     "scalinglaws",
+     "llm"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "bestofn",
+    "name": "Best-of-n sampling with learned verifiers",
+    "group": "Inference & efficient systems",
+    "authors": "Karl Cobbe et al.; Leo Gao · John Schulman · Jacob Hilton",
+    "year": "2021 / 2022",
+    "text": "Sample n candidates and return the one a learned verifier or reward model scores highest. The verifier is trained on correctness labels (GSM8K) or on preferences.",
+    "url": "https://arxiv.org/abs/2110.14168",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "On GSM8K, ranking many sampled solutions with a trained verifier beat fine-tuning alone and scaled better with data ([Cobbe et al.](https://arxiv.org/abs/2110.14168)). Against a proxy reward model, best-of-n first raises and then lowers the “gold” reward as n grows ([Gao et al.](https://arxiv.org/abs/2210.10760)).",
+    "boundary": "Selection amplifies verifier errors: with more samples the top choice is increasingly a candidate the verifier overrates. The overoptimization curves use a larger reward model as the gold standard, not human judgement. [Scope](https://arxiv.org/abs/2210.10760)",
+    "test": "Plot gold or human-judged quality against n for a fixed proxy verifier, find where it peaks, and repeat with an ensemble verifier.",
+    "p": [
+     100.2,
+     -291.0,
+     125.5
+    ]
+   },
+   "learning": {
+    "level": 3,
+    "skills": [
+     "rl",
+     "probability",
+     "stats-ml"
+    ],
+    "prereqs": [
+     "testtime"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "inferencectl",
+    "name": "Inference-time intervention & controlled decoding",
+    "group": "Inference & efficient systems",
+    "authors": "Kenneth Li · Oam Patel · Fernanda Viégas · Hanspeter Pfister · Martin Wattenberg; Sidharth Mudgal et al.",
+    "year": "2023",
+    "text": "Change behaviour at decoding time without updating weights: shift activations along probe-found directions in a few attention heads (ITI), or reweight token choices with a learned prefix scorer (controlled decoding).",
+    "url": "https://arxiv.org/abs/2306.03341",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "ITI raised Alpaca's TruthfulQA truthfulness from 32.5% to 65.1% using a few hundred labelled examples, with a tunable truthfulness–helpfulness trade-off. Controlled decoding treats reward-guided decoding, including blockwise best-of-K, as KL-regularized alignment done at inference time ([Li et al.](https://arxiv.org/abs/2306.03341), [Mudgal et al.](https://arxiv.org/abs/2310.17022)).",
+    "boundary": "The effect lasts only while the intervention is applied: weights are unchanged, and results are on narrow benchmarks. Stronger interventions cost other capabilities, and a learned scorer used for control can be overoptimized like any proxy. [Scope](https://arxiv.org/abs/2306.03341)",
+    "test": "Apply the same correction by prompt, by inference-time intervention and by fine-tuning, and compare effect size, persistence across turns, unrelated-task retention and added latency.",
+    "p": [
+     134.2,
+     -274.0,
+     151.0
+    ]
+   },
+   "learning": {
+    "level": 3,
+    "skills": [
+     "deep-learning",
+     "control"
+    ],
+    "prereqs": [
+     "steering",
+     "bestofn"
+    ]
+   }
+  }
+ ],
+ "edges": [
+  {
+   "a": "roofline",
+   "b": "flashattention",
+   "type": "established",
+   "relation": "memory-bound kernel moved toward the compute roof",
+   "text": "Standard attention writes and rereads the N×N score matrix in HBM, so it is memory-bound. Tiling in on-chip SRAM cuts that traffic and moves the kernel toward the compute ceiling.",
+   "url": "https://arxiv.org/abs/2205.14135"
+  },
+  {
+   "a": "roofline",
+   "b": "pagedkv",
+   "type": "established",
+   "relation": "decode is bandwidth-bound",
+   "text": "Each decoded token rereads all weights and the whole KV cache for a few FLOPs per byte, so small-batch decode sits far left of the ridge point. KV memory then limits how far batching can raise intensity.",
+   "url": "https://arxiv.org/abs/2402.16363"
+  },
+  {
+   "a": "roofline",
+   "b": "quantization",
+   "type": "established",
+   "relation": "fewer bytes per FLOP",
+   "text": "In memory-bound decoding, weight-only low-bit formats speed generation mainly by moving fewer bytes, not by cheaper arithmetic; AWQ's 4-bit kernels report more than 3× over FP16.",
+   "url": "https://arxiv.org/abs/2306.00978"
+  },
+  {
+   "a": "roofline",
+   "b": "specdecode",
+   "type": "established",
+   "relation": "spends idle compute in memory-bound decode",
+   "text": "Verifying k drafted tokens costs about one target forward pass of weight reads, so speculative decoding uses compute that memory-bound decoding leaves idle. When large batches make decode compute-bound, the advantage shrinks.",
+   "url": "https://arxiv.org/abs/2211.17192"
+  },
+  {
+   "a": "roofline",
+   "b": "contbatch",
+   "type": "established",
+   "relation": "batching raises arithmetic intensity",
+   "text": "Batching B sequences reuses each weight read B times and moves decode toward the ridge point; iteration-level scheduling keeps the batch full as requests finish.",
+   "url": "https://arxiv.org/abs/2402.16363"
+  },
+  {
+   "a": "flashattention",
+   "b": "kvcompress",
+   "type": "established",
+   "relation": "exact versus approximate fixes for long context",
+   "text": "FlashAttention keeps attention exact and fits long sequences by cutting memory traffic, but FLOPs stay quadratic. KV compression changes the computation by dropping cache entries, so its outputs are approximate.",
+   "url": "https://arxiv.org/abs/2205.14135"
+  },
+  {
+   "a": "kvcompress",
+   "b": "pagedkv",
+   "type": "established",
+   "relation": "bounding the cache",
+   "text": "PagedAttention stores the whole cache efficiently; StreamingLLM and H2O bound it by keeping only sink, recent or heavy-hitter tokens, trading exactness for constant memory.",
+   "url": "https://arxiv.org/abs/2309.17453"
+  },
+  {
+   "a": "pagedkv",
+   "b": "contbatch",
+   "type": "established",
+   "relation": "free KV memory sets the batch size",
+   "text": "Continuous batching needs KV memory for every active sequence. vLLM builds on iteration-level scheduling and uses paging to cut fragmentation, so more sequences fit in a batch.",
+   "url": "https://arxiv.org/abs/2309.06180"
+  },
+  {
+   "a": "quantization",
+   "b": "pagedkv",
+   "type": "empirical",
+   "relation": "quantizing the cache",
+   "text": "At long context and large batch the KV cache becomes the memory bottleneck. KIVI quantizes keys per channel and values per token to 2 bits, reporting 2.6× lower peak memory, up to 4× larger batches and 2.35–3.47× throughput.",
+   "url": "https://arxiv.org/abs/2402.02750"
+  },
+  {
+   "a": "pruning",
+   "b": "quantization",
+   "type": "established",
+   "relation": "one compression pipeline",
+   "text": "Deep Compression chains pruning, trained quantization with k-means weight sharing, and Huffman coding, reducing storage 35–49× without loss of accuracy on the tested networks.",
+   "url": "https://arxiv.org/abs/1510.00149"
+  },
+  {
+   "a": "pruning",
+   "b": "distillation",
+   "type": "empirical",
+   "relation": "prune, then distill to recover",
+   "text": "Minitron pruned Nemotron-4 15B in depth and width and retrained by distillation from the original, deriving 8B and 4B models with up to 40× fewer training tokens than training from scratch.",
+   "url": "https://arxiv.org/abs/2407.14679"
+  },
+  {
+   "a": "distillation",
+   "b": "specdecode",
+   "type": "empirical",
+   "relation": "distilling the draft model",
+   "text": "The speedup depends on draft–target agreement. DistillSpec distils the draft toward the target using on-policy data and a task-tuned divergence, reporting 10–45% speedups over standard speculative decoding.",
+   "url": "https://arxiv.org/abs/2310.08461"
+  },
+  {
+   "a": "distillation",
+   "b": "moe",
+   "type": "empirical",
+   "relation": "distilling sparse into dense",
+   "text": "Switch Transformers distilled into dense models with about 1% of the parameters kept roughly 30% of the sparse teacher's quality gain.",
+   "url": "https://arxiv.org/abs/2101.03961"
+  },
+  {
+   "a": "moe",
+   "b": "pruning",
+   "type": "empirical",
+   "relation": "expert-level pruning",
+   "text": "Post-training, task-agnostic or task-specific expert pruning and dynamic expert skipping reduced mixture-of-experts model size and raised inference speed while keeping performance satisfactory on the tested tasks.",
+   "url": "https://arxiv.org/abs/2402.14800"
+  },
+  {
+   "a": "moe",
+   "b": "quantization",
+   "type": "empirical",
+   "relation": "sub-1-bit compression of a trillion-parameter MoE",
+   "text": "QMoE compressed the 1.6-trillion-parameter SwitchTransformer-c2048 to under 160 GB, about 0.8 bits per parameter, with minor accuracy loss.",
+   "url": "https://arxiv.org/abs/2310.16795"
+  },
+  {
+   "a": "quantization",
+   "b": "lora",
+   "type": "established",
+   "relation": "fine-tuning on a quantized base",
+   "text": "QLoRA backpropagates through a frozen 4-bit (NF4) base model into LoRA adapters, which made fine-tuning a 65B model on one 48 GB GPU possible.",
+   "url": "https://arxiv.org/abs/2305.14314"
+  },
+  {
+   "a": "scalinglaws",
+   "b": "moe",
+   "type": "empirical",
+   "relation": "parameters and compute as separate axes",
+   "text": "Routed models add parameters without adding FLOPs per token. Clark et al. fit scaling laws over both axes across five orders of magnitude and define an effective parameter count along which routed models scale.",
+   "url": "https://arxiv.org/abs/2202.01169"
+  },
+  {
+   "a": "scalinglaws",
+   "b": "testtime",
+   "type": "empirical",
+   "relation": "pretraining versus inference compute",
+   "text": "Snell et al. compare spending FLOPs on a larger pretrained model with spending them on test-time search by a smaller one: test-time compute wins on easier and intermediate problems, pretraining on the hardest.",
+   "url": "https://arxiv.org/abs/2408.03314"
+  },
+  {
+   "a": "testtime",
+   "b": "bestofn",
+   "type": "established",
+   "relation": "the standard test-time baseline",
+   "text": "Best-of-N against a verifier is the baseline test-time strategy; allocating compute per prompt across search and revision was more than 4× more efficient.",
+   "url": "https://arxiv.org/abs/2408.03314"
+  },
+  {
+   "a": "inferencecost",
+   "b": "scalinglaws",
+   "type": "empirical",
+   "relation": "inference-aware optimum",
+   "text": "Adding expected inference cost to the Chinchilla objective moves the optimum: with large inference demand, train a smaller model on more tokens.",
+   "url": "https://arxiv.org/abs/2401.00448"
+  },
+  {
+   "a": "inferencecost",
+   "b": "testtime",
+   "type": "established",
+   "relation": "cost moves to every query",
+   "text": "Test-time scaling buys quality with per-query FLOPs, so whether it beats a larger model depends on query volume and latency budgets, not only on accuracy at matched FLOPs.",
+   "url": "https://arxiv.org/abs/2408.03314"
+  },
+  {
+   "a": "contbatch",
+   "b": "inferencecost",
+   "type": "established",
+   "relation": "throughput versus latency",
+   "text": "Cost per token falls with batch size while per-request latency rises; iteration-level scheduling moves the throughput–latency frontier rather than removing it.",
+   "url": "https://www.usenix.org/conference/osdi22/presentation/yu"
+  },
+  {
+   "a": "bestofn",
+   "b": "inferencectl",
+   "type": "established",
+   "relation": "reward-guided decoding",
+   "text": "Controlled decoding generalizes best-of-n: a learned prefix scorer reweights tokens or blocks, and blockwise best-of-K is one instance; both target a KL-regularized reward objective at inference time.",
+   "url": "https://arxiv.org/abs/2310.17022"
+  },
+  {
+   "a": "bestofn",
+   "b": "pagedkv",
+   "type": "established",
+   "relation": "shared prefixes for parallel samples",
+   "text": "Best-of-n and beam search decode many continuations of one prompt; PagedAttention shares the prompt's KV blocks across them copy-on-write instead of duplicating them.",
+   "url": "https://arxiv.org/abs/2309.06180"
+  },
+  {
+   "a": "distillation",
+   "b": "quantization",
+   "type": "empirical",
+   "relation": "quantized distillation",
+   "text": "Training a low-bit student with a distillation loss from a full-precision teacher let quantized shallow students reach accuracy close to the full-precision teacher.",
+   "url": "https://arxiv.org/abs/1802.05668"
+  },
+  {
+   "a": "specdecode",
+   "b": "llm",
+   "type": "exact",
+   "relation": "target distribution preserved",
+   "text": "Exact under the stated rule: accept a drafted token x with probability min(1, p(x)/q(x)) and, at the first rejection, sample from max(0, p − q) renormalized, with draft and target conditioned on the same prefix at the same temperature. Then every emitted token is distributed exactly as the target model's p, for any draft q. Floating-point differences and lenient-acceptance variants break exactness; the speedup, not the output distribution, depends on q.",
+   "url": "https://arxiv.org/abs/2211.17192"
+  },
+  {
+   "a": "distillation",
+   "b": "proper",
+   "type": "exact",
+   "relation": "soft-target cross-entropy is the log score",
+   "text": "Soft-target cross-entropy equals H(p_T) + KL(p_T‖q), the expected log score of the student q under the teacher's distribution p_T. Because the log score is strictly proper, for each input the unique minimizer is q = p_T. Exact when teacher and student use the same temperature and the student can represent p_T; otherwise training finds the KL projection onto the student family. Says nothing about inputs outside the transfer set.",
+   "url": "https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf"
+  },
+  {
+   "a": "pagedkv",
+   "b": "lru",
+   "type": "established",
+   "relation": "growing exact state versus fixed recurrent state",
+   "text": "A KV cache keeps every past key and value, so decode memory grows linearly with context: a lossless but growing memory. A linear recurrent unit carries a fixed-size state, so per-token decode memory and time are constant in context length, at the price of a lossy summary of the past.",
+   "url": "https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf"
+  },
+  {
+   "a": "pagedkv",
+   "b": "linearattention",
+   "type": "exact",
+   "relation": "the cache collapses to a running sum",
+   "text": "For kernelized causal attention with feature map φ (not softmax), step t needs the cache only through S_t = Σ φ(k_i)v_iᵀ and z_t = Σ φ(k_i), so the growing KV cache can be replaced exactly by a fixed-size running sum. Exact for that attention form; it does not hold for softmax attention.",
+   "url": "https://proceedings.mlr.press/v119/katharopoulos20a.html"
+  },
+  {
+   "a": "kvcompress",
+   "b": "memoryclosure",
+   "type": "hypothesis",
+   "relation": "eviction as truncated memory",
+   "text": "Proposed: evicting cache entries is a truncated-memory closure. Mori–Zwanzig reasoning says dropped history comes back as memory and noise terms. Test whether eviction policies lose the rare, decision-relevant history the thesis cares about, beyond what perplexity shows.",
+   "url": "https://arxiv.org/abs/2309.17453"
+  },
+  {
+   "a": "lru",
+   "b": "predictivestate",
+   "type": "hypothesis",
+   "relation": "fixed-size state as a compressed belief",
+   "text": "Proposed: a trained recurrent state is a lossy candidate for the predictive (causal) state, the minimal statistic of the past that is sufficient for predicting the future. Whether a fixed-size LRU state approaches it on a process with known causal states is untested.",
+   "url": "https://arxiv.org/pdf/cs/0001027v1"
+  },
+  {
+   "a": "predictivestate",
+   "b": "testtime",
+   "type": "hypothesis",
+   "relation": "information versus computation limits",
+   "text": "Processing a state cannot add Shannon information about the future (data processing inequality), but computation can raise usable information for a computationally bounded predictor (Xu et al.). Proposed reading: test-time compute extracts more from what the context or state retains; it cannot restore what was discarded. Untested for LLM test-time scaling.",
+   "url": "https://arxiv.org/abs/2002.10689"
+  },
+  {
+   "a": "quantization",
+   "b": "mdl",
+   "type": "empirical",
+   "relation": "compressibility tracks the LLC",
+   "text": "Across the Pythia suite, LLC-based complexity estimates were closely, sometimes linearly, correlated with compressibility under quantization and factorization. A correlation across models, not a guarantee for a given model.",
+   "url": "https://arxiv.org/abs/2510.12077"
+  },
+  {
+   "a": "quantization",
+   "b": "degeneracy",
+   "type": "hypothesis",
+   "relation": "degenerate minima may tolerate coarse weights",
+   "text": "Proposed: quantization noise is a weight perturbation, so a minimum with a large low-loss volume (small learning coefficient) should tolerate it better. Flat-minimum description-length arguments predict this, but Hessian flatness can mislead for singular models; untested as a per-model predictor for LLMs.",
+   "url": "https://www.bioinf.jku.at/publications/older/3304.pdf"
+  },
+  {
+   "a": "quantization",
+   "b": "kmeans",
+   "type": "established",
+   "relation": "k-means is a quantizer",
+   "text": "Lloyd's k-means is the classical quantizer design; Deep Compression's trained quantization clusters each layer's weights with k-means and stores centroid indices plus a small codebook.",
+   "url": "https://arxiv.org/abs/1510.00149"
+  },
+  {
+   "a": "bestofn",
+   "b": "rewardhack",
+   "type": "empirical",
+   "relation": "Goodhart under selection",
+   "text": "In Gao et al.'s synthetic setup, best-of-n against a proxy reward model first raises and then lowers the gold reward as n grows: a proxy–true divergence produced by selection alone, with no weight updates.",
+   "url": "https://arxiv.org/abs/2210.10760"
+  },
+  {
+   "a": "bestofn",
+   "b": "rmensemble",
+   "type": "empirical",
+   "relation": "ensembles curb best-of-n overoptimization",
+   "text": "Conservative ensemble objectives (worst-case or uncertainty-weighted) practically eliminated overoptimization in best-of-n sampling in Coste et al.'s gold-model setup.",
+   "url": "https://arxiv.org/abs/2310.02743"
+  },
+  {
+   "a": "bestofn",
+   "b": "preference",
+   "type": "established",
+   "relation": "a training-free comparison point for RLHF",
+   "text": "Best-of-n is itself an aligned policy at a known cost: its KL from the reference policy is at most log n − (n−1)/n. Beirami et al. show this widely quoted formula is an upper bound, not an equality, and bound the win rate by n/(n+1).",
+   "url": "https://arxiv.org/abs/2401.01879"
+  },
+  {
+   "a": "testtime",
+   "b": "llm",
+   "type": "established",
+   "relation": "reasoning models spend test-time compute",
+   "text": "Reasoning models are trained so that longer chains of thought raise accuracy, turning test-time compute into a learned capability; Snell et al. study how to allocate that compute per prompt.",
+   "url": "https://arxiv.org/abs/2408.03314"
+  },
+  {
+   "a": "testtime",
+   "b": "semanticentropy",
+   "type": "established",
+   "relation": "the same samples serve two uses",
+   "text": "Sampling several answers supports majority voting (self-consistency) for accuracy and disagreement over meanings (semantic entropy) for confabulation detection; the samples are paid for once.",
+   "url": "https://arxiv.org/abs/2203.11171"
+  },
+  {
+   "a": "inferencectl",
+   "b": "steering",
+   "type": "established",
+   "relation": "ITI is head-level activation steering",
+   "text": "Inference-time intervention adds probe-derived directions to the outputs of selected attention heads at every decoding step, a head-level form of activation steering.",
+   "url": "https://arxiv.org/abs/2306.03341"
+  },
+  {
+   "a": "inferencectl",
+   "b": "structdecode",
+   "type": "established",
+   "relation": "decoding-time constraints",
+   "text": "Grammar masking and scorer-guided decoding both change token choices without weight updates, and both move the output distribution away from the model's own conditional distribution.",
+   "url": "https://arxiv.org/abs/2307.09702"
+  },
+  {
+   "a": "inferencectl",
+   "b": "guardrail",
+   "type": "established",
+   "relation": "intervening inside versus filtering outside",
+   "text": "Guardrails classify inputs and outputs from outside the model and block or escalate; inference-time interventions change the computation itself. Both act at deployment time and need monitoring for drift and evasion.",
+   "url": "https://arxiv.org/abs/2110.06177"
+  },
+  {
+   "a": "inferencectl",
+   "b": "alignmentthesis",
+   "type": "hypothesis",
+   "relation": "a cheap correction actuator",
+   "text": "Proposed: inference-time interventions are the cheapest actuators for the thesis's correction interface, with no retraining and easy reversal and versioning. They count only if the effect persists through a session, unrelated capability holds on independent evaluations, and the intervention sits outside the model's write access.",
+   "url": "https://arxiv.org/abs/2306.03341"
+  },
+  {
+   "a": "inferencecost",
+   "b": "alignmentthesis",
+   "type": "hypothesis",
+   "relation": "the compute-and-usefulness gap",
+   "text": "The thesis's gap register asks whether correction machinery costs more than it helps. Proposed metric: energy or money per accepted, correctly corrected task at a fixed error rate, compared with the declared simple baselines.",
+   "url": "https://arxiv.org/abs/2311.16863"
+  },
+  {
+   "a": "moe",
+   "b": "mlp",
+   "type": "established",
+   "relation": "experts replace the feed-forward block",
+   "text": "Switch layers replace the transformer's dense feed-forward block with routed expert feed-forward blocks; attention is unchanged.",
+   "url": "https://arxiv.org/abs/2101.03961"
+  },
+  {
+   "a": "lora",
+   "b": "interference",
+   "type": "empirical",
+   "relation": "learns less, forgets less",
+   "text": "LoRA underperformed full fine-tuning on code and maths but better preserved performance outside the target domain, and full fine-tuning learned updates of 10–100× higher rank: evidence on how update structure affects retention.",
+   "url": "https://arxiv.org/abs/2405.09673"
+  },
+  {
+   "a": "scalinglaws",
+   "b": "bitterlesson",
+   "type": "established",
+   "relation": "the bitter lesson, measured",
+   "text": "Scaling laws give the bitter lesson a quantitative form within their tested ranges: loss falls predictably with compute, data and parameters for a fixed architecture family.",
+   "url": "https://arxiv.org/abs/2001.08361"
+  },
+  {
+   "a": "scalinglaws",
+   "b": "mup",
+   "type": "established",
+   "relation": "hyperparameters that transfer across scale",
+   "text": "μP keeps optimal hyperparameters stable across width, so they can be tuned on a small proxy and transferred; scaling studies otherwise risk confusing model size with mistuning.",
+   "url": "https://arxiv.org/abs/2203.03466"
+  },
+  {
+   "a": "flashattention",
+   "b": "attention",
+   "type": "exact",
+   "relation": "same attention, different schedule",
+   "text": "FlashAttention returns the same output as standard softmax attention: tiling with a running maximum and normalizer is an algebraic rearrangement of the same sums. Exact in real arithmetic; in floating point the results agree to rounding error because the summation order differs.",
+   "url": "https://arxiv.org/abs/2205.14135"
+  }
+ ],
+ "paths": [
+  {
+   "id": "inference-to-thesis",
+   "title": "From LLM inference and performance engineering to the alignment thesis: compute, compression and inference-time control",
+   "summary": "Start where serving engineers live (the roofline, quantization and the KV cache) and follow the state that decoding carries: a growing exact cache, a fixed-size recurrent state, and the predictive state that theory says is sufficient. Then spend test-time compute against verifiers, see how selection overoptimizes them, and end at inference-time interventions as candidate correction actuators for the alignment thesis. The last three links into theory and the thesis are untested hypotheses.",
+   "audience": "ML/LLM inference and performance engineers (kernels, serving, quantization, decoding) who think in FLOPs, bytes and latency, are comfortable with probability at the level of sampling and KL divergence, and want to see where their tools meet the atlas's alignment thesis. No control theory or learning theory is assumed; open the computational-mechanics topic first if predictive states are new.",
+   "level": "advanced",
+   "skills": [
+    "deep-learning",
+    "probability",
+    "theory",
+    "control"
+   ],
+   "estHours": 20,
+   "steps": [
+    {
+     "node": "roofline",
+     "objective": "Compute the arithmetic intensity of batch-1 decode and of prefill for a given model and GPU, place both on the roofline, and say which ceiling binds and why batching or fewer bytes per weight help.",
+     "why": "Home ground and the lens for the whole path: every later step either moves bytes, spends idle compute or decides what state to keep. Decode is memory-bound because each token rereads every weight.",
+     "via": null
+    },
+    {
+     "node": "quantization",
+     "objective": "Explain how GPTQ and AWQ choose low-bit weights, why weight-only quantization speeds memory-bound decode, and which evaluations can hide capability-specific damage.",
+     "why": "The most familiar lever: fewer bytes per weight move decode toward the compute roof. Carry one caveat forward: a small average loss can hide damage on rare inputs, the kind of distinction the thesis cares about.",
+     "via": "auto"
+    },
+    {
+     "node": "pagedkv",
+     "objective": "Compute KV-cache bytes per token, explain why the cache grows linearly with context and batch, and describe how paging and prefix sharing change allocation but not the state per token.",
+     "why": "Once weights are small, the cache becomes the memory bottleneck (KIVI quantizes it to 2 bits). Think of the KV cache as a belief state about the conversation: lossless relative to the model, but growing without bound.",
+     "via": "auto"
+    },
+    {
+     "node": "lru",
+     "objective": "Contrast per-token decode memory and time for a KV cache and a linear recurrent unit, and explain what a fixed-size state must give up.",
+     "why": "A KV cache is a lossless but growing belief; a recurrent state is a fixed-size lossy one. Which distinctions survive the compression is exactly the thesis's semantic-sufficiency question.",
+     "via": "auto"
+    },
+    {
+     "node": "predictivestate",
+     "objective": "State the definition of causal states (histories grouped by their predicted futures) and why they are the minimal sufficient statistic for prediction, then design a test of whether a trained recurrent state approximates them.",
+     "why": "Untested link: theory names the state worth keeping, the minimal one sufficient for predicting the future. It gives a target for “what should the cache or state retain?” that is not just perplexity.",
+     "via": "auto"
+    },
+    {
+     "node": "testtime",
+     "objective": "Explain the compute-optimal allocation of test-time compute, when it beats a larger model at matched FLOPs, and when it does not.",
+     "why": "Untested link: extra inference compute can extract more usable information from what the state retains, but it cannot restore what was discarded. Here your FLOPs budget becomes a quality knob instead of a cost.",
+     "via": "auto"
+    },
+    {
+     "node": "bestofn",
+     "objective": "Describe best-of-n with a trained verifier, state the KL upper bound log n − (n−1)/n, and explain why gold reward falls at large n against a proxy.",
+     "why": "The simplest test-time strategy, and the cleanest Goodhart demonstration: selection alone, with no weight updates, overoptimizes an imperfect verifier. This is the thesis's falsifier in miniature.",
+     "via": "auto"
+    },
+    {
+     "node": "inferencectl",
+     "objective": "Explain how inference-time intervention and controlled decoding change behaviour without weight updates, and list what they cost (latency, other capabilities) and what they do not change.",
+     "why": "From picking among samples to steering the computation itself: these are cheap, reversible actuators you can deploy like a serving feature. Their scorers and directions are proxies too.",
+     "via": "auto"
+    },
+    {
+     "node": "alignmentthesis",
+     "objective": "State what the thesis requires of its correction interface (persistence, unrelated-capability retention, enforcement outside the model) and design a matched-cost comparison of prompt, inference-time intervention and fine-tuning corrections.",
+     "why": "Untested link: inference-time interventions count as correction actuators only if the effect persists and unrelated capability holds on independent evaluations, at a total cost the thesis's compute-and-usefulness gap accepts.",
+     "via": "auto"
+    }
+   ]
+  },
+  {
+   "id": "inference-serving-systems",
+   "title": "Serving LLMs efficiently: memory-bound decoding, KV memory, batching and the inference budget",
+   "summary": "Follow one request through a serving stack: why attention and decoding are memory-bound, how IO-aware kernels, cache compression and paging manage KV memory, how continuous batching trades latency for throughput, and how lifetime inference cost changes both model sizing and test-time compute.",
+   "audience": "Engineers and researchers who want a systems view of LLM inference, or performance engineers who want each technique tied to its primary source and its limits. Assumes the transformer architecture.",
+   "level": "intermediate",
+   "skills": [
+    "deep-learning",
+    "optimization"
+   ],
+   "estHours": 12,
+   "steps": [
+    {
+     "node": "roofline",
+     "objective": "Place prefill, decode and attention kernels on a roofline and identify which are memory-bound.",
+     "why": "The model that explains every optimization on this path.",
+     "via": null
+    },
+    {
+     "node": "flashattention",
+     "objective": "Explain how tiling and online softmax keep attention exact while cutting HBM traffic, and why FLOPs stay quadratic.",
+     "why": "The classic case of a memory-bound kernel made faster without changing its output.",
+     "via": "auto"
+    },
+    {
+     "node": "kvcompress",
+     "objective": "Describe attention sinks and heavy-hitter eviction, and explain why stable perplexity is not long-range recall.",
+     "why": "FlashAttention keeps attention exact; cache compression gives up exactness to bound memory at inference time.",
+     "via": "auto"
+    },
+    {
+     "node": "pagedkv",
+     "objective": "Compute KV bytes per token and explain paging, block tables and copy-on-write prefix sharing.",
+     "why": "When the whole cache must be kept, the problem becomes allocating it without waste.",
+     "via": "auto"
+    },
+    {
+     "node": "contbatch",
+     "objective": "Explain iteration-level scheduling and selective batching, and how free KV memory limits batch size.",
+     "why": "Efficient KV memory lets more sequences share each weight read, which is what batching exploits.",
+     "via": "auto"
+    },
+    {
+     "node": "inferencecost",
+     "objective": "Define energy and cost per accepted answer and explain why per-query figures do not transfer between deployments.",
+     "why": "Batching moves the throughput–latency frontier; the budget decides where on it to operate.",
+     "via": "auto"
+    },
+    {
+     "node": "scalinglaws",
+     "objective": "State the Chinchilla compute-optimal rule and how expected inference demand shifts the optimum toward smaller models trained longer.",
+     "why": "Lifetime inference cost feeds back into how large a model to train in the first place.",
+     "via": "auto"
+    },
+    {
+     "node": "testtime",
+     "objective": "Compare a larger model with a smaller one plus test-time search at matched total FLOPs, and say when each wins.",
+     "why": "The other side of the same budget: compute can be spent per query instead of in pretraining.",
+     "via": "auto"
+    }
+   ]
+  },
+  {
+   "id": "inference-compression-and-decoding",
+   "title": "Smaller models and faster decoding: speculative decoding, distillation, MoE, pruning, quantization and LoRA",
+   "summary": "Start from speculative decoding's exact output guarantee, then work through the ways a model is made cheaper to run: distilled drafts and students, sparse experts, pruning, low-bit weights and low-rank adapters on quantized bases, with what each preserves and what it can lose.",
+   "audience": "Engineers and researchers who deploy or compress models and want the main compression and fast-decoding methods connected, with sources and caveats. Assumes basic probability (sampling, KL divergence).",
+   "level": "intermediate",
+   "skills": [
+    "deep-learning",
+    "probability",
+    "optimization"
+   ],
+   "estHours": 10,
+   "steps": [
+    {
+     "node": "specdecode",
+     "objective": "State the acceptance rule and residual distribution, and explain why the output distribution equals the target model's.",
+     "why": "A speedup with an exact guarantee: the standard against which the lossy methods that follow are judged.",
+     "via": null
+    },
+    {
+     "node": "distillation",
+     "objective": "Write the temperature-softened distillation loss, explain the T² factor, and state what student–teacher agreement does and does not imply.",
+     "why": "Speculative speedups depend on how well the draft agrees with the target, and distillation is how drafts are aligned.",
+     "via": "auto"
+    },
+    {
+     "node": "moe",
+     "objective": "Explain top-1 routing, why FLOPs per token stay fixed as parameters grow, and what memory and communication costs remain.",
+     "why": "Switch Transformers were distilled into dense students; sparse experts are the opposite trade, more parameters at fixed FLOPs.",
+     "via": "auto"
+    },
+    {
+     "node": "pruning",
+     "objective": "Distinguish unstructured and structured pruning, state the lottery-ticket hypothesis and its large-scale caveat, and explain expert pruning.",
+     "why": "Whole experts can be pruned after training; pruning is the general version of removing what the model does not need.",
+     "via": "auto"
+    },
+    {
+     "node": "quantization",
+     "objective": "Explain outlier handling in LLM.int8, second-order rounding in GPTQ and salient-channel scaling in AWQ.",
+     "why": "Pruning and quantization combine in one pipeline (Deep Compression); quantization is the most widely deployed of the two.",
+     "via": "auto"
+    },
+    {
+     "node": "lora",
+     "objective": "Write the LoRA update, explain merging for zero added latency, and describe QLoRA and the learning–forgetting trade-off.",
+     "why": "A quantized base can still be adapted: QLoRA trains low-rank adapters on a frozen 4-bit model.",
+     "via": "auto"
+    }
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "id": "q-inf-roofline-1",
+   "node": "roofline",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "In the roofline model, what determines whether a kernel is memory-bound or compute-bound?",
+   "choices": [
+    "Its parameter count",
+    "Its arithmetic intensity (FLOPs per byte moved) relative to the machine's ridge point",
+    "The number of GPU streaming multiprocessors used",
+    "Whether it uses floating-point or integer arithmetic"
+   ],
+   "answer": 1,
+   "explain": "Attainable throughput is min(peak compute, bandwidth × intensity); kernels below the ridge point's intensity are limited by memory bandwidth.",
+   "source": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2008/EECS-2008-134.html"
+  },
+  {
+   "id": "q-inf-roofline-2",
+   "node": "roofline",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "Why is batch-1 autoregressive decoding of a large LLM usually memory-bound?",
+   "choices": [
+    "Each new token rereads all weights (and the KV cache) while doing only a few FLOPs per byte",
+    "Each token needs a full backward pass",
+    "Softmax cannot run on tensor cores",
+    "The tokenizer runs on the CPU"
+   ],
+   "answer": 0,
+   "explain": "Generating one token multiplies vectors by every weight matrix once, so bytes moved dominate FLOPs and intensity is low.",
+   "source": "https://arxiv.org/abs/2402.16363"
+  },
+  {
+   "id": "q-inf-flashattention-1",
+   "node": "flashattention",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What does FlashAttention mainly reduce to obtain its speedup?",
+   "choices": [
+    "The number of FLOPs in attention",
+    "The number of attention heads",
+    "The precision of the attention scores",
+    "Reads and writes between GPU HBM and on-chip SRAM"
+   ],
+   "answer": 3,
+   "explain": "It tiles the computation in SRAM and never materializes the N×N score matrix in HBM; FLOPs stay quadratic.",
+   "source": "https://arxiv.org/abs/2205.14135"
+  },
+  {
+   "id": "q-inf-flashattention-2",
+   "node": "flashattention",
+   "skill": "linear-algebra",
+   "difficulty": 3,
+   "prompt": "Compared with standard softmax attention, FlashAttention's output is:",
+   "choices": [
+    "An approximation with bounded error controlled by a rank parameter",
+    "A sparse attention restricted to local windows",
+    "The same exact attention, up to floating-point rounding from a different summation order",
+    "A linear-attention approximation using kernel features"
+   ],
+   "answer": 2,
+   "explain": "Tiling with a running max and normalizer rearranges the same sums, so the result is exact in real arithmetic.",
+   "source": "https://arxiv.org/abs/2205.14135"
+  },
+  {
+   "id": "q-inf-pagedkv-1",
+   "node": "pagedkv",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "How does KV-cache memory for one sequence scale during decoding with standard attention?",
+   "choices": [
+    "Constant in sequence length",
+    "Linearly in the number of tokens so far",
+    "Quadratically in the number of tokens so far",
+    "Logarithmically in the number of tokens so far"
+   ],
+   "answer": 1,
+   "explain": "Each token adds one key and one value vector per layer and KV head, so memory grows linearly with context.",
+   "source": "https://arxiv.org/abs/2309.06180"
+  },
+  {
+   "id": "q-inf-pagedkv-2",
+   "node": "pagedkv",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "What does PagedAttention change about the KV cache?",
+   "choices": [
+    "It stores the cache in fixed-size blocks so memory is allocated without fragmentation and prefixes can be shared",
+    "It compresses keys and values to 2 bits",
+    "It evicts old tokens to keep memory constant",
+    "It recomputes keys and values instead of storing them"
+   ],
+   "answer": 0,
+   "explain": "Inspired by virtual-memory paging, it changes allocation and sharing, not the amount of state per token.",
+   "source": "https://arxiv.org/abs/2309.06180"
+  },
+  {
+   "id": "q-inf-contbatch-1",
+   "node": "contbatch",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What is iteration-level (continuous) batching?",
+   "choices": [
+    "Waiting until a full batch of requests arrives before starting",
+    "Batching only the attention operations",
+    "Running each request on a separate GPU",
+    "Rescheduling the batch every decoding step so finished sequences leave and new ones join"
+   ],
+   "answer": 3,
+   "explain": "Orca schedules at the granularity of one model iteration rather than whole requests.",
+   "source": "https://www.usenix.org/conference/osdi22/presentation/yu"
+  },
+  {
+   "id": "q-inf-contbatch-2",
+   "node": "contbatch",
+   "skill": "optimization",
+   "difficulty": 2,
+   "prompt": "Why does batching more sequences raise decoding throughput on a GPU?",
+   "choices": [
+    "It reduces the number of layers",
+    "It shortens every sequence",
+    "It lets one read of each weight serve many sequences, raising arithmetic intensity",
+    "It removes the need for a KV cache"
+   ],
+   "answer": 2,
+   "explain": "Decode is memory-bound; reusing each weight read across the batch moves it toward the compute roof, until KV memory or latency limits are hit.",
+   "source": "https://arxiv.org/abs/2402.16363"
+  },
+  {
+   "id": "q-inf-kvcompress-1",
+   "node": "kvcompress",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What did StreamingLLM find about window attention that keeps only the most recent tokens?",
+   "choices": [
+    "It works perfectly at any length",
+    "It fails once text exceeds the cache, but keeping a few initial “attention sink” tokens largely restores it",
+    "It is slower than full attention",
+    "It requires retraining the model from scratch"
+   ],
+   "answer": 1,
+   "explain": "Initial tokens receive large attention scores as sinks; keeping their KV plus a recent window stabilizes long streaming.",
+   "source": "https://arxiv.org/abs/2309.17453"
+  },
+  {
+   "id": "q-inf-kvcompress-2",
+   "node": "kvcompress",
+   "skill": "deep-learning",
+   "difficulty": 3,
+   "prompt": "A model with an attention-sink plus sliding-window cache keeps stable perplexity over 1 million tokens. What does this NOT show?",
+   "choices": [
+    "That the model can recall a fact from far outside the kept window",
+    "That memory use is bounded",
+    "That decoding speed is roughly constant per token",
+    "That the cache size is fixed"
+   ],
+   "answer": 0,
+   "explain": "Evicted tokens are gone; stable perplexity does not mean long-range retrieval works.",
+   "source": "https://arxiv.org/abs/2309.17453"
+  },
+  {
+   "id": "q-inf-inferencecost-1",
+   "node": "inferencecost",
+   "skill": "optimization",
+   "difficulty": 2,
+   "prompt": "According to Sardana et al., how does large expected inference demand change the cost-optimal model?",
+   "choices": [
+    "Train a larger model on fewer tokens",
+    "Inference demand does not change the optimum",
+    "Use only mixture-of-experts models",
+    "Train a smaller model on more tokens than Chinchilla-optimal"
+   ],
+   "answer": 3,
+   "explain": "Adding lifetime inference cost to the objective favors smaller models that are cheaper per query, trained longer.",
+   "source": "https://arxiv.org/abs/2401.00448"
+  },
+  {
+   "id": "q-inf-inferencecost-2",
+   "node": "inferencecost",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What did Luccioni et al. find when measuring the energy of 1,000 inferences across model types?",
+   "choices": [
+    "Task-specific models used more energy than general-purpose ones",
+    "All models used about the same energy",
+    "Multi-purpose generative models were orders of magnitude more expensive than task-specific ones, even at matched parameter count",
+    "Energy depended only on parameter count"
+   ],
+   "answer": 2,
+   "explain": "Generality came at a steep energy cost per inference in their comparison.",
+   "source": "https://arxiv.org/abs/2311.16863"
+  },
+  {
+   "id": "q-inf-quantization-1",
+   "node": "quantization",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What problem does LLM.int8 address with its mixed-precision decomposition?",
+   "choices": [
+    "Slow tokenization",
+    "Outlier feature dimensions with large magnitudes that break naive 8-bit quantization",
+    "Vanishing gradients during training",
+    "Too many attention heads"
+   ],
+   "answer": 1,
+   "explain": "It keeps the few outlier dimensions in 16-bit and quantizes the rest to 8-bit.",
+   "source": "https://arxiv.org/abs/2208.07339"
+  },
+  {
+   "id": "q-inf-quantization-2",
+   "node": "quantization",
+   "skill": "optimization",
+   "difficulty": 3,
+   "prompt": "A 4-bit model shows only a 0.1 perplexity increase over FP16. Which conclusion is safest?",
+   "choices": [
+    "The average loss is small, but specific capabilities, long contexts or rare inputs may still degrade and need separate evaluation",
+    "All capabilities are preserved",
+    "The model will be exactly 4× faster at every batch size",
+    "The KV cache is now 4× smaller"
+   ],
+   "answer": 0,
+   "explain": "Averages can hide concentrated damage; speedups need kernels, and weight quantization alone does not shrink the KV cache.",
+   "source": "https://arxiv.org/abs/2210.17323"
+  },
+  {
+   "id": "q-inf-specdecode-1",
+   "node": "specdecode",
+   "skill": "probability",
+   "difficulty": 2,
+   "prompt": "In speculative sampling, a drafted token x is accepted with probability:",
+   "choices": [
+    "q(x)",
+    "p(x) · q(x)",
+    "Always 1 if the draft is greedy",
+    "min(1, p(x)/q(x)), where p is the target and q the draft distribution"
+   ],
+   "answer": 3,
+   "explain": "On rejection, the token is resampled from the normalized residual max(0, p − q); this makes the output exactly distributed as p.",
+   "source": "https://arxiv.org/abs/2211.17192"
+  },
+  {
+   "id": "q-inf-specdecode-2",
+   "node": "specdecode",
+   "skill": "probability",
+   "difficulty": 3,
+   "prompt": "If the draft model in speculative sampling is poorly matched to the target, what happens?",
+   "choices": [
+    "Outputs follow the draft distribution",
+    "The method fails and returns errors",
+    "Outputs still follow the target distribution, but fewer tokens are accepted, so the speedup falls",
+    "Outputs become greedy"
+   ],
+   "answer": 2,
+   "explain": "Exactness holds for any draft under the acceptance rule; only efficiency depends on agreement.",
+   "source": "https://arxiv.org/abs/2302.01318"
+  },
+  {
+   "id": "q-inf-distillation-1",
+   "node": "distillation",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "In Hinton et al.'s distillation, what is a “soft target”?",
+   "choices": [
+    "A label smoothed with uniform noise",
+    "The teacher's output distribution computed with a raised softmax temperature",
+    "A target that the student may ignore",
+    "The average of all training labels"
+   ],
+   "answer": 1,
+   "explain": "Raising the temperature exposes the teacher's relative probabilities over incorrect classes.",
+   "source": "https://arxiv.org/abs/1503.02531"
+  },
+  {
+   "id": "q-inf-distillation-2",
+   "node": "distillation",
+   "skill": "probability",
+   "difficulty": 3,
+   "prompt": "Minimizing soft-target cross-entropy H(p_T, q) over student distributions q is equivalent to minimizing:",
+   "choices": [
+    "KL(p_T ‖ q), since H(p_T, q) = H(p_T) + KL(p_T ‖ q) and H(p_T) is fixed",
+    "KL(q ‖ p_T)",
+    "The squared error between logits only",
+    "The entropy of q"
+   ],
+   "answer": 0,
+   "explain": "The teacher's entropy is constant, so cross-entropy and forward KL share their minimizer, q = p_T when the student can represent it.",
+   "source": "https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf"
+  },
+  {
+   "id": "q-inf-pruning-1",
+   "node": "pruning",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What does the lottery-ticket hypothesis claim?",
+   "choices": [
+    "Random pruning always improves accuracy",
+    "Only the largest weights matter at initialization",
+    "Pruned networks never need retraining",
+    "Dense networks contain sparse subnetworks that, reset to their original initialization, train in isolation to comparable accuracy"
+   ],
+   "answer": 3,
+   "explain": "Iterative magnitude pruning found such subnetworks at 10–20% of original size on small vision networks.",
+   "source": "https://arxiv.org/abs/1803.03635"
+  },
+  {
+   "id": "q-inf-pruning-2",
+   "node": "pruning",
+   "skill": "optimization",
+   "difficulty": 2,
+   "prompt": "Why does 90% unstructured weight sparsity often give little speedup on a GPU?",
+   "choices": [
+    "Sparse weights use more memory",
+    "GPUs cannot store zeros",
+    "Irregular sparsity does not map to dense matrix hardware without special kernels or hardware support",
+    "Pruning increases FLOPs"
+   ],
+   "answer": 2,
+   "explain": "Structured pruning (channels, heads, layers) or sparse kernels are needed to turn sparsity into speed.",
+   "source": "https://arxiv.org/abs/1912.05671"
+  },
+  {
+   "id": "q-inf-moe-1",
+   "node": "moe",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "In a Switch Transformer layer, each token is processed by:",
+   "choices": [
+    "Every expert, averaged",
+    "One expert selected by a learned router",
+    "A random expert",
+    "The attention layer only"
+   ],
+   "answer": 1,
+   "explain": "Top-1 routing keeps FLOPs per token constant while total parameters grow with the number of experts.",
+   "source": "https://arxiv.org/abs/2101.03961"
+  },
+  {
+   "id": "q-inf-moe-2",
+   "node": "moe",
+   "skill": "deep-learning",
+   "difficulty": 3,
+   "prompt": "A mixture-of-experts model has 8× the parameters of a dense model at the same FLOPs per token. Which cost does NOT stay the same?",
+   "choices": [
+    "Memory to store the weights",
+    "Arithmetic per token",
+    "Number of attention heads",
+    "Vocabulary size"
+   ],
+   "answer": 0,
+   "explain": "All experts must be stored and moved, so memory and communication grow even though per-token FLOPs do not.",
+   "source": "https://arxiv.org/abs/2101.03961"
+  },
+  {
+   "id": "q-inf-lora-1",
+   "node": "lora",
+   "skill": "linear-algebra",
+   "difficulty": 1,
+   "prompt": "What does LoRA train?",
+   "choices": [
+    "All weights at reduced precision",
+    "Only the embedding layer",
+    "A new attention head per layer",
+    "A low-rank update ΔW = BA added to frozen pretrained weights"
+   ],
+   "answer": 3,
+   "explain": "The pretrained weights stay frozen; only the small factors B and A are learned, and they can be merged for inference.",
+   "source": "https://arxiv.org/abs/2106.09685"
+  },
+  {
+   "id": "q-inf-lora-2",
+   "node": "lora",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "Biderman et al. compared LoRA with full fine-tuning on code and maths. What did they find?",
+   "choices": [
+    "LoRA matched full fine-tuning everywhere",
+    "LoRA forgot more and learned more",
+    "LoRA learned less on the target domain but forgot less outside it",
+    "Full fine-tuning learned only low-rank updates"
+   ],
+   "answer": 2,
+   "explain": "Full fine-tuning learned updates of 10–100× higher rank than typical LoRA settings.",
+   "source": "https://arxiv.org/abs/2405.09673"
+  },
+  {
+   "id": "q-inf-scalinglaws-1",
+   "node": "scalinglaws",
+   "skill": "stats-ml",
+   "difficulty": 1,
+   "prompt": "What did Hoffmann et al. (Chinchilla) conclude about compute-optimal training?",
+   "choices": [
+    "Model size should grow much faster than data",
+    "Parameters and training tokens should be scaled in roughly equal proportion",
+    "Data matters more than parameters at every scale",
+    "Loss stops improving beyond 10B parameters"
+   ],
+   "answer": 1,
+   "explain": "Chinchilla, with 70B parameters and 1.4T tokens, beat the 280B Gopher at the same training compute.",
+   "source": "https://arxiv.org/abs/2203.15556"
+  },
+  {
+   "id": "q-inf-scalinglaws-2",
+   "node": "scalinglaws",
+   "skill": "stats-ml",
+   "difficulty": 3,
+   "prompt": "Why is a “compute-optimal” model not necessarily the cheapest model to deploy?",
+   "choices": [
+    "Compute-optimal counts training FLOPs only; with heavy inference use, a smaller model trained longer can cost less overall",
+    "Scaling laws are exact",
+    "Larger models always run faster",
+    "Compute-optimal models cannot be quantized"
+   ],
+   "answer": 0,
+   "explain": "Inference cost scales with model size and query volume, which the training-only optimum ignores.",
+   "source": "https://arxiv.org/abs/2401.00448"
+  },
+  {
+   "id": "q-inf-testtime-1",
+   "node": "testtime",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "In Snell et al.'s FLOPs-matched comparison, when could test-time compute beat a 14× larger model?",
+   "choices": [
+    "On every problem",
+    "Only on the hardest problems",
+    "Only with greedy decoding",
+    "On problems where the smaller model already had somewhat non-trivial success"
+   ],
+   "answer": 3,
+   "explain": "On the hardest problems, extra pretraining was more effective than test-time search.",
+   "source": "https://arxiv.org/abs/2408.03314"
+  },
+  {
+   "id": "q-inf-testtime-2",
+   "node": "testtime",
+   "skill": "probability",
+   "difficulty": 3,
+   "prompt": "A compressed state has discarded a fact needed to answer a question. What can more test-time compute on that state achieve?",
+   "choices": [
+    "Recover the fact by reasoning longer",
+    "Recover it if best-of-n is used",
+    "Not recover it: processing cannot add information the state lost, though it can extract more from what was kept",
+    "Recover it by lowering temperature"
+   ],
+   "answer": 2,
+   "explain": "Shannon information cannot grow by processing (data processing inequality); computation can raise usable information only from what remains.",
+   "source": "https://arxiv.org/abs/2002.10689"
+  },
+  {
+   "id": "q-inf-bestofn-1",
+   "node": "bestofn",
+   "skill": "rl",
+   "difficulty": 2,
+   "prompt": "What happens to the gold reward as n grows when best-of-n selects against an imperfect proxy reward model?",
+   "choices": [
+    "It rises without limit",
+    "It rises at first, then falls, as selection finds candidates the proxy overrates",
+    "It stays constant",
+    "It falls from the start"
+   ],
+   "answer": 1,
+   "explain": "Gao et al. observed this overoptimization in a synthetic setup with a larger reward model as gold.",
+   "source": "https://arxiv.org/abs/2210.10760"
+  },
+  {
+   "id": "q-inf-bestofn-2",
+   "node": "bestofn",
+   "skill": "probability",
+   "difficulty": 3,
+   "prompt": "The often-quoted KL(best-of-n ‖ reference) = log n − (n−1)/n is, according to Beirami et al.:",
+   "choices": [
+    "An upper bound on the actual KL divergence",
+    "Exact for every reward function",
+    "A lower bound on the actual KL divergence",
+    "Only valid for n = 2"
+   ],
+   "answer": 0,
+   "explain": "They disprove the equality, show it is an upper bound, and propose a tighter estimator.",
+   "source": "https://arxiv.org/abs/2401.01879"
+  },
+  {
+   "id": "q-inf-inferencectl-1",
+   "node": "inferencectl",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "How does Inference-Time Intervention (ITI) change a model's behaviour?",
+   "choices": [
+    "By fine-tuning all weights on truthful data",
+    "By filtering outputs with a separate classifier",
+    "By changing the tokenizer",
+    "By shifting activations along learned directions in a few attention heads during decoding"
+   ],
+   "answer": 3,
+   "explain": "ITI raised Alpaca's TruthfulQA truthfulness from 32.5% to 65.1% without weight updates.",
+   "source": "https://arxiv.org/abs/2306.03341"
+  },
+  {
+   "id": "q-inf-inferencectl-2",
+   "node": "inferencectl",
+   "skill": "control",
+   "difficulty": 3,
+   "prompt": "For the alignment thesis, what must an inference-time correction show before it counts as a correction actuator?",
+   "choices": [
+    "A large effect on one benchmark",
+    "That it needs no labelled data",
+    "That its effect persists, unrelated capabilities hold on independent evaluations, and it sits outside the model's write access",
+    "That it lowers latency"
+   ],
+   "answer": 2,
+   "explain": "The thesis asks for persistent, measured corrections without silent damage to unrelated capability.",
+   "source": "https://arxiv.org/abs/2306.03341"
+  }
+ ],
+ "background_option": {
+  "question": "bg-goal",
+  "after": "goal-interp",
+  "option": {
+   "id": "goal-inference",
+   "label": "I come from ML/LLM inference or performance engineering (GPU kernels, KV caches, batching and serving, quantization, speculative decoding) and want to see how it connects to the alignment thesis",
+   "sets": {},
+   "goal": "inference-to-thesis"
+  }
+ }
+}

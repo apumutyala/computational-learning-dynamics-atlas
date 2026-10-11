@@ -1535,6 +1535,189 @@
      "via": "rel-2c7e420d"
     }
    ]
+  },
+  {
+   "id": "inference-to-thesis",
+   "title": "From LLM inference and performance engineering to the alignment thesis: compute, compression and inference-time control",
+   "summary": "Start where serving engineers live (the roofline, quantization and the KV cache) and follow the state that decoding carries: a growing exact cache, a fixed-size recurrent state, and the predictive state that theory says is sufficient. Then spend test-time compute against verifiers, see how selection overoptimizes them, and end at inference-time interventions as candidate correction actuators for the alignment thesis. The last three links into theory and the thesis are untested hypotheses.",
+   "audience": "ML/LLM inference and performance engineers (kernels, serving, quantization, decoding) who think in FLOPs, bytes and latency, are comfortable with probability at the level of sampling and KL divergence, and want to see where their tools meet the atlas's alignment thesis. No control theory or learning theory is assumed; open the computational-mechanics topic first if predictive states are new.",
+   "level": "advanced",
+   "skills": [
+    "deep-learning",
+    "probability",
+    "theory",
+    "control"
+   ],
+   "estHours": 20,
+   "steps": [
+    {
+     "node": "roofline",
+     "objective": "Compute the arithmetic intensity of batch-1 decode and of prefill for a given model and GPU, place both on the roofline, and say which ceiling binds and why batching or fewer bytes per weight help.",
+     "why": "Home ground and the lens for the whole path: every later step either moves bytes, spends idle compute or decides what state to keep. Decode is memory-bound because each token rereads every weight.",
+     "via": null
+    },
+    {
+     "node": "quantization",
+     "objective": "Explain how GPTQ and AWQ choose low-bit weights, why weight-only quantization speeds memory-bound decode, and which evaluations can hide capability-specific damage.",
+     "why": "The most familiar lever: fewer bytes per weight move decode toward the compute roof. Carry one caveat forward: a small average loss can hide damage on rare inputs, the kind of distinction the thesis cares about.",
+     "via": "rel-f2e8a263"
+    },
+    {
+     "node": "pagedkv",
+     "objective": "Compute KV-cache bytes per token, explain why the cache grows linearly with context and batch, and describe how paging and prefix sharing change allocation but not the state per token.",
+     "why": "Once weights are small, the cache becomes the memory bottleneck (KIVI quantizes it to 2 bits). Think of the KV cache as a belief state about the conversation: lossless relative to the model, but growing without bound.",
+     "via": "rel-5d1c1abe"
+    },
+    {
+     "node": "lru",
+     "objective": "Contrast per-token decode memory and time for a KV cache and a linear recurrent unit, and explain what a fixed-size state must give up.",
+     "why": "A KV cache is a lossless but growing belief; a recurrent state is a fixed-size lossy one. Which distinctions survive the compression is exactly the thesis's semantic-sufficiency question.",
+     "via": "rel-5debe828"
+    },
+    {
+     "node": "predictivestate",
+     "objective": "State the definition of causal states (histories grouped by their predicted futures) and why they are the minimal sufficient statistic for prediction, then design a test of whether a trained recurrent state approximates them.",
+     "why": "Untested link: theory names the state worth keeping, the minimal one sufficient for predicting the future. It gives a target for “what should the cache or state retain?” that is not just perplexity.",
+     "via": "rel-64e967a5"
+    },
+    {
+     "node": "testtime",
+     "objective": "Explain the compute-optimal allocation of test-time compute, when it beats a larger model at matched FLOPs, and when it does not.",
+     "why": "Untested link: extra inference compute can extract more usable information from what the state retains, but it cannot restore what was discarded. Here your FLOPs budget becomes a quality knob instead of a cost.",
+     "via": "rel-8ccb98af"
+    },
+    {
+     "node": "bestofn",
+     "objective": "Describe best-of-n with a trained verifier, state the KL upper bound log n − (n−1)/n, and explain why gold reward falls at large n against a proxy.",
+     "why": "The simplest test-time strategy, and the cleanest Goodhart demonstration: selection alone, with no weight updates, overoptimizes an imperfect verifier. This is the thesis's falsifier in miniature.",
+     "via": "rel-d97813f5"
+    },
+    {
+     "node": "inferencectl",
+     "objective": "Explain how inference-time intervention and controlled decoding change behaviour without weight updates, and list what they cost (latency, other capabilities) and what they do not change.",
+     "why": "From picking among samples to steering the computation itself: these are cheap, reversible actuators you can deploy like a serving feature. Their scorers and directions are proxies too.",
+     "via": "rel-5b955e53"
+    },
+    {
+     "node": "alignmentthesis",
+     "objective": "State what the thesis requires of its correction interface (persistence, unrelated-capability retention, enforcement outside the model) and design a matched-cost comparison of prompt, inference-time intervention and fine-tuning corrections.",
+     "why": "Untested link: inference-time interventions count as correction actuators only if the effect persists and unrelated capability holds on independent evaluations, at a total cost the thesis's compute-and-usefulness gap accepts.",
+     "via": "rel-fa1c2037"
+    }
+   ]
+  },
+  {
+   "id": "inference-serving-systems",
+   "title": "Serving LLMs efficiently: memory-bound decoding, KV memory, batching and the inference budget",
+   "summary": "Follow one request through a serving stack: why attention and decoding are memory-bound, how IO-aware kernels, cache compression and paging manage KV memory, how continuous batching trades latency for throughput, and how lifetime inference cost changes both model sizing and test-time compute.",
+   "audience": "Engineers and researchers who want a systems view of LLM inference, or performance engineers who want each technique tied to its primary source and its limits. Assumes the transformer architecture.",
+   "level": "intermediate",
+   "skills": [
+    "deep-learning",
+    "optimization"
+   ],
+   "estHours": 12,
+   "steps": [
+    {
+     "node": "roofline",
+     "objective": "Place prefill, decode and attention kernels on a roofline and identify which are memory-bound.",
+     "why": "The model that explains every optimization on this path.",
+     "via": null
+    },
+    {
+     "node": "flashattention",
+     "objective": "Explain how tiling and online softmax keep attention exact while cutting HBM traffic, and why FLOPs stay quadratic.",
+     "why": "The classic case of a memory-bound kernel made faster without changing its output.",
+     "via": "rel-8871b98d"
+    },
+    {
+     "node": "kvcompress",
+     "objective": "Describe attention sinks and heavy-hitter eviction, and explain why stable perplexity is not long-range recall.",
+     "why": "FlashAttention keeps attention exact; cache compression gives up exactness to bound memory at inference time.",
+     "via": "rel-37b7af4a"
+    },
+    {
+     "node": "pagedkv",
+     "objective": "Compute KV bytes per token and explain paging, block tables and copy-on-write prefix sharing.",
+     "why": "When the whole cache must be kept, the problem becomes allocating it without waste.",
+     "via": "rel-19603d1d"
+    },
+    {
+     "node": "contbatch",
+     "objective": "Explain iteration-level scheduling and selective batching, and how free KV memory limits batch size.",
+     "why": "Efficient KV memory lets more sequences share each weight read, which is what batching exploits.",
+     "via": "rel-574e25ae"
+    },
+    {
+     "node": "inferencecost",
+     "objective": "Define energy and cost per accepted answer and explain why per-query figures do not transfer between deployments.",
+     "why": "Batching moves the throughput–latency frontier; the budget decides where on it to operate.",
+     "via": "rel-78b001b7"
+    },
+    {
+     "node": "scalinglaws",
+     "objective": "State the Chinchilla compute-optimal rule and how expected inference demand shifts the optimum toward smaller models trained longer.",
+     "why": "Lifetime inference cost feeds back into how large a model to train in the first place.",
+     "via": "rel-bd2f2471"
+    },
+    {
+     "node": "testtime",
+     "objective": "Compare a larger model with a smaller one plus test-time search at matched total FLOPs, and say when each wins.",
+     "why": "The other side of the same budget: compute can be spent per query instead of in pretraining.",
+     "via": "rel-1644ffb0"
+    }
+   ]
+  },
+  {
+   "id": "inference-compression-and-decoding",
+   "title": "Smaller models and faster decoding: speculative decoding, distillation, MoE, pruning, quantization and LoRA",
+   "summary": "Start from speculative decoding's exact output guarantee, then work through the ways a model is made cheaper to run: distilled drafts and students, sparse experts, pruning, low-bit weights and low-rank adapters on quantized bases, with what each preserves and what it can lose.",
+   "audience": "Engineers and researchers who deploy or compress models and want the main compression and fast-decoding methods connected, with sources and caveats. Assumes basic probability (sampling, KL divergence).",
+   "level": "intermediate",
+   "skills": [
+    "deep-learning",
+    "probability",
+    "optimization"
+   ],
+   "estHours": 10,
+   "steps": [
+    {
+     "node": "specdecode",
+     "objective": "State the acceptance rule and residual distribution, and explain why the output distribution equals the target model's.",
+     "why": "A speedup with an exact guarantee: the standard against which the lossy methods that follow are judged.",
+     "via": null
+    },
+    {
+     "node": "distillation",
+     "objective": "Write the temperature-softened distillation loss, explain the T² factor, and state what student–teacher agreement does and does not imply.",
+     "why": "Speculative speedups depend on how well the draft agrees with the target, and distillation is how drafts are aligned.",
+     "via": "rel-ba1193cd"
+    },
+    {
+     "node": "moe",
+     "objective": "Explain top-1 routing, why FLOPs per token stay fixed as parameters grow, and what memory and communication costs remain.",
+     "why": "Switch Transformers were distilled into dense students; sparse experts are the opposite trade, more parameters at fixed FLOPs.",
+     "via": "rel-2018aa90"
+    },
+    {
+     "node": "pruning",
+     "objective": "Distinguish unstructured and structured pruning, state the lottery-ticket hypothesis and its large-scale caveat, and explain expert pruning.",
+     "why": "Whole experts can be pruned after training; pruning is the general version of removing what the model does not need.",
+     "via": "rel-851f167f"
+    },
+    {
+     "node": "quantization",
+     "objective": "Explain outlier handling in LLM.int8, second-order rounding in GPTQ and salient-channel scaling in AWQ.",
+     "why": "Pruning and quantization combine in one pipeline (Deep Compression); quantization is the most widely deployed of the two.",
+     "via": "rel-f485a0a9"
+    },
+    {
+     "node": "lora",
+     "objective": "Write the LoRA update, explain merging for zero added latency, and describe QLoRA and the learning–forgetting trade-off.",
+     "why": "A quantized base can still be adapted: QLoRA trains low-rank adapters on a frozen 4-bit model.",
+     "via": "rel-0e1bf169"
+    }
+   ]
   }
  ]
 }

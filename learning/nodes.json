@@ -2369,6 +2369,160 @@
     "theory"
    ],
    "prereqs": []
+  },
+  "roofline": {
+   "level": 1,
+   "skills": [
+    "deep-learning",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "flashattention": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "attention",
+    "roofline"
+   ]
+  },
+  "pagedkv": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "attention",
+    "roofline"
+   ]
+  },
+  "contbatch": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "optimization"
+   ],
+   "prereqs": [
+    "pagedkv"
+   ]
+  },
+  "kvcompress": {
+   "level": 3,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "pagedkv"
+   ]
+  },
+  "inferencecost": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "optimization"
+   ],
+   "prereqs": [
+    "roofline"
+   ]
+  },
+  "quantization": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "linear-algebra",
+    "optimization"
+   ],
+   "prereqs": [
+    "roofline"
+   ]
+  },
+  "specdecode": {
+   "level": 2,
+   "skills": [
+    "probability",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "llm"
+   ]
+  },
+  "distillation": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "probability",
+    "stats-ml"
+   ],
+   "prereqs": []
+  },
+  "pruning": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "optimization"
+   ],
+   "prereqs": []
+  },
+  "moe": {
+   "level": 3,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "attention"
+   ]
+  },
+  "lora": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "linear-algebra"
+   ],
+   "prereqs": []
+  },
+  "scalinglaws": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "stats-ml"
+   ],
+   "prereqs": []
+  },
+  "testtime": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "probability"
+   ],
+   "prereqs": [
+    "scalinglaws",
+    "llm"
+   ]
+  },
+  "bestofn": {
+   "level": 3,
+   "skills": [
+    "rl",
+    "probability",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "testtime"
+   ]
+  },
+  "inferencectl": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "control"
+   ],
+   "prereqs": [
+    "steering",
+    "bestofn"
+   ]
   }
  }
 }

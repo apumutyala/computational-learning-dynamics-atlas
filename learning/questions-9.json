@@ -1,0 +1,517 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "q-inf-roofline-1",
+      "node": "roofline",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "In the roofline model, what determines whether a kernel is memory-bound or compute-bound?",
+      "choices": [
+        "Its parameter count",
+        "Its arithmetic intensity (FLOPs per byte moved) relative to the machine's ridge point",
+        "The number of GPU streaming multiprocessors used",
+        "Whether it uses floating-point or integer arithmetic"
+      ],
+      "answer": 1,
+      "explain": "Attainable throughput is min(peak compute, bandwidth × intensity); kernels below the ridge point's intensity are limited by memory bandwidth.",
+      "source": "https://www2.eecs.berkeley.edu/Pubs/TechRpts/2008/EECS-2008-134.html"
+    },
+    {
+      "id": "q-inf-roofline-2",
+      "node": "roofline",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Why is batch-1 autoregressive decoding of a large LLM usually memory-bound?",
+      "choices": [
+        "Each new token rereads all weights (and the KV cache) while doing only a few FLOPs per byte",
+        "Each token needs a full backward pass",
+        "Softmax cannot run on tensor cores",
+        "The tokenizer runs on the CPU"
+      ],
+      "answer": 0,
+      "explain": "Generating one token multiplies vectors by every weight matrix once, so bytes moved dominate FLOPs and intensity is low.",
+      "source": "https://arxiv.org/abs/2402.16363"
+    },
+    {
+      "id": "q-inf-flashattention-1",
+      "node": "flashattention",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What does FlashAttention mainly reduce to obtain its speedup?",
+      "choices": [
+        "The number of FLOPs in attention",
+        "The number of attention heads",
+        "The precision of the attention scores",
+        "Reads and writes between GPU HBM and on-chip SRAM"
+      ],
+      "answer": 3,
+      "explain": "It tiles the computation in SRAM and never materializes the N×N score matrix in HBM; FLOPs stay quadratic.",
+      "source": "https://arxiv.org/abs/2205.14135"
+    },
+    {
+      "id": "q-inf-flashattention-2",
+      "node": "flashattention",
+      "skill": "linear-algebra",
+      "difficulty": 3,
+      "prompt": "Compared with standard softmax attention, FlashAttention's output is:",
+      "choices": [
+        "An approximation with bounded error controlled by a rank parameter",
+        "A sparse attention restricted to local windows",
+        "The same exact attention, up to floating-point rounding from a different summation order",
+        "A linear-attention approximation using kernel features"
+      ],
+      "answer": 2,
+      "explain": "Tiling with a running max and normalizer rearranges the same sums, so the result is exact in real arithmetic.",
+      "source": "https://arxiv.org/abs/2205.14135"
+    },
+    {
+      "id": "q-inf-pagedkv-1",
+      "node": "pagedkv",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "How does KV-cache memory for one sequence scale during decoding with standard attention?",
+      "choices": [
+        "Constant in sequence length",
+        "Linearly in the number of tokens so far",
+        "Quadratically in the number of tokens so far",
+        "Logarithmically in the number of tokens so far"
+      ],
+      "answer": 1,
+      "explain": "Each token adds one key and one value vector per layer and KV head, so memory grows linearly with context.",
+      "source": "https://arxiv.org/abs/2309.06180"
+    },
+    {
+      "id": "q-inf-pagedkv-2",
+      "node": "pagedkv",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "What does PagedAttention change about the KV cache?",
+      "choices": [
+        "It stores the cache in fixed-size blocks so memory is allocated without fragmentation and prefixes can be shared",
+        "It compresses keys and values to 2 bits",
+        "It evicts old tokens to keep memory constant",
+        "It recomputes keys and values instead of storing them"
+      ],
+      "answer": 0,
+      "explain": "Inspired by virtual-memory paging, it changes allocation and sharing, not the amount of state per token.",
+      "source": "https://arxiv.org/abs/2309.06180"
+    },
+    {
+      "id": "q-inf-contbatch-1",
+      "node": "contbatch",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What is iteration-level (continuous) batching?",
+      "choices": [
+        "Waiting until a full batch of requests arrives before starting",
+        "Batching only the attention operations",
+        "Running each request on a separate GPU",
+        "Rescheduling the batch every decoding step so finished sequences leave and new ones join"
+      ],
+      "answer": 3,
+      "explain": "Orca schedules at the granularity of one model iteration rather than whole requests.",
+      "source": "https://www.usenix.org/conference/osdi22/presentation/yu"
+    },
+    {
+      "id": "q-inf-contbatch-2",
+      "node": "contbatch",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "Why does batching more sequences raise decoding throughput on a GPU?",
+      "choices": [
+        "It reduces the number of layers",
+        "It shortens every sequence",
+        "It lets one read of each weight serve many sequences, raising arithmetic intensity",
+        "It removes the need for a KV cache"
+      ],
+      "answer": 2,
+      "explain": "Decode is memory-bound; reusing each weight read across the batch moves it toward the compute roof, until KV memory or latency limits are hit.",
+      "source": "https://arxiv.org/abs/2402.16363"
+    },
+    {
+      "id": "q-inf-kvcompress-1",
+      "node": "kvcompress",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What did StreamingLLM find about window attention that keeps only the most recent tokens?",
+      "choices": [
+        "It works perfectly at any length",
+        "It fails once text exceeds the cache, but keeping a few initial “attention sink” tokens largely restores it",
+        "It is slower than full attention",
+        "It requires retraining the model from scratch"
+      ],
+      "answer": 1,
+      "explain": "Initial tokens receive large attention scores as sinks; keeping their KV plus a recent window stabilizes long streaming.",
+      "source": "https://arxiv.org/abs/2309.17453"
+    },
+    {
+      "id": "q-inf-kvcompress-2",
+      "node": "kvcompress",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "A model with an attention-sink plus sliding-window cache keeps stable perplexity over 1 million tokens. What does this NOT show?",
+      "choices": [
+        "That the model can recall a fact from far outside the kept window",
+        "That memory use is bounded",
+        "That decoding speed is roughly constant per token",
+        "That the cache size is fixed"
+      ],
+      "answer": 0,
+      "explain": "Evicted tokens are gone; stable perplexity does not mean long-range retrieval works.",
+      "source": "https://arxiv.org/abs/2309.17453"
+    },
+    {
+      "id": "q-inf-inferencecost-1",
+      "node": "inferencecost",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "According to Sardana et al., how does large expected inference demand change the cost-optimal model?",
+      "choices": [
+        "Train a larger model on fewer tokens",
+        "Inference demand does not change the optimum",
+        "Use only mixture-of-experts models",
+        "Train a smaller model on more tokens than Chinchilla-optimal"
+      ],
+      "answer": 3,
+      "explain": "Adding lifetime inference cost to the objective favors smaller models that are cheaper per query, trained longer.",
+      "source": "https://arxiv.org/abs/2401.00448"
+    },
+    {
+      "id": "q-inf-inferencecost-2",
+      "node": "inferencecost",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What did Luccioni et al. find when measuring the energy of 1,000 inferences across model types?",
+      "choices": [
+        "Task-specific models used more energy than general-purpose ones",
+        "All models used about the same energy",
+        "Multi-purpose generative models were orders of magnitude more expensive than task-specific ones, even at matched parameter count",
+        "Energy depended only on parameter count"
+      ],
+      "answer": 2,
+      "explain": "Generality came at a steep energy cost per inference in their comparison.",
+      "source": "https://arxiv.org/abs/2311.16863"
+    },
+    {
+      "id": "q-inf-quantization-1",
+      "node": "quantization",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What problem does LLM.int8 address with its mixed-precision decomposition?",
+      "choices": [
+        "Slow tokenization",
+        "Outlier feature dimensions with large magnitudes that break naive 8-bit quantization",
+        "Vanishing gradients during training",
+        "Too many attention heads"
+      ],
+      "answer": 1,
+      "explain": "It keeps the few outlier dimensions in 16-bit and quantizes the rest to 8-bit.",
+      "source": "https://arxiv.org/abs/2208.07339"
+    },
+    {
+      "id": "q-inf-quantization-2",
+      "node": "quantization",
+      "skill": "optimization",
+      "difficulty": 3,
+      "prompt": "A 4-bit model shows only a 0.1 perplexity increase over FP16. Which conclusion is safest?",
+      "choices": [
+        "The average loss is small, but specific capabilities, long contexts or rare inputs may still degrade and need separate evaluation",
+        "All capabilities are preserved",
+        "The model will be exactly 4× faster at every batch size",
+        "The KV cache is now 4× smaller"
+      ],
+      "answer": 0,
+      "explain": "Averages can hide concentrated damage; speedups need kernels, and weight quantization alone does not shrink the KV cache.",
+      "source": "https://arxiv.org/abs/2210.17323"
+    },
+    {
+      "id": "q-inf-specdecode-1",
+      "node": "specdecode",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "In speculative sampling, a drafted token x is accepted with probability:",
+      "choices": [
+        "q(x)",
+        "p(x) · q(x)",
+        "Always 1 if the draft is greedy",
+        "min(1, p(x)/q(x)), where p is the target and q the draft distribution"
+      ],
+      "answer": 3,
+      "explain": "On rejection, the token is resampled from the normalized residual max(0, p − q); this makes the output exactly distributed as p.",
+      "source": "https://arxiv.org/abs/2211.17192"
+    },
+    {
+      "id": "q-inf-specdecode-2",
+      "node": "specdecode",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "If the draft model in speculative sampling is poorly matched to the target, what happens?",
+      "choices": [
+        "Outputs follow the draft distribution",
+        "The method fails and returns errors",
+        "Outputs still follow the target distribution, but fewer tokens are accepted, so the speedup falls",
+        "Outputs become greedy"
+      ],
+      "answer": 2,
+      "explain": "Exactness holds for any draft under the acceptance rule; only efficiency depends on agreement.",
+      "source": "https://arxiv.org/abs/2302.01318"
+    },
+    {
+      "id": "q-inf-distillation-1",
+      "node": "distillation",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "In Hinton et al.'s distillation, what is a “soft target”?",
+      "choices": [
+        "A label smoothed with uniform noise",
+        "The teacher's output distribution computed with a raised softmax temperature",
+        "A target that the student may ignore",
+        "The average of all training labels"
+      ],
+      "answer": 1,
+      "explain": "Raising the temperature exposes the teacher's relative probabilities over incorrect classes.",
+      "source": "https://arxiv.org/abs/1503.02531"
+    },
+    {
+      "id": "q-inf-distillation-2",
+      "node": "distillation",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Minimizing soft-target cross-entropy H(p_T, q) over student distributions q is equivalent to minimizing:",
+      "choices": [
+        "KL(p_T ‖ q), since H(p_T, q) = H(p_T) + KL(p_T ‖ q) and H(p_T) is fixed",
+        "KL(q ‖ p_T)",
+        "The squared error between logits only",
+        "The entropy of q"
+      ],
+      "answer": 0,
+      "explain": "The teacher's entropy is constant, so cross-entropy and forward KL share their minimizer, q = p_T when the student can represent it.",
+      "source": "https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf"
+    },
+    {
+      "id": "q-inf-pruning-1",
+      "node": "pruning",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What does the lottery-ticket hypothesis claim?",
+      "choices": [
+        "Random pruning always improves accuracy",
+        "Only the largest weights matter at initialization",
+        "Pruned networks never need retraining",
+        "Dense networks contain sparse subnetworks that, reset to their original initialization, train in isolation to comparable accuracy"
+      ],
+      "answer": 3,
+      "explain": "Iterative magnitude pruning found such subnetworks at 10–20% of original size on small vision networks.",
+      "source": "https://arxiv.org/abs/1803.03635"
+    },
+    {
+      "id": "q-inf-pruning-2",
+      "node": "pruning",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "Why does 90% unstructured weight sparsity often give little speedup on a GPU?",
+      "choices": [
+        "Sparse weights use more memory",
+        "GPUs cannot store zeros",
+        "Irregular sparsity does not map to dense matrix hardware without special kernels or hardware support",
+        "Pruning increases FLOPs"
+      ],
+      "answer": 2,
+      "explain": "Structured pruning (channels, heads, layers) or sparse kernels are needed to turn sparsity into speed.",
+      "source": "https://arxiv.org/abs/1912.05671"
+    },
+    {
+      "id": "q-inf-moe-1",
+      "node": "moe",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "In a Switch Transformer layer, each token is processed by:",
+      "choices": [
+        "Every expert, averaged",
+        "One expert selected by a learned router",
+        "A random expert",
+        "The attention layer only"
+      ],
+      "answer": 1,
+      "explain": "Top-1 routing keeps FLOPs per token constant while total parameters grow with the number of experts.",
+      "source": "https://arxiv.org/abs/2101.03961"
+    },
+    {
+      "id": "q-inf-moe-2",
+      "node": "moe",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "A mixture-of-experts model has 8× the parameters of a dense model at the same FLOPs per token. Which cost does NOT stay the same?",
+      "choices": [
+        "Memory to store the weights",
+        "Arithmetic per token",
+        "Number of attention heads",
+        "Vocabulary size"
+      ],
+      "answer": 0,
+      "explain": "All experts must be stored and moved, so memory and communication grow even though per-token FLOPs do not.",
+      "source": "https://arxiv.org/abs/2101.03961"
+    },
+    {
+      "id": "q-inf-lora-1",
+      "node": "lora",
+      "skill": "linear-algebra",
+      "difficulty": 1,
+      "prompt": "What does LoRA train?",
+      "choices": [
+        "All weights at reduced precision",
+        "Only the embedding layer",
+        "A new attention head per layer",
+        "A low-rank update ΔW = BA added to frozen pretrained weights"
+      ],
+      "answer": 3,
+      "explain": "The pretrained weights stay frozen; only the small factors B and A are learned, and they can be merged for inference.",
+      "source": "https://arxiv.org/abs/2106.09685"
+    },
+    {
+      "id": "q-inf-lora-2",
+      "node": "lora",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Biderman et al. compared LoRA with full fine-tuning on code and maths. What did they find?",
+      "choices": [
+        "LoRA matched full fine-tuning everywhere",
+        "LoRA forgot more and learned more",
+        "LoRA learned less on the target domain but forgot less outside it",
+        "Full fine-tuning learned only low-rank updates"
+      ],
+      "answer": 2,
+      "explain": "Full fine-tuning learned updates of 10–100× higher rank than typical LoRA settings.",
+      "source": "https://arxiv.org/abs/2405.09673"
+    },
+    {
+      "id": "q-inf-scalinglaws-1",
+      "node": "scalinglaws",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What did Hoffmann et al. (Chinchilla) conclude about compute-optimal training?",
+      "choices": [
+        "Model size should grow much faster than data",
+        "Parameters and training tokens should be scaled in roughly equal proportion",
+        "Data matters more than parameters at every scale",
+        "Loss stops improving beyond 10B parameters"
+      ],
+      "answer": 1,
+      "explain": "Chinchilla, with 70B parameters and 1.4T tokens, beat the 280B Gopher at the same training compute.",
+      "source": "https://arxiv.org/abs/2203.15556"
+    },
+    {
+      "id": "q-inf-scalinglaws-2",
+      "node": "scalinglaws",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "Why is a “compute-optimal” model not necessarily the cheapest model to deploy?",
+      "choices": [
+        "Compute-optimal counts training FLOPs only; with heavy inference use, a smaller model trained longer can cost less overall",
+        "Scaling laws are exact",
+        "Larger models always run faster",
+        "Compute-optimal models cannot be quantized"
+      ],
+      "answer": 0,
+      "explain": "Inference cost scales with model size and query volume, which the training-only optimum ignores.",
+      "source": "https://arxiv.org/abs/2401.00448"
+    },
+    {
+      "id": "q-inf-testtime-1",
+      "node": "testtime",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "In Snell et al.'s FLOPs-matched comparison, when could test-time compute beat a 14× larger model?",
+      "choices": [
+        "On every problem",
+        "Only on the hardest problems",
+        "Only with greedy decoding",
+        "On problems where the smaller model already had somewhat non-trivial success"
+      ],
+      "answer": 3,
+      "explain": "On the hardest problems, extra pretraining was more effective than test-time search.",
+      "source": "https://arxiv.org/abs/2408.03314"
+    },
+    {
+      "id": "q-inf-testtime-2",
+      "node": "testtime",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "A compressed state has discarded a fact needed to answer a question. What can more test-time compute on that state achieve?",
+      "choices": [
+        "Recover the fact by reasoning longer",
+        "Recover it if best-of-n is used",
+        "Not recover it: processing cannot add information the state lost, though it can extract more from what was kept",
+        "Recover it by lowering temperature"
+      ],
+      "answer": 2,
+      "explain": "Shannon information cannot grow by processing (data processing inequality); computation can raise usable information only from what remains.",
+      "source": "https://arxiv.org/abs/2002.10689"
+    },
+    {
+      "id": "q-inf-bestofn-1",
+      "node": "bestofn",
+      "skill": "rl",
+      "difficulty": 2,
+      "prompt": "What happens to the gold reward as n grows when best-of-n selects against an imperfect proxy reward model?",
+      "choices": [
+        "It rises without limit",
+        "It rises at first, then falls, as selection finds candidates the proxy overrates",
+        "It stays constant",
+        "It falls from the start"
+      ],
+      "answer": 1,
+      "explain": "Gao et al. observed this overoptimization in a synthetic setup with a larger reward model as gold.",
+      "source": "https://arxiv.org/abs/2210.10760"
+    },
+    {
+      "id": "q-inf-bestofn-2",
+      "node": "bestofn",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "The often-quoted KL(best-of-n ‖ reference) = log n − (n−1)/n is, according to Beirami et al.:",
+      "choices": [
+        "An upper bound on the actual KL divergence",
+        "Exact for every reward function",
+        "A lower bound on the actual KL divergence",
+        "Only valid for n = 2"
+      ],
+      "answer": 0,
+      "explain": "They disprove the equality, show it is an upper bound, and propose a tighter estimator.",
+      "source": "https://arxiv.org/abs/2401.01879"
+    },
+    {
+      "id": "q-inf-inferencectl-1",
+      "node": "inferencectl",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "How does Inference-Time Intervention (ITI) change a model's behaviour?",
+      "choices": [
+        "By fine-tuning all weights on truthful data",
+        "By filtering outputs with a separate classifier",
+        "By changing the tokenizer",
+        "By shifting activations along learned directions in a few attention heads during decoding"
+      ],
+      "answer": 3,
+      "explain": "ITI raised Alpaca's TruthfulQA truthfulness from 32.5% to 65.1% without weight updates.",
+      "source": "https://arxiv.org/abs/2306.03341"
+    },
+    {
+      "id": "q-inf-inferencectl-2",
+      "node": "inferencectl",
+      "skill": "control",
+      "difficulty": 3,
+      "prompt": "For the alignment thesis, what must an inference-time correction show before it counts as a correction actuator?",
+      "choices": [
+        "A large effect on one benchmark",
+        "That it needs no labelled data",
+        "That its effect persists, unrelated capabilities hold on independent evaluations, and it sits outside the model's write access",
+        "That it lowers latency"
+      ],
+      "answer": 2,
+      "explain": "The thesis asks for persistent, measured corrections without silent damage to unrelated capability.",
+      "source": "https://arxiv.org/abs/2306.03341"
+    }
+  ]
+}
