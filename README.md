@@ -8,13 +8,13 @@ An interactive 3D map of research topics in learning, signals, physics, control 
 
 ## What it is
 
-The atlas has 188 topics in 9 clusters, joined by 394 recorded connections. The clusters are statistical learning; signals and estimation; neural architectures; physical and generative models; actions and control; theory and learning dynamics; construction and assurance; capable and grounded systems; and deployed agents and high-stakes applications. Each topic window gives a short description, a primary source and notes on what the topic does and does not establish. Each connection is labelled with one of four evidence levels:
+The atlas has 193 topics in 9 clusters, joined by 415 recorded connections. The clusters are statistical learning; signals and estimation; neural architectures; physical and generative models; actions and control; theory and learning dynamics; construction and assurance; capable and grounded systems; and deployed agents and high-stakes applications. Each topic window gives a short description, a primary source and notes on what the topic does and does not establish. Each connection is labelled with one of four evidence levels:
 
 | Label | Count | Meaning |
 |---|---|---|
 | Exact, conditional | 41 | A mathematical identity that holds under stated assumptions (e.g. ridge regression and the Gaussian-process posterior mean under matched noise and prior). |
-| Established | 244 | A well-supported result in the published literature. |
-| Empirical | 46 | Observed in experiments, without a general guarantee. |
+| Established | 252 | A well-supported result in the published literature. |
+| Empirical | 59 | Observed in experiments, without a general guarantee. |
 | Hypothesis | 63 | An untested proposal. Hidden by default. |
 
 Positions group topics by cluster to make them easier to find. **Distance is not evidence.** Two points sitting close together are not thereby related. Only a drawn, labelled connection records a relationship.

@@ -1921,6 +1921,60 @@
     "vlm",
     "selective"
    ]
+  },
+  "marl": {
+   "level": 3,
+   "skills": [
+    "rl",
+    "theory"
+   ],
+   "prereqs": [
+    "rl",
+    "pomdp"
+   ]
+  },
+  "gameeq": {
+   "level": 3,
+   "skills": [
+    "rl",
+    "theory",
+    "optimization"
+   ],
+   "prereqs": [
+    "marl"
+   ]
+  },
+  "multillm": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": [
+    "llm",
+    "toolcall"
+   ]
+  },
+  "mapeval": {
+   "level": 3,
+   "skills": [
+    "rl",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "marl",
+    "agentbench"
+   ]
+  },
+  "agentworm": {
+   "level": 3,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "promptinject",
+    "multillm"
+   ]
   }
  }
 }

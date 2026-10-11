@@ -1,0 +1,581 @@
+{
+ "note": "Connection audit 2026-10-11: math, applications/evals/RL/multi-agent, interpretability/development bridges.",
+ "edge_changes": [
+  {
+   "id": "rel-80c92baa",
+   "expect_text": "Our algebra from the two definitions, checked: −Cov(φ, ℓ_z − L) = −Cov(ℓ_z, φ) + Cov(φ, L). The two coincide up to a shift that does not depend on z only when both use the same localized tempered posterior and observable; for a probe token outside the training set the BIF formula is applied beyond its training-sample definition. Baker et al. note that influence functions are a special case of susceptibilities.",
+   "set": {
+    "type": "exact",
+    "relation": "χ_z(φ) = BIF_γ(z, φ) + Cov(φ, L_n) = BIF_γ(z, φ) − (1/n) Σᵢ BIF_γ(zᵢ, φ)",
+    "text": "Atlas derivation from both papers' definitions; neither paper states it as written. Holds when both are covariances over the same localized posterior ∝ exp(−nβL_n(w) − (γ/2)‖w − w*‖²), with the same observable φ and finite second moments. By Definition 2.5, χ_z = −Cov(φ, ℓ_z − L_n) = −Cov(ℓ_z, φ) + Cov(φ, L_n), and the second term is minus the training-set mean BIF, which does not depend on z. The shift comes from the mixture taking weight from the rest of the data; adding one sample with no reweighting gives the BIF alone (Baker et al., related work). For a probe z outside the training set, use the covariance form, not the derivative for upweighting a training point."
+   },
+   "source": "math",
+   "reason": "The algebra is correct, but the current text calls it 'our algebra', writes z where it means (x,y), and leaves the shift implicit. Writing the shift as minus the mean training-set BIF is exact when L = L_n, and it is the term that Baker et al.'s row standardization removes. With population L as in Def. 2.5, the shift is −E_q[BIF(z′, φ)], which also does not depend on z. Keep `exact`; see susceptibility_bif."
+  },
+  {
+   "id": "thesis-a6c99969",
+   "expect_text": "EnKF estimates covariance by an ensemble; linear dynamics and infinite ensemble size recover the Kalman covariance limit.",
+   "set": {
+    "relation": "ensemble approximation",
+    "text": "The EnKF replaces the Kalman covariance with an ensemble estimate. With linear dynamics, Gaussian errors and perturbed observations (or a deterministic square-root update), the ensemble mean and covariance approach the Kalman filter's as ensemble size grows. Without perturbed observations the analysis covariance is too small; finite ensembles add sampling error."
+   },
+   "source": "math",
+   "reason": "The limit needs perturbed observations or a square-root scheme, the point Evensen (2003) stresses. Without one, even an infinite ensemble underestimates the analysis covariance. That condition was missing."
+  },
+  {
+   "id": "thesis-fbcc6d84",
+   "expect_text": "In the specified no-feedback driven heat-bath setup (Markov system starting in equilibrium), the instantaneous nonpredictive information equals the dissipated work of each driving step in units of kT, and its total lower-bounds the overall dissipation.",
+   "set": {
+    "text": "In the specified no-feedback driven heat-bath setup (Markov system starting in equilibrium), the instantaneous nonpredictive information I_mem(t) − I_pred(t) equals the average work dissipated in each driving step, in units of kT (eq. 14). Its total lower-bounds the overall average dissipation."
+   },
+   "source": "math",
+   "reason": "Eq. 14 of Still et al. is about the dissipated work averaged over states and protocols, not about one realization. The current text drops the word 'average'. The type stays `exact`."
+  },
+  {
+   "id": "rel-70414bb3",
+   "expect_text": "Flat-minimum evidence arguments use log det H; at singular minima the LLC replaces it as the singularity-aware Occam factor.",
+   "set": {
+    "relation": "regular Laplace: F_n = nL_n(ŵ) + (d/2) log(n/2π) + ½ log det H − log φ(ŵ) + o_p(1), H = ∇²L_n(ŵ); undefined when det H = 0",
+    "text": "Flat-minimum evidence arguments use log det H of the per-sample (averaged) loss Hessian. If H were the Hessian of nL_n, the log n term would be counted twice. At singular minima, det H = 0 and the expansion fails; the LLC replaces it as the singularity-aware Occam factor."
+   },
+   "source": "math",
+   "reason": "The current formula keeps ½ log det H but drops the other O(1) terms. It does not say which Hessian is meant, and with the Hessian of the summed loss it double-counts (d/2) log n. This is a precision fix; the type stays `established`."
+  },
+  {
+   "id": "rel-202dc40",
+   "expect_text": "CIRL formalizes a cooperative decision problem with uncertainty about the human reward.",
+   "set": {
+    "type": "established",
+    "relation": "RLHF: learn a reward from comparisons, then optimize it",
+    "text": "Use preference learning when outcomes cannot be checked programmatically but people can compare them: RLHF fits a reward model to human comparisons of trajectory segments and optimizes it with RL; DPO fits the same preference objective without a separate RL loop.",
+    "url": "https://arxiv.org/abs/1706.03741"
+   },
+   "source": "apps",
+   "reason": "Current text describes CIRL, which duplicates thesis-cf022352 (assistance->preference) and does not state how preference learning feeds RL. Christiano et al. (1706.03741) is the canonical preference->RL link; it is already cited in the preference node handle."
+  },
+  {
+   "id": "rel-4d1399d6",
+   "expect_text": "Verifiable-outcome RL improves reasoning performance in the reported R1 training pipeline.",
+   "set": {
+    "type": "empirical",
+    "relation": "RL where the reward is verifiable",
+    "text": "R1-Zero is trained with rule-based accuracy and format rewards on checkable tasks; the authors avoid neural reward models because they found them prone to reward hacking in large-scale RL. Use RL fine-tuning when the reward is verifiable or the reward model has been validated against held-out judgements.",
+    "url": "https://arxiv.org/abs/2501.12948"
+   },
+   "source": "apps",
+   "reason": "Verified in arXiv 2501.12948v1 section 2.2.2: 'We do not apply the outcome or process neural reward model ... because ... the neural reward model may suffer from reward hacking'. This makes the 'RL needs a verifiable reward' decision rule explicit. Current text is correct but omits this. The PMC url is behind a captcha for scripted fetches, so the arXiv url is the more checkable option."
+  },
+  {
+   "id": "rel-2c7e420d",
+   "expect_text": "Patching a grader raises the measured score while the intended task goes undone, the proxy–true ordering reversal analysed for reward misspecification.",
+   "set": {
+    "type": "empirical",
+    "relation": "observed cases consistent with proxy-true reversal",
+    "text": "Patching a grader raises the measured score while the intended task goes undone, consistent with the proxy-true ordering reversal analysed for reward misspecification; METR observes this at evaluation time and only speculates that training instilled it."
+   },
+   "source": "apps",
+   "reason": "The METR blog gives observations (39/128 RE-Bench runs and 8/1087 HCAST runs, verified). It does not establish that these runs are instances of Skalse et al.'s formal policy-set result, and METR says only that the behaviour 'might have been instilled ... by reward hacking in training'. An observed link to a theory is better typed empirical."
+  },
+  {
+   "id": "rel-d3a0ee27",
+   "expect_text": "Preference models sometimes prefer convincingly written sycophantic responses to correct ones, so preference-trained judges can score sycophancy as quality.",
+   "set": {
+    "type": "empirical",
+    "relation": "preference models can reward agreement",
+    "text": "Humans and a preference model sometimes preferred convincingly written sycophantic responses to correct ones, and optimizing against the preference model sometimes traded truthfulness for sycophancy. LLM judges scoring helpfulness by preference may inherit this; calibrate them against ground-truth items."
+   },
+   "source": "apps",
+   "reason": "Sharma et al. (2310.13548) test preference models (PMs), not LLM-as-a-judge prompts. The current phrase 'preference-trained judges' extends the finding without saying so."
+  },
+  {
+   "id": "rel-6f3b1d0d",
+   "expect_text": "Agents that exploit one-day vulnerabilities (87% of 15 with the CVE description, 7% without) need isolated, scope-limited environments.",
+   "set": {
+    "type": "empirical",
+    "relation": "dual-use exploit capability motivates scoped execution",
+    "text": "A GPT-4 agent exploited 87% of 15 one-day vulnerabilities given the CVE description (7% without; 0% for the other models and scanners tested). The paper raises deployment concerns; isolating such agents is the atlas's design inference, not a result of the paper."
+   },
+   "source": "apps",
+   "reason": "Numbers verified against the 2404.08144 abstract, but they apply to GPT-4 only. The paper does not study or require sandboxing, so 'established ... requires' overstates it."
+  },
+  {
+   "id": "rel-8fa0c1dc",
+   "expect_text": "When outcomes cannot be checked programmatically, agent evals fall back on model judges and inherit their biases; τ-bench avoids this by comparing final database states.",
+   "set": {
+    "type": "established",
+    "relation": "model graders where end states cannot be checked",
+    "text": "When outcomes cannot be checked programmatically, agent evals fall back on model judges and inherit their biases. tau-bench grades by comparing the final database with an annotated goal state, but still relies on an LLM-simulated user, so the model dependence moves rather than disappears."
+   },
+   "source": "apps",
+   "reason": "Verified: tau-bench grades database states, but the users are simulated by language models (2406.12045 abstract). 'Avoids this' overstates."
+  },
+  {
+   "id": "rel-9087f715",
+   "expect_text": "SOTIF targets functions built on complex sensors and algorithms; valid VLA action tokens still need hazard analysis and risk reduction around them.",
+   "set": {
+    "type": "hypothesis",
+    "relation": "standards do not certify learned policies (by analogy)",
+    "text": "Proposed: SOTIF (ISO 21448) addresses road-vehicle functions built on complex sensors and algorithms; applying its triggering-condition analysis to VLA robot policies is an extrapolation. Valid action tokens still need hazard analysis and risk reduction around them."
+   },
+   "source": "apps",
+   "reason": "ISO 21448:2022 is scoped to road vehicles. Using it for VLA robots is a design proposal, not documented practice. iso.org returned 403 to scripted fetch, so this rests on the standard's published title."
+  },
+  {
+   "id": "rel-1ab30d51",
+   "expect_text": "Proposal: treat the response matrix as an input/output identification problem and its numerical rank as a model-order estimate. Untested; χ is a static posterior response, not a dynamical system.",
+   "set": {
+    "type": "hypothesis",
+    "relation": "static gain-matrix rank selection",
+    "text": "Proposal, untested: the shared math is only low-rank estimation of a noisy static input–output matrix, as in the PCA of χ. Use noise-floor rank-selection rules on the response matrix and check whether the selected rank matches ablation-confirmed modules. χ has no dynamics, so Hankel or model-order tools do not apply."
+   },
+   "source": "interp",
+   "reason": "The current text renames what Baker et al. already did (PCA of χ) in system-identification terms and calls the rank a \"model order\", which implies dynamics χ lacks. The narrower statement keeps the one real overlap and gives a checkable test."
+  },
+  {
+   "id": "rel-f1f2511e",
+   "expect_text": "Treat a training intervention as both changing a model and learning its response; validate the response model before calling this dual control.",
+   "set": {
+    "type": "hypothesis",
+    "relation": "analogy; closed- vs open-loop patterning",
+    "text": "Proposal, untested: dual control is an analogy here. One concrete test: re-estimate susceptibilities between reweighting rounds (closed loop) and compare against a schedule fixed from the first estimate (open loop), at equal total compute including sampling."
+   },
+   "source": "interp",
+   "reason": "Loose analogy with no source. Its test (\"validate the response model\") was not operational. It is kept as a labelled hypothesis because patterning supplies the measurable ingredients."
+  },
+  {
+   "id": "rel-7c0471e3",
+   "expect_text": "Training-stage measures might predict which curriculum intervention improves capability and correction. Prospective baseline comparisons are required.",
+   "set": {
+    "type": "hypothesis",
+    "relation": "proposed connection",
+    "text": "Proposal, untested at LLM scale: stage measures taken at early checkpoints might pick curriculum interventions that improve later capability and correction. The nearest evidence is patterning in small transformers. Compare against validation-loss-based selection."
+   },
+   "source": "interp",
+   "reason": "The text lacked an explicit untested label and did not name the nearest evidence. It is otherwise a fair hypothesis."
+  },
+  {
+   "id": "rel-fd637e17",
+   "expect_text": "Test whether intervention-aware training predicts and improves held-out capability and correction, rather than merely labeling stages afterward.",
+   "set": {
+    "type": "hypothesis",
+    "relation": "construction proposal",
+    "text": "Proposal, untested: check whether intervention-aware training predicts and improves held-out capability and correction in LLMs, not just labels stages afterward. Existing interventions (patterning, preference-data shaping) are small-model or single-behavior results."
+   },
+   "source": "interp",
+   "reason": "Add the untested label and scope. It largely overlaps llm-development, and merging the two is an option."
+  },
+  {
+   "id": "rel-b9562f44",
+   "expect_text": "The author’s research biography links his dynamical-systems background and later SLT agenda; no equivalence theorem is asserted.",
+   "set": {
+    "type": "established",
+    "relation": "biographical lineage",
+    "text": "Biographical lineage only: the same author wrote the random-network ergodic-theory thesis before co-founding the SLT-for-safety agenda at Timaeus. No technical result carries over."
+   },
+   "source": "interp",
+   "reason": "The connection is real, but it is biographical, not technical. The source lists statistical physics, not a dynamical-systems-to-SLT argument, so the narrower wording avoids implying a technical bridge."
+  },
+  {
+   "id": "rel-d211ad0d",
+   "expect_text": "K-means on per-head curves recovers the functional partition in a two-layer attention-only transformer; a weight- and data-refined LLC on code separates the two induction heads.",
+   "set": {
+    "relation": "weight-refined λ̂(t) clusters heads: previous-token, induction, multigram",
+    "text": "K-means on per-head curves recovers the functional partition in a two-layer attention-only transformer; ablations confirm head types. The data-refined LLC on code suggests one induction head is partly specialized to code."
+   },
+   "source": "interp",
+   "reason": "The source says one induction head \"appears partly specialized to code\", not that the LLC cleanly separates the two heads, and validation used ablations."
+  },
+  {
+   "id": "rel-5d3dab9e",
+   "expect_text": "Proposed: rank preference pairs by alignment with a sycophancy probe and filter, as probe-based attribution did for harmful-distractor compliance; measure the change in answer-flip rate.",
+   "set": {
+    "type": "hypothesis",
+    "relation": "attributing sycophancy to preference examples",
+    "text": "Proposal, untested: rank preference pairs by alignment with a sycophancy probe and filter, as probe-based attribution did for harmful-distractor compliance; measure the change in answer-flip rate. Related concept-level shaping of physics sycophancy gave only partial, non-significant recovery."
+   },
+   "source": "interp",
+   "reason": "A fair, concrete hypothesis. Add the untested label and the relevant measured result so it does not read as a likely win."
+  }
+ ],
+ "edge_deletes": [
+  {
+   "id": "rel-a39e3bb7",
+   "reason": "Anti-edge: asserts that a Hankel spectrum and the LLC are different objects and cites no paper, shared math or measurement linking them. The slt node text already guards against this conflation. The \"test joint predictive value\" clause names no system or observable."
+  },
+  {
+   "id": "cap-patterning-hankel",
+   "reason": "Same non-connection as hankel-llc. No source applies Hankel or I/O-mode analysis to patterning responses. The edge exists only to say \"do not identify these\", which a node boundary already covers."
+  },
+  {
+   "id": "rel-4e743f29",
+   "reason": "A vague hypothesis to the generic control node (\"later closed-loop utility\") with no concrete test. It is superseded by a real, source-backed LLC-RL result (Elliott, Urdshals, Quarel, Farrugia-Roberts, Murfet 2026, arXiv 2601.07524). Replaced by the added llc-rl edge below."
+  }
+ ],
+ "node_changes": [
+  {
+   "id": "featurerewards",
+   "field": "boundary",
+   "expect": "The headline 58% hallucination reduction includes intervention and best-of-32 selection. It is not a training-only gain, and full probe-construction cost must be counted. [Scope](https://www.goodfire.com/research/rlfr)",
+   "value": "The headline 58% hallucination reduction includes inline intervention and best-of-32 selection; policy-only reduction is about 10% of the total, and removing interventions leaves 31%. Probes distill Gemini 2.5 plus web-search labels, so probe-construction cost must be counted. [Scope](https://www.goodfire.com/research/rlfr)",
+   "reason": "The current boundary is accurate but omits the decomposition that makes the training-only gain concrete (10% policy reduction, 35% in-context, 12.5% direct). The text and handle do not overclaim; 360 vs 3-5 steps for a roughly $2.5k budget is verified."
+  },
+  {
+   "id": "probeattr",
+   "field": "boundary",
+   "expect": "A targeted correction and ranking-cost reduction are not proof of more general capability or end-to-end compute efficiency. [Scope](https://www.goodfire.com/research/probe-based-data-attribution)",
+   "value": "One emergent behavior in OLMo 2 7B DPO, scored by a GPT-5-mini judge on 120 prompts. A targeted correction and ranking-cost reduction are not proof of general capability or end-to-end compute efficiency; probe construction used 150 Grok-4-generated prompts. [Scope](https://www.goodfire.com/research/probe-based-data-attribution)",
+   "reason": "The text and handle are verified (63% at top-30k filtering; 12 vs 128 H100-hours, excluding probe build). Adding the single-behavior, single-model, LLM-judge scope prevents over-reading. No overclaim found."
+  }
+ ],
+ "new_nodes": [
+  {
+   "id": "marl",
+   "name": "Multi-agent RL & centralized training, decentralized execution",
+   "group": "Actions & control",
+   "authors": "Ryan Lowe · Yi Wu · Aviv Tamar · Jean Harb · Pieter Abbeel · Igor Mordatch; Chao Yu · Akash Velu · Eugene Vinitsky et al.",
+   "year": "2017 / 2021 (NeurIPS 2022)",
+   "text": "Several learners act in a shared environment, so each agent's environment includes the others' changing policies. Centralized training with decentralized execution (CTDE) trains with shared information and acts on local observations.",
+   "url": "https://arxiv.org/abs/1706.02275",
+   "sourceLabel": null,
+   "kind": "topic",
+   "guide": null,
+   "handle": "MADDPG trains each agent with a critic that sees all agents' actions, while actors use only local observations ([Lowe et al.](https://arxiv.org/abs/1706.02275)). MAPPO, which is PPO with a centralized value function, was competitive with or better than off-policy baselines on particle worlds, SMAC, Google Research Football and Hanabi with little tuning ([Yu et al.](https://arxiv.org/abs/2103.01955)).",
+   "boundary": "Single-agent guarantees do not carry over. Other learners make the environment non-stationary ([Lowe et al.](https://arxiv.org/abs/1706.02275)), and exact finite-horizon decentralized planning is NEXP-complete even for two agents ([Bernstein et al.](https://arxiv.org/abs/1301.3836)). Return against training partners does not show behaviour with new partners ([Lanctot et al.](https://arxiv.org/abs/1711.00832)).",
+   "test": "Train several seeds, then cross-play agents from different runs and against held-out partners. Report the self-play versus cross-play return gap alongside constraint violations."
+  },
+  {
+   "id": "gameeq",
+   "name": "Game-theoretic equilibria & population training",
+   "group": "Actions & control",
+   "authors": "Yoav Shoham · Kevin Leyton-Brown; Marc Lanctot · Vinicius Zambaldi · Audrunas Gruslys et al.",
+   "year": "2009 / 2017",
+   "text": "A solution concept, such as Nash or correlated equilibrium, defines which joint policy counts as stable when each agent optimizes its own payoff. Population methods approximate one through repeated best responses.",
+   "url": "http://www.masfoundations.org/",
+   "sourceLabel": null,
+   "kind": "topic",
+   "guide": null,
+   "handle": "At a Nash equilibrium no player gains by deviating alone. Finding a sample Nash equilibrium of a general-sum finite game is PPAD-complete, while correlated equilibria can be computed by linear programming ([Shoham and Leyton-Brown](http://www.masfoundations.org/)). PSRO trains approximate best responses to mixtures of earlier policies and picks meta-strategies by empirical game-theoretic analysis ([Lanctot et al.](https://arxiv.org/abs/1711.00832)).",
+   "boundary": "An equilibrium is stable, not necessarily good. It need not maximize welfare or match the principal's intent, and general-sum games can have many equilibria. Empirical game analysis covers only the policies in the population ([Lanctot et al.](https://arxiv.org/abs/1711.00832)).",
+   "test": "Measure exploitability, the best-response gain against the trained population, and compare welfare at the equilibrium found with the cooperative optimum."
+  },
+  {
+   "id": "mapeval",
+   "name": "Multi-agent evaluation with held-out co-players",
+   "group": "Deployed agents & high-stakes applications",
+   "authors": "Joel Z. Leibo · Edgar Duéñez-Guzmán · Alexander Sasha Vezhnevets et al.; Allan Dafoe · Edward Hughes · Yoram Bachrach et al.",
+   "year": "2021 / 2020",
+   "text": "Score agents by how they perform alongside co-players they never trained with, in cooperative, competitive and mixed-motive scenarios.",
+   "url": "https://arxiv.org/abs/2107.06857",
+   "sourceLabel": null,
+   "kind": "topic",
+   "guide": null,
+   "handle": "Melting Pot pairs a substrate with a pre-trained background population used only for evaluation. Its 80+ scenarios include social dilemmas, reciprocity and resource sharing, and it reveals weaknesses that training performance hides ([Leibo et al.](https://arxiv.org/abs/2107.06857)). Cooperative AI treats such joint-welfare problems as a research target ([Dafoe et al.](https://arxiv.org/abs/2012.08630)).",
+   "boundary": "Generalization is measured only against the background populations that were built. Real counterparties, humans and markets of LLM agents are not covered, and a scenario score is not a welfare guarantee. [Scope](https://arxiv.org/abs/2107.06857)",
+   "test": "Hold out co-player populations, and for LLM agents hold out counterpart models and prompts. Report focal return and group welfare per scenario, with uncertainty over seeds and co-players."
+  },
+  {
+   "id": "multillm",
+   "name": "Multi-agent LLM systems & failure modes",
+   "group": "Deployed agents & high-stakes applications",
+   "authors": "Mert Cemri · Melissa Z. Pan · Shuyi Yang et al.; Yilun Du · Shuang Li · Antonio Torralba · Joshua B. Tenenbaum · Igor Mordatch; Andries Smit et al.",
+   "year": "2025 / 2023",
+   "text": "Several role-assigned LLM agents exchange messages to plan, critique, debate or split a task. Gains over a single agent are not automatic, and new failures arise between agents.",
+   "url": "https://arxiv.org/abs/2503.13657",
+   "sourceLabel": null,
+   "kind": "topic",
+   "guide": null,
+   "handle": "Multiagent debate improved reported math, strategy and factuality scores ([Du et al.](https://arxiv.org/abs/2305.14325)). MAST sorts 1,600+ annotated traces from 7 frameworks into 14 failure modes in three categories, validated with kappa = 0.88: system design, inter-agent misalignment and task verification ([Cemri et al.](https://arxiv.org/abs/2503.13657)).",
+   "boundary": "Multi-agent systems often gain little on benchmarks ([Cemri et al.](https://arxiv.org/abs/2503.13657)). In one comparison, untuned debate did not reliably beat self-consistency or ensembling ([Smit et al.](https://arxiv.org/abs/2311.17371)). These protocols carry no equilibrium or correctness guarantee.",
+   "test": "Compare against a single agent and self-consistency at matched tokens. Tag failed traces by MAST category with a human-audited judge, then inject one faulty or compromised agent and measure how far the fault propagates."
+  },
+  {
+   "id": "agentworm",
+   "name": "Agent-to-agent prompt-injection propagation",
+   "group": "Deployed agents & high-stakes applications",
+   "authors": "Stav Cohen · Ron Bitton · Ben Nassi; Donghyun Lee · Mo Tiwari",
+   "year": "2024",
+   "text": "A self-replicating prompt makes each compromised assistant or agent pass the injection to the next, through shared retrieval stores or inter-agent messages.",
+   "url": "https://arxiv.org/abs/2410.07283",
+   "sourceLabel": null,
+   "kind": "topic",
+   "guide": null,
+   "handle": "Morris II chains indirect injections through RAG-connected email assistants and extracts data across hops ([Cohen et al.](https://arxiv.org/abs/2403.02817)). Prompt Infection spreads from one LLM to the next inside multi-agent systems, even when agents do not share all communications ([Lee and Tiwari](https://arxiv.org/abs/2410.07283)).",
+   "boundary": "These are researcher-built testbeds. Neither LLM Tagging nor traditional defenses alone stop propagation, and how often this happens in deployed agent networks has not been measured ([Lee and Tiwari](https://arxiv.org/abs/2410.07283)).",
+   "test": "Seed one agent with a self-replicating payload. Measure hop count, the fraction of agents compromised and the data exfiltrated, with and without message tagging and capability-scoped tools."
+  }
+ ],
+ "new_edges": [
+  {
+   "id": "rel-f2e7b0ce",
+   "a": "llc",
+   "b": "rl",
+   "type": "empirical",
+   "relation": "regret-landscape LLC; \"opposing staircases\"",
+   "text": "SLT extended to RL: the concentration of a generalized posterior over policies is governed by the LLC of the regret function. In one gridworld, SGD training moves through stages where regret drops sharply while λ̂ rises. Theory plus a single-environment test; transfer to closed-loop control utility is untested.",
+   "url": "https://arxiv.org/abs/2601.07524"
+  },
+  {
+   "id": "rel-e2b40f74",
+   "a": "sycophancy",
+   "b": "predictivedata",
+   "type": "empirical",
+   "relation": "measured, partial mitigation",
+   "text": "Preference-data concept analysis flagged physics-query sycophancy that DPO on Dolci amplifies in Llama-3.1-8B. The best training intervention reduced it on average, but recovery was partial and not statistically reliable; only link hallucination recovered reliably.",
+   "url": "https://arxiv.org/html/2606.12360v1"
+  },
+  {
+   "id": "rel-aa97dc2b",
+   "a": "llmjudge",
+   "b": "rewardhack",
+   "type": "empirical",
+   "relation": "a grader used as a reward is overoptimized",
+   "text": "Measure with a judge; optimize against it and Goodhart applies. In a synthetic-gold setup, gold reward-model score follows a different functional form under RL and under best-of-n optimization against a proxy reward model, and too much optimization hurts gold performance. Keep an independent grader held out whenever a judge becomes a reward.",
+   "url": "https://arxiv.org/abs/2210.10760"
+  },
+  {
+   "id": "rel-57ab1301",
+   "a": "llmjudge",
+   "b": "selective",
+   "type": "established",
+   "relation": "calibrate judges against humans and abstain when unsure",
+   "text": "Selective evaluation trusts a judge only when its calibrated confidence clears a threshold and escalates otherwise, giving a provable human-agreement level: over 80% agreement at almost 80% coverage on a Chatbot Arena subset where GPT-4 alone almost never reaches 80%.",
+   "url": "https://arxiv.org/abs/2407.18370"
+  },
+  {
+   "id": "rel-1e5acea5",
+   "a": "llmjudge",
+   "b": "preference",
+   "type": "empirical",
+   "relation": "AI feedback as preference labels",
+   "text": "RLAIF trains the reward model on LLM-labeled preferences and matched RLHF on summarization and dialogue tasks. Use it when human labels are the bottleneck; the reward then inherits the judge's biases.",
+   "url": "https://arxiv.org/abs/2309.00267"
+  },
+  {
+   "id": "rel-922e0ca0",
+   "a": "agentbench",
+   "b": "rl",
+   "type": "empirical",
+   "relation": "executable checks as training signal, on held-out repositories",
+   "text": "SWE-Gym's 2,438 tasks with executable unit tests supply a test-passing reward for rejection-sampling fine-tuning, giving up to 19% absolute gains on SWE-bench. Its repositories are kept separate from SWE-bench's to avoid contamination: train on one environment, report on another.",
+   "url": "https://arxiv.org/abs/2412.21139"
+  },
+  {
+   "id": "rel-2fbee565",
+   "a": "agentbench",
+   "b": "bootstrap",
+   "type": "established",
+   "relation": "repeated trials for reliability",
+   "text": "pass^k, the chance that all k i.i.d. trials succeed averaged over tasks, has an unbiased estimate E_task[C(c,k)/C(n,k)] from n trials with c successes. Report it with uncertainty over tasks, the sampling unit, rather than single-trial pass rates.",
+   "url": "https://arxiv.org/abs/2406.12045"
+  },
+  {
+   "id": "rel-5d0619be",
+   "a": "agentbench",
+   "b": "guardrail",
+   "type": "established",
+   "relation": "offline evals versus online monitoring",
+   "text": "A pre-deployment score estimates risk on a fixed task distribution. Deployed models meet shifts, some benign and some harmful, so track risk sequentially as labels arrive and intervene only on harmful shift.",
+   "url": "https://arxiv.org/abs/2110.06177"
+  },
+  {
+   "id": "rel-2e703bb9",
+   "a": "aigovern",
+   "b": "guardrail",
+   "type": "established",
+   "relation": "mandated post-market monitoring",
+   "text": "Article 72 requires providers of high-risk AI systems to run a post-market monitoring system that actively and systematically collects, documents and analyses performance data throughout the system's lifetime.",
+   "url": "https://artificialintelligenceact.eu/article/72/"
+  },
+  {
+   "id": "rel-79834248",
+   "a": "marl",
+   "b": "rl",
+   "type": "established",
+   "relation": "other learners make the environment non-stationary",
+   "text": "Q-learning faces non-stationarity and policy-gradient variance grows with the number of agents; MADDPG's centralized critics condition on other agents' actions during training, while execution stays decentralized.",
+   "url": "https://arxiv.org/abs/1706.02275"
+  },
+  {
+   "id": "rel-ae7db498",
+   "a": "marl",
+   "b": "ppo",
+   "type": "empirical",
+   "relation": "PPO with a centralized value function",
+   "text": "MAPPO achieved competitive or superior results to off-policy methods on particle worlds, SMAC, Google Research Football and Hanabi with minimal tuning, in cooperative settings.",
+   "url": "https://arxiv.org/abs/2103.01955"
+  },
+  {
+   "id": "rel-a9a29082",
+   "a": "marl",
+   "b": "pomdp",
+   "type": "established",
+   "relation": "decentralized POMDPs are harder than POMDPs",
+   "text": "Finite-horizon decentralized MDPs and POMDPs are NEXP-complete even for small numbers of agents, so decentralized planning does not reduce to centralized belief-state planning.",
+   "url": "https://arxiv.org/abs/1301.3836"
+  },
+  {
+   "id": "rel-c96edfe1",
+   "a": "gameeq",
+   "b": "marl",
+   "type": "established",
+   "relation": "best responses to populations rather than to one partner",
+   "text": "Independent RL can overfit to co-trained partners, measured by joint-policy correlation; PSRO trains best responses to policy mixtures and generalizes independent RL, iterated best response, double oracle and fictitious play.",
+   "url": "https://arxiv.org/abs/1711.00832"
+  },
+  {
+   "id": "rel-2eee4dcb",
+   "a": "gameeq",
+   "b": "assistance",
+   "type": "established",
+   "relation": "assistance as a cooperative game",
+   "text": "CIRL is a cooperative, partial-information game between human and robot in which both are rewarded by the human's reward function and only the human knows it initially.",
+   "url": "https://arxiv.org/abs/1606.03137"
+  },
+  {
+   "id": "rel-6ffadfa6",
+   "a": "oversight",
+   "b": "gameeq",
+   "type": "established",
+   "relation": "debate as a zero-sum game",
+   "text": "Debate trains agents by self-play on a zero-sum game judged by a human. By complexity-theoretic analogy, optimal play answers PSPACE questions with polynomial-time judges, but whether real debates reach that play is empirical.",
+   "url": "https://arxiv.org/abs/1805.00899"
+  },
+  {
+   "id": "rel-71dfcf32",
+   "a": "multillm",
+   "b": "oversight",
+   "type": "empirical",
+   "relation": "LLM debate helps weaker judges",
+   "text": "With two expert LLMs debating, non-expert judges reached 76% accuracy (models) and 88% (humans), against 48% and 60% naive baselines, on information-asymmetric reading-comprehension questions. Making debaters more persuasive improved judge accuracy.",
+   "url": "https://arxiv.org/abs/2402.06782"
+  },
+  {
+   "id": "rel-1ba46b31",
+   "a": "multillm",
+   "b": "agentbench",
+   "type": "empirical",
+   "relation": "benchmark multi-agent systems against single-agent baselines",
+   "text": "Multi-agent LLM systems often gain little on popular benchmarks; MAST's task-verification failures mean end-state checks and matched-compute single-agent baselines are needed before adding agents.",
+   "url": "https://arxiv.org/abs/2503.13657"
+  },
+  {
+   "id": "rel-366cb45e",
+   "a": "multillm",
+   "b": "llmjudge",
+   "type": "empirical",
+   "relation": "a judge validated against human annotation",
+   "text": "MAST scales failure annotation with an LLM-as-a-judge pipeline after checking its agreement with expert human annotations, the calibration step a judge needs before it replaces humans.",
+   "url": "https://arxiv.org/abs/2503.13657"
+  },
+  {
+   "id": "rel-ed2ad578",
+   "a": "mapeval",
+   "b": "marl",
+   "type": "established",
+   "relation": "evaluate against held-out populations",
+   "text": "Melting Pot tests MARL agents against background populations used only for evaluation, revealing weaknesses not apparent from training performance alone.",
+   "url": "https://arxiv.org/abs/2107.06857"
+  },
+  {
+   "id": "rel-c4f8fba8",
+   "a": "mapeval",
+   "b": "multillm",
+   "type": "hypothesis",
+   "relation": "held-out counterpart agents for LLM systems",
+   "text": "Proposed: evaluate multi-agent LLM systems with held-out counterpart models and prompts, as Melting Pot holds out co-players. Single-environment pass^k does not test robustness to new partners.",
+   "url": "https://arxiv.org/abs/2107.06857"
+  },
+  {
+   "id": "rel-762b1aa7",
+   "a": "agentworm",
+   "b": "promptinject",
+   "type": "established",
+   "relation": "indirect injection that self-replicates",
+   "text": "An adversarial self-replicating prompt triggers a cascade of indirect injections across RAG-connected assistants, each compromising the retrieval store of the next.",
+   "url": "https://arxiv.org/abs/2403.02817"
+  },
+  {
+   "id": "rel-43875211",
+   "a": "agentworm",
+   "b": "multillm",
+   "type": "empirical",
+   "relation": "LLM-to-LLM infection inside multi-agent systems",
+   "text": "Prompt Infection propagates between agents even when they do not share all communications. LLM Tagging combined with existing safeguards mitigated spread, but neither alone sufficed.",
+   "url": "https://arxiv.org/abs/2410.07283"
+  },
+  {
+   "id": "rel-b5a8d503",
+   "a": "agentworm",
+   "b": "agentsec",
+   "type": "hypothesis",
+   "relation": "treat other agents' messages as untrusted data",
+   "text": "Proposed: apply CaMeL-style control/data-flow separation to inter-agent messages, so a compromised agent's output cannot choose another agent's tool calls. CaMeL is evaluated on single-agent AgentDojo, not on multi-agent pipelines.",
+   "url": "https://arxiv.org/abs/2503.18813"
+  },
+  {
+   "id": "rel-46ef4b80",
+   "a": "agentworm",
+   "b": "guardrail",
+   "type": "empirical",
+   "relation": "a propagation detector",
+   "text": "The Virtual Donkey guardrail detected Morris II propagation with a true-positive rate of 1.0 and a false-positive rate of 0.015 in the authors' email-assistant testbed, including out-of-distribution worm variants.",
+   "url": "https://arxiv.org/abs/2403.02817"
+  }
+ ],
+ "node_meta": {
+  "marl": {
+   "level": 3,
+   "skills": [
+    "rl",
+    "theory"
+   ],
+   "prereqs": [
+    "rl",
+    "pomdp"
+   ]
+  },
+  "gameeq": {
+   "level": 3,
+   "skills": [
+    "rl",
+    "theory",
+    "optimization"
+   ],
+   "prereqs": [
+    "marl"
+   ]
+  },
+  "multillm": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": [
+    "llm",
+    "toolcall"
+   ]
+  },
+  "mapeval": {
+   "level": 3,
+   "skills": [
+    "rl",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "marl",
+    "agentbench"
+   ]
+  },
+  "agentworm": {
+   "level": 3,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "promptinject",
+    "multillm"
+   ]
+  }
+ }
+}
