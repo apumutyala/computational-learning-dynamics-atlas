@@ -27,7 +27,7 @@ Positions group topics by cluster to make them easier to find. **Distance is not
 2. **Quick check:** an adaptive set of about 8–12 multiple-choice questions. It picks each question from what it has learned about you so far and stops early once it is confident. "I don't know" is always an option.
 3. **Results:** estimated mastery per skill, plus recommended paths with a suggested starting step.
 
-There are 21 curated paths, such as *From regression to Gaussian processes*. A path opens as a step-by-step view on the 3D map. Each step has an objective, a reason it follows the previous step, the connection that links them, a short checkpoint quiz and a "Mark done" toggle. **Paths** in the top bar lists every path whether or not you took the assessment.
+There are 24 curated paths, such as *From regression to Gaussian processes*. A path opens as a step-by-step view on the 3D map. Each step has an objective, a reason it follows the previous step, the connection that links them, a short checkpoint quiz and a "Mark done" toggle. **Paths** in the top bar lists every path whether or not you took the assessment.
 
 Everything runs in your browser. There is no account and no server, and nothing is sent anywhere. Progress is stored in `localStorage` (key `atlas.learn.v1`). **Reset progress** clears it.
 
@@ -99,7 +99,7 @@ To **add a question bank**:
 2. Add the filename to the `questions` list in `learning/index.json`. The site loads only the banks listed there.
 3. Run the validator.
 
-The current banks hold 536 items (178 + 174 + 11 + 32 + 63 + 52 + 26).
+The current banks hold 610 items (178 + 174 + 11 + 32 + 63 + 74 + 52 + 26).
 
 ## Optional AI chat backend
 
