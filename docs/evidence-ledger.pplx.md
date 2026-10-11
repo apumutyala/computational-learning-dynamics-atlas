@@ -18,9 +18,6 @@ The following sources were read for the Structure-Informed Capability Learning e
 | [LRU, Orvieto et al.](https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf) | Architecture, long-sequence results, and per-step throughput comparisons. |
 | [Structured mechanics comparison, Zhong et al.](https://proceedings.mlr.press/v144/zhong21a/zhong21a.pdf) | Physical structure, constraints, formulations, and data-regime comparisons. |
 | [μTransfer, Yang and collaborators](https://www.microsoft.com/en-us/research/publication/tuning-large-neural-networks-via-zero-shot-hyperparameter-transfer/) | Publication summary of small-to-large hyperparameter transfer and tuning-cost claims. |
-| [Typed-control Item 4](https://github.com/apumutyala/chl-typed-control/issues/1#issuecomment-5925146688) | Named forward-response experiment; estimator scores and sampling qualifications. Reviewed through the connected GitHub service. |
-| [State-Space-Decision-Model PR 215](https://github.com/apumutyala/State-Space-Decision-Model/pull/215) | Named qualification-infrastructure change, not a learned-capability result. Reviewed through the connected GitHub service. |
-| [Structured-models project brief](https://github.com/apumutyala/chl-structured-models/issues/1) | Construction-from-initialization objective, not a benchmark result. Reviewed through the connected GitHub service. |
 
 The capability-learning extension produced 108 nodes and 198 typed relationships, with full endpoint and ID validation. All-edge topology is connected; hiding hypotheses leaves five components, including four isolated records, which indicates missing reviewed non-hypothesis paths rather than scientific independence.
 

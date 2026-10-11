@@ -100,21 +100,9 @@ Hankel singular values concern an input/output dynamical operator and jointly re
 
 For the atlas, the proposed bridge is to identify a local training-response model from actual perturbations, validate it prospectively, and then ask whether its finite-horizon controllability or observability analysis adds predictive value. A fixed stationary linear plant cannot simply be assumed for a learning process whose parameters, optimizer state, and data distribution all change.
 
-## Connection to our existing work
+## Structural comparison points
 
-### Typed-control is already a forward-response benchmark
-
-The recorded Item 4 test in `chl-typed-control` evaluates prediction of data-reweighting effects for Qwen3-1.7B LoRA across 40 reweightings and four seeds; its median linear datamodeling score, measuring rank agreement between predicted and observed changes across seven observables, is 0.72 for gradient alignment, versus −0.14 for the tested GGN influence estimate and 0.05 for the tested empirical Fisher estimate ([Item 4 report](https://github.com/apumutyala/chl-typed-control/issues/1#issuecomment-5925146688)). The SGLD estimate is inconclusive, with score 0.03 and insufficient sampling/convergence evidence; that result does not refute SLT or Patterning in general ([same report](https://github.com/apumutyala/chl-typed-control/issues/1#issuecomment-5925146688)).
-
-This connects directly to the question Goodfire and Patterning ask: can a measurement predict what a training intervention will do? The existing result is forward prediction, not yet inverse control that chooses an intervention and reliably produces a new capability ([Item 4 scope](https://github.com/apumutyala/chl-typed-control/issues/1#issuecomment-5925146688)).
-
-### State-space construction needs a qualified learned result
-
-The reviewed State-Space-Decision-Model PR prepares L0–L4 qualification gates for native RWKV7 parents, including capability, retention, and intervention controls; that PR is infrastructure/readiness evidence, not a qualified learned-capability result ([PR 215](https://github.com/apumutyala/State-Space-Decision-Model/pull/215)). Its final-hidden-feature interventions also do not establish control of recurrent memory ([PR 215](https://github.com/apumutyala/State-Space-Decision-Model/pull/215)).
-
-I recommend using HiPPO/LRU as explicit structural comparison points, rather than treating any attention-free network as inherently interpretable or controllable. The structured-models track already specifies construction through architecture and training from initialization, distinct from retrofitting controls onto a finished black box ([project brief](https://github.com/apumutyala/chl-structured-models/issues/1)).
-
-Repository observations above are bounded to the named report and PR reviewed for this extension. They do not certify every later commit, branch, experiment, or current repository state.
+I recommend using HiPPO/LRU as explicit structural comparison points, rather than treating any attention-free network as inherently interpretable or controllable.
 
 ## Decisive experiment: capability acquisition and retention at equal total cost
 
@@ -127,7 +115,7 @@ This is an original proposal, not an experiment run for this atlas. It tests con
 - **Budget:** count training, tuning, failed runs, measurement, probe construction, labels, and inference-time selection separately and in total. Report wall-clock and hardware as well as estimated FLOPs.
 - **Decision rule:** require a reproducible improvement in time or total cost to a prespecified capability-and-retention threshold. A faster step, better probe fit, or smaller training loss alone does not pass.
 
-The most defensible initial comparison is therefore **structural architecture priors × cheap response-aware training**, with more expensive developmental measurements earning their place through incremental predictive and intervention value. This recommendation follows from the combination of published structural results and the current typed-control baseline, rather than presuming a universal theory of intelligence or alignment ([LRU](https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf), [typed-control report](https://github.com/apumutyala/chl-typed-control/issues/1#issuecomment-5925146688)).
+The most defensible initial comparison is therefore **structural architecture priors × cheap response-aware training**, with more expensive developmental measurements earning their place through incremental predictive and intervention value. This recommendation follows from published structural results, rather than presuming a universal theory of intelligence or alignment ([LRU](https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf)).
 
 ## Atlas relationship semantics
 

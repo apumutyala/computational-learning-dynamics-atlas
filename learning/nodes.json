@@ -1078,42 +1078,6 @@
     "mlp"
    ]
   },
-  "typedcontrol": {
-   "level": 4,
-   "skills": [
-    "deep-learning",
-    "optimization",
-    "theory"
-   ],
-   "prereqs": [
-    "trainingdynamics",
-    "fisher"
-   ]
-  },
-  "stateproject": {
-   "level": 4,
-   "skills": [
-    "deep-learning",
-    "control"
-   ],
-   "prereqs": [
-    "lru",
-    "observability"
-   ]
-  },
-  "structuredproject": {
-   "level": 4,
-   "skills": [
-    "deep-learning",
-    "control",
-    "theory"
-   ],
-   "prereqs": [
-    "stateproject",
-    "typedcontrol",
-    "interference"
-   ]
-  },
   "sampling": {
    "level": 1,
    "skills": [
