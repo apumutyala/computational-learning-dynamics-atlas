@@ -22,7 +22,7 @@ const EV_ORDER = ['exact', 'established', 'empirical', 'hypothesis'];
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isMobile = () => innerWidth <= 760;
 
-const data = await (await fetch('atlas.json?v=499e0042')).json();
+const data = await (await fetch('atlas.json?v=a7a88b57')).json();
 const nodes = data.nodes, edges = data.edges;
 const byId = new Map(nodes.map((n, i) => (n.i = i, [n.id, n])));
 const clusterOf = new Map(data.clusters.map(c => [c.name, c]));
