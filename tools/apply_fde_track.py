@@ -1,7 +1,7 @@
 """Idempotent overlay: flagship forward-deployed research engineer path + harness-lens titles for parts I-III.
 
 Run from the repo root:  python tools/apply_fde_track.py
-Keeps learning/paths.json formatting (indent 1, CRLF). Re-running is a no-op.
+Keeps learning/paths.json formatting (indent 1, existing line endings). Re-running is a no-op.
 """
 import json
 from pathlib import Path
