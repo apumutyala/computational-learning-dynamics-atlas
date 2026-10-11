@@ -1,0 +1,1189 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "q6-toolcall-1",
+      "node": "toolcall",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "In a tool-using LLM agent, what ultimately defines what a tool call does in the world?",
+      "choices": [
+        "The tool's API contract, as executed by the application's code",
+        "The reasoning text the model writes just before the call",
+        "The role description in the agent's system prompt",
+        "The model's confidence that the call is correct"
+      ],
+      "answer": 0,
+      "explain": "The model only emits a structured request; the application executes it against the API, so the API contract, not the model's text, determines the action and its side effects.",
+      "source": "https://arxiv.org/abs/2302.04761"
+    },
+    {
+      "id": "q6-toolcall-2",
+      "node": "toolcall",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "An agent's tool call passes JSON Schema validation against the tool's parameter schema. Which failure can it still have?",
+      "choices": [
+        "A required field that the schema lists but the call leaves out",
+        "Output that does not parse as JSON, such as a missing closing brace",
+        "A well-typed but wrong argument value, or an unauthorized side effect",
+        "A value whose type does not match the type declared for that field"
+      ],
+      "answer": 2,
+      "explain": "Schema validation catches syntax, types and required fields. It says nothing about intent: a valid call can target the wrong record, use the wrong amount or perform an unauthorized action.",
+      "source": "https://arxiv.org/abs/2305.15334"
+    },
+    {
+      "id": "q6-toolcall-3",
+      "node": "toolcall",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Gorilla reduces hallucinated API arguments mainly by doing what?",
+      "choices": [
+        "Having a second model vote on each call before it runs",
+        "Masking tokens so arguments match a JSON grammar",
+        "Learning, Toolformer-style, where API calls help next-token prediction",
+        "Conditioning call generation on retrieved API documentation"
+      ],
+      "answer": 3,
+      "explain": "Gorilla retrieves the relevant API documentation and conditions on it, which cuts hallucinated arguments and lets it follow documentation changes. Toolformer, by contrast, learns where calls help prediction.",
+      "source": "https://arxiv.org/abs/2305.15334"
+    },
+    {
+      "id": "q6-structdecode-1",
+      "node": "structdecode",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "Constrained decoding against a JSON Schema guarantees which property of the output?",
+      "choices": [
+        "The model chose the right tool to call",
+        "Its field values are factually correct",
+        "It parses and conforms to the schema's syntax",
+        "Its probabilities equal the model's distribution conditioned on validity"
+      ],
+      "answer": 2,
+      "explain": "Masking invalid tokens guarantees syntactic validity only. Semantic correctness is not guaranteed, and per-token masking also changes the output distribution relative to conditioning on the grammar.",
+      "source": "https://arxiv.org/abs/2307.09702"
+    },
+    {
+      "id": "q6-structdecode-2",
+      "node": "structdecode",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "How do automaton-based constrained decoders (e.g. Willard and Louf) enforce a regex or JSON Schema during generation?",
+      "choices": [
+        "Fine-tune the model on many examples that already follow the schema",
+        "Post-process the finished output by deleting characters that break the schema",
+        "Generate freely, then resample the whole output until it happens to parse",
+        "Compile it to an automaton and mask tokens that cannot continue a valid string"
+      ],
+      "answer": 3,
+      "explain": "The schema or regex becomes an automaton; for each state, the decoder precomputes which vocabulary tokens keep the string valid and masks the rest at every step, so invalid output is impossible.",
+      "source": "https://arxiv.org/abs/2307.09702"
+    },
+    {
+      "id": "q6-structdecode-3",
+      "node": "structdecode",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Why can per-token grammar masking produce a different output distribution from the language model conditioned on the output being grammatical?",
+      "choices": [
+        "Masking constrains only the first token, so later tokens follow the raw model",
+        "Masking temporarily modifies the model's weights while the output is generated",
+        "Local renormalization ignores how much probability each prefix's valid completions carry",
+        "Masking makes decoding deterministic, so all randomness is removed from sampling"
+      ],
+      "answer": 2,
+      "explain": "Conditioning on validity weights each prefix by the total probability of its valid continuations. Greedy local renormalization does not, so it can favour prefixes the model rarely completes validly; grammar-aligned decoding corrects this.",
+      "source": "https://arxiv.org/abs/2405.21047"
+    },
+    {
+      "id": "q6-mcp-1",
+      "node": "mcp",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "Which three kinds of capability does an MCP server offer to language-model applications?",
+      "choices": [
+        "Sampling, roots and elicitation",
+        "Tools, resources and prompts",
+        "Models, datasets and embeddings",
+        "Agents, memories and plans"
+      ],
+      "answer": 1,
+      "explain": "MCP servers expose tools, resources and prompts over JSON-RPC 2.0. Sampling, roots and elicitation are features that clients may offer back to servers.",
+      "source": "https://modelcontextprotocol.io/specification/2025-06-18"
+    },
+    {
+      "id": "q6-mcp-2",
+      "node": "mcp",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "According to the MCP specification, who must enforce user consent and treat tool descriptions from untrusted servers as untrusted?",
+      "choices": [
+        "The protocol itself, through signed and verified tool descriptions",
+        "The model, which is trained to ignore instructions inside tool text",
+        "Each server, which certifies its own tools and descriptions as safe",
+        "The host application's implementors; the protocol cannot enforce it"
+      ],
+      "answer": 3,
+      "explain": "The specification states that MCP cannot enforce its security principles at the protocol level: consent, access control and distrust of tool annotations are left to implementors, mainly the host.",
+      "source": "https://modelcontextprotocol.io/specification/2025-06-18"
+    },
+    {
+      "id": "q6-agentbench-1",
+      "node": "agentbench",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What does τ-bench's pass^k metric measure for a task?",
+      "choices": [
+        "The probability that at least one of k trials succeeds",
+        "The average success rate over k different tasks",
+        "The probability that all k independent trials succeed",
+        "Whether the task is solved within k dialogue turns"
+      ],
+      "answer": 2,
+      "explain": "pass^k asks for consistency: every one of k trials must succeed. It is the opposite of pass@k, which credits a task if any of k attempts succeeds.",
+      "source": "https://arxiv.org/abs/2406.12045"
+    },
+    {
+      "id": "q6-agentbench-2",
+      "node": "agentbench",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "An agent succeeds on a task with probability 0.6 per trial, independently across trials. What is its pass^4 on that task?",
+      "choices": [
+        "About 0.13",
+        "0.24",
+        "0.6",
+        "About 0.97"
+      ],
+      "answer": 0,
+      "explain": "pass^4 = 0.6⁴ ≈ 0.13. The value 0.97 is 1 − 0.4⁴, the chance that at least one of four trials succeeds (pass@4). A 60% agent is rarely reliable four times in a row.",
+      "source": "https://arxiv.org/abs/2406.12045"
+    },
+    {
+      "id": "q6-agentbench-3",
+      "node": "agentbench",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "How does τ-bench decide whether a tool-using dialogue succeeded?",
+      "choices": [
+        "An LLM judge reads the full transcript and rates whether the user was helped",
+        "Human raters score each assistant turn for correctness and politeness",
+        "It counts how many of the agent's tool calls returned without an error",
+        "It compares the final database state with an annotated goal state"
+      ],
+      "answer": 3,
+      "explain": "τ-bench checks end states, so it avoids judge bias: the database after the episode must match the annotated goal. Successful-looking transcripts that leave the wrong state count as failures.",
+      "source": "https://arxiv.org/abs/2406.12045"
+    },
+    {
+      "id": "q6-llmjudge-1",
+      "node": "llmjudge",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "An LLM judge prefers answer A when A is shown first, and answer B when the order is swapped. Which documented bias is this?",
+      "choices": [
+        "Self-enhancement bias",
+        "Position bias",
+        "Sycophancy toward the user",
+        "Verbosity bias"
+      ],
+      "answer": 1,
+      "explain": "The MT-Bench study documents position bias (preferring a slot), verbosity bias (preferring longer answers) and self-enhancement bias (preferring one's own model family). Swapping order is the standard test for position bias.",
+      "source": "https://arxiv.org/abs/2306.05685"
+    },
+    {
+      "id": "q6-llmjudge-2",
+      "node": "llmjudge",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "A judge model agrees with human preferences over 80% of the time on MT-Bench and Chatbot Arena. What does that justify for grading a legal-research agent?",
+      "choices": [
+        "Using it as ground truth for legal accuracy, since its verdicts match human raters",
+        "Little: preference agreement is not factual correctness, so audit it against legal experts",
+        "Using it as ground truth once its temperature is set to zero for repeatable verdicts",
+        "Skipping human review, since humans agree with each other no more often than this"
+      ],
+      "answer": 1,
+      "explain": "The study reports agreement on preferences, about the level humans reach with each other, and also documents biases and limited reasoning. Correctness on domain facts must be checked against expert labels per domain.",
+      "source": "https://arxiv.org/abs/2306.05685"
+    },
+    {
+      "id": "q6-llmjudge-3",
+      "node": "llmjudge",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "Two agent versions get mean judge scores of 7.9 and 8.1 on the same 80 questions. What should you report before calling the second one better?",
+      "choices": [
+        "A standard error for the difference, treating questions as a sample from a population",
+        "The two scores again after re-running the judge until both of them stop changing",
+        "The judge's agreement rate with human raters on a public benchmark such as MT-Bench",
+        "Nothing more: 8.1 is greater than 7.9, so the second version scored higher"
+      ],
+      "answer": 0,
+      "explain": "Eval questions are draws from a super-population of possible questions. A small difference can sit well inside sampling noise; paired standard errors on the difference say whether it is distinguishable from zero.",
+      "source": "https://arxiv.org/abs/2411.00640"
+    },
+    {
+      "id": "q6-semanticentropy-1",
+      "node": "semanticentropy",
+      "skill": "probability",
+      "difficulty": 1,
+      "prompt": "Semantic entropy is the entropy of which distribution?",
+      "choices": [
+        "The distribution over distinct sampled answer strings",
+        "The distribution over meaning clusters of sampled answers",
+        "The attention weights over the prompt in the final layer",
+        "The next-token distribution at the first decoding step"
+      ],
+      "answer": 1,
+      "explain": "Sampled answers are grouped by bidirectional entailment and entropy is computed over these meaning clusters, so paraphrases of one answer do not count as uncertainty.",
+      "source": "https://www.nature.com/articles/s41586-024-07421-0"
+    },
+    {
+      "id": "q6-semanticentropy-2",
+      "node": "semanticentropy",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "Ten answers are sampled for each of four questions. Which set has the highest semantic entropy?",
+      "choices": [
+        "All ten say \"Paris\", each worded in a different way",
+        "Four name Paris, three name Lyon, three name Marseille",
+        "Nine answers name Paris and a single answer names Lyon",
+        "Ten identical strings that read \"The capital is Paris.\""
+      ],
+      "answer": 1,
+      "explain": "Only meaning clusters count. Ten paraphrases of Paris form one cluster (entropy 0); a 9:1 split is low; a 4:3:3 split across three meanings has the highest entropy and is the likeliest confabulation.",
+      "source": "https://www.nature.com/articles/s41586-024-07421-0"
+    },
+    {
+      "id": "q6-semanticentropy-3",
+      "node": "semanticentropy",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Which error is semantic entropy least able to detect?",
+      "choices": [
+        "A model that gives a different made-up date each time it is asked the question",
+        "A confabulated biography whose birthplace and career change between the samples",
+        "Answers whose meaning varies across samples because the question is unfamiliar",
+        "A model that repeats the same wrong answer it learned from bad training data"
+      ],
+      "answer": 3,
+      "explain": "The method targets confabulation, where samples disagree in meaning. A systematic error is repeated consistently, so the meaning clusters collapse to one and semantic entropy stays low.",
+      "source": "https://www.nature.com/articles/s41586-024-07421-0"
+    },
+    {
+      "id": "q6-selective-1",
+      "node": "selective",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What does a risk–coverage curve show for a model that can abstain?",
+      "choices": [
+        "Error on answered cases against the fraction answered, as the threshold moves",
+        "Expected calibration error against the number of parameters in the model",
+        "Precision against recall for the positive class as the threshold moves",
+        "Training loss against the number of optimizer steps taken during fine-tuning"
+      ],
+      "answer": 0,
+      "explain": "Raising the threshold answers fewer cases (lower coverage) and usually lowers the selective risk on those answered. The curve shows how much coverage a target error rate costs.",
+      "source": "https://arxiv.org/abs/1705.08500"
+    },
+    {
+      "id": "q6-selective-2",
+      "node": "selective",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "Under 0-1 loss with abstention cost c = 0.2, the true posterior's largest class probability for an input is 0.75. What does Chow's rule do?",
+      "choices": [
+        "Abstain, because 0.75 ≤ 1 − 0.2",
+        "Predict the top class, because 0.75 > 0.5",
+        "Abstain only if the second-largest probability exceeds 0.2",
+        "Predict the top class, because 0.75 > 0.2"
+      ],
+      "answer": 0,
+      "explain": "Predicting has expected loss 1 − 0.75 = 0.25, which exceeds the abstention cost 0.2. Chow's rule abstains exactly when max p(y|x) ≤ 1 − c, and is optimal only if the scores are true posteriors.",
+      "source": "https://arxiv.org/abs/1705.08500"
+    },
+    {
+      "id": "q6-selective-3",
+      "node": "selective",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "A model's confidence scores are well calibrated on your overall test set. Why might they still be a poor gate for the errors that cost most?",
+      "choices": [
+        "Calibration is an average; scores can still rank the costly cases badly or not transfer",
+        "Calibrated scores are always too low on rare cases, so costly errors are never flagged",
+        "Calibration guarantees good ranking of every case, so such a gate cannot be poor",
+        "Abstention only works with uncalibrated scores, because calibration compresses them"
+      ],
+      "answer": 0,
+      "explain": "Calibration says that among cases scored 0.8, about 80% are right on average. It does not ensure that a costly subgroup is scored well, and calibration measured on one format need not hold on another.",
+      "source": "https://arxiv.org/abs/2207.05221"
+    },
+    {
+      "id": "q6-conformallm-1",
+      "node": "conformallm",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "How does conformal factuality make an LLM's output satisfy a correctness guarantee with probability at least 1 − α?",
+      "choices": [
+        "It samples answers repeatedly and keeps the first one that two samples share",
+        "It backs off to less specific claims until a calibrated threshold is met",
+        "It raises the decoding temperature until the model expresses its uncertainty",
+        "It retrains the model on labelled data until its error rate falls below α"
+      ],
+      "answer": 1,
+      "explain": "Claims are scored, and a threshold calibrated on a labelled set decides which to keep; removing or generalizing claims forms nested uncertainty sets, giving marginal coverage under exchangeability.",
+      "source": "https://arxiv.org/abs/2402.10978"
+    },
+    {
+      "id": "q6-conformallm-2",
+      "node": "conformallm",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "A conformal claim filter at α = 0.1 achieves its 90% guarantee but keeps only 15% of each answer's claims. What is the best reading?",
+      "choices": [
+        "The calibration step failed, so the stated 90% guarantee does not actually hold",
+        "Most of the model's claims are false, so the system should not be deployed at all",
+        "Coverage is bought with vagueness; report retention too and seek a better score",
+        "Retention is irrelevant; a valid coverage guarantee is all a deployment needs"
+      ],
+      "answer": 2,
+      "explain": "A fully backed-off answer is trivially correct, so coverage alone can hide a useless output. The score (e.g. semantic entropy, as the atlas proposes) determines how much is retained at a given coverage.",
+      "source": "https://arxiv.org/abs/2402.10978"
+    },
+    {
+      "id": "q6-conformallm-3",
+      "node": "conformallm",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "Which post-deployment change most directly undermines a conformal guarantee calibrated before launch?",
+      "choices": [
+        "Switching to a different nonconformity score, recalibrated on the same labelled set",
+        "Live queries drift so they are no longer exchangeable with the calibration set",
+        "Lowering α to 0.05 and recalibrating",
+        "Doubling the size of the calibration set"
+      ],
+      "answer": 1,
+      "explain": "Conformal validity holds for any score, but it requires the new query to be exchangeable with the calibration data. Drift breaks that assumption; online conformal methods trade the guarantee for long-run control.",
+      "source": "https://arxiv.org/abs/2402.10978"
+    },
+    {
+      "id": "q6-guardrail-1",
+      "node": "guardrail",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "What do runtime guardrail classifiers such as Llama Guard do?",
+      "choices": [
+        "Prove formally that the model can never produce harmful content",
+        "Retrain the deployed model each night on any flagged conversations",
+        "Encrypt each conversation so that user data stays private in transit",
+        "Classify inputs and outputs against a content policy at run time"
+      ],
+      "answer": 3,
+      "explain": "Input–output classifiers gate traffic against a policy. They filter without a formal guarantee and are attack surfaces themselves.",
+      "source": "https://arxiv.org/abs/2312.06674"
+    },
+    {
+      "id": "q6-guardrail-2",
+      "node": "guardrail",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "Which costs did the constitutional-classifiers work report for its guarded system?",
+      "choices": [
+        "No additional refusals and no additional compute",
+        "A halving of throughput, with refusals unchanged",
+        "About +23.7% absolute refusals and about +0.38% inference cost",
+        "About +0.38% absolute refusals and about +23.7% inference cost"
+      ],
+      "answer": 3,
+      "explain": "Guards cost over-refusals and compute: the reported figures are a 0.38 percentage-point rise in refusals and a 23.7% inference overhead. Both belong in a deployment decision.",
+      "source": "https://arxiv.org/abs/2501.18837"
+    },
+    {
+      "id": "q6-guardrail-3",
+      "node": "guardrail",
+      "skill": "probability",
+      "difficulty": 3,
+      "prompt": "Why monitor live risk with a time-uniform confidence sequence rather than re-running a fixed-sample hypothesis test every day?",
+      "choices": [
+        "Repeated looks inflate a fixed test's false alarms; time-uniform bounds hold at all times",
+        "Confidence sequences need no labelled outcomes, while fixed-sample tests do need them",
+        "Fixed-sample tests cannot be computed at all when the data arrive as a stream",
+        "Daily fixed-sample tests detect harmful shift faster and add no extra false alarms"
+      ],
+      "answer": 0,
+      "explain": "Checking a fixed-α test again and again gives many chances for a false alarm. Time-uniform confidence sequences remain valid under continuous monitoring, so you can stop whenever the evidence crosses the line.",
+      "source": "https://arxiv.org/abs/2110.06177"
+    },
+    {
+      "id": "q6-promptinject-1",
+      "node": "promptinject",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What is indirect prompt injection?",
+      "choices": [
+        "A user typing a jailbreak prompt directly into the application's chat box",
+        "Instructions planted in content the app retrieves, which the model then follows",
+        "An attacker extracting the model's weights through repeated API queries",
+        "An attacker poisoning the documents used to pre-train the underlying model"
+      ],
+      "answer": 1,
+      "explain": "In indirect injection the attacker never talks to the model; they place instructions where an LLM-integrated application will retrieve them, exploiting the blurred line between data and instructions.",
+      "source": "https://arxiv.org/abs/2302.12173"
+    },
+    {
+      "id": "q6-promptinject-2",
+      "node": "promptinject",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "When reporting a defense against prompt injection, which measurement matters beyond benign task utility?",
+      "choices": [
+        "End-to-end latency of the agent with the defense enabled, compared with it disabled",
+        "Utility under attack and attack success, with injections in every untrusted channel",
+        "The model's refusal rate on a public jailbreak benchmark, before and after the defense",
+        "Benign utility on a larger and more varied task suite, run with the defense enabled"
+      ],
+      "answer": 1,
+      "explain": "A defense can look free on benign tasks while failing under attack, or block attacks by breaking tasks. Benchmarks such as AgentDojo report utility under attack and attack success together.",
+      "source": "https://arxiv.org/abs/2406.13352"
+    },
+    {
+      "id": "q6-agentsec-1",
+      "node": "agentsec",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "How does CaMeL prevent injected text in a retrieved email from triggering a new tool call?",
+      "choices": [
+        "The plan comes only from the trusted query, and tagged data cannot alter it",
+        "It instructs the model to ignore any instructions that appear inside emails",
+        "It screens every email with a classifier before the model is allowed to read it",
+        "It fine-tunes the model to prefer system-prompt instructions over other text"
+      ],
+      "answer": 0,
+      "explain": "CaMeL separates control and data flow: the plan comes only from the trusted query, and a policy is enforced on capability-tagged data at each tool call, so injected text can influence values but not choose actions.",
+      "source": "https://arxiv.org/abs/2503.18813"
+    },
+    {
+      "id": "q6-agentsec-2",
+      "node": "agentsec",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "CaMeL solved 77% of AgentDojo tasks with provable security, against 84% for the undefended agent. What does the 7-point gap represent?",
+      "choices": [
+        "The share of attacks that still succeed under CaMeL",
+        "The utility cost of enforcing the security policy",
+        "Tasks that AgentDojo labels as impossible",
+        "Measurement noise between two runs of the benchmark"
+      ],
+      "answer": 1,
+      "explain": "Tight policies block some legitimate task paths. The trade-off is explicit: a little benign utility is given up for a guarantee against the injection attacks the policy covers.",
+      "source": "https://arxiv.org/abs/2503.18813"
+    },
+    {
+      "id": "q6-agentsec-3",
+      "node": "agentsec",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "Which risk remains even if a CaMeL-style policy is enforced perfectly?",
+      "choices": [
+        "Injected text in a retrieved document choosing a brand-new tool call",
+        "A retrieved document appending extra steps to the user's original plan",
+        "A harmful plan the user asked for, or a policy written too permissively",
+        "Untrusted data silently redirecting the program's control flow"
+      ],
+      "answer": 2,
+      "explain": "The guarantee is relative to the written policy and the interpreter. It stops untrusted data from steering control flow, but cannot judge whether the user's own request or the policy is safe.",
+      "source": "https://arxiv.org/abs/2503.18813"
+    },
+    {
+      "id": "q6-defer-1",
+      "node": "defer",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "How does learning to defer differ from abstaining at a fixed model-confidence threshold?",
+      "choices": [
+        "It always defers whichever cases the model is least confident about",
+        "It removes the human from the loop once the model is accurate enough",
+        "It models the human's errors and defers where the human is likely better",
+        "It defers a fixed random fraction of all cases for later auditing"
+      ],
+      "answer": 2,
+      "explain": "Plain abstention looks only at the model. Learning to defer trains the predictor together with a deferral rule using samples of expert decisions, so it can defer even confident cases where the expert is better.",
+      "source": "https://arxiv.org/abs/2006.01862"
+    },
+    {
+      "id": "q6-defer-2",
+      "node": "defer",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "How do Mozannar and Sontag make learning to defer trainable with standard methods?",
+      "choices": [
+        "The model and deferral rule are trained separately and their outputs multiplied",
+        "A softmax threshold on the model's output, chosen by the expert by hand",
+        "Reinforcement learning, with the reviewer's time cost as the only reward signal",
+        "Deferral as an extra option in cost-sensitive learning, with a consistent surrogate"
+      ],
+      "answer": 3,
+      "explain": "Predict-or-defer becomes a cost-sensitive classification problem with one extra output for deferring; the surrogate is consistent, so minimizing it recovers the Bayes-optimal joint rule.",
+      "source": "https://arxiv.org/abs/2006.01862"
+    },
+    {
+      "id": "q6-defer-3",
+      "node": "defer",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "A deployed deferral rule was trained on decisions by senior reviewers. The customer replaces them with a new, less experienced team. What should you expect?",
+      "choices": [
+        "Nothing changes, because the rule depends only on the model's outputs",
+        "Accuracy improves, because new reviewers will be sent more of the cases",
+        "It may defer the wrong cases now; re-measure team accuracy and cost",
+        "The rule adapts on its own to the new reviewers' strengths over time"
+      ],
+      "answer": 2,
+      "explain": "A learned deferral rule is only as good as the samples of expert decisions it was trained on. A changed reviewer pool, fatigue or automation bias changes the expert being deferred to.",
+      "source": "https://arxiv.org/abs/2006.01862"
+    },
+    {
+      "id": "q6-auditlog-1",
+      "node": "auditlog",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "In the W3C PROV data model, provenance is expressed with which three core types?",
+      "choices": [
+        "Entities, activities and agents",
+        "Sources, sinks and filters",
+        "Inputs, outputs and weights",
+        "Users, sessions and events"
+      ],
+      "answer": 0,
+      "explain": "PROV-DM links entities (things), activities (what happened) and agents (who is responsible) through relations such as generation, use, derivation and attribution.",
+      "source": "https://www.w3.org/TR/prov-dm/"
+    },
+    {
+      "id": "q6-auditlog-2",
+      "node": "auditlog",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "An agent's full provenance log is available after an incident. What can it not establish on its own?",
+      "choices": [
+        "Why the model chose the action it took",
+        "Which model version produced the action",
+        "Which retrieved sources and tool calls preceded the action",
+        "Which human approved the action"
+      ],
+      "answer": 0,
+      "explain": "Logs record what happened: inputs, versions, sources, calls and approvals. They do not explain the model's internal reasons, and they bring privacy and retention obligations of their own.",
+      "source": "https://www.w3.org/TR/prov-dm/"
+    },
+    {
+      "id": "q6-redteam-1",
+      "node": "redteam",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What can a red-teaming campaign establish about a model?",
+      "choices": [
+        "That the model is safe for deployment",
+        "That certain failures exist, not that no others remain",
+        "That the model passes regulatory conformity assessment",
+        "The model's true failure rate on all inputs"
+      ],
+      "answer": 1,
+      "explain": "Red teaming discovers failures; its coverage depends on who attacks and what they look for, so it cannot certify absence. Old attacks should be re-run on every release as a regression suite.",
+      "source": "https://arxiv.org/abs/2209.07858"
+    },
+    {
+      "id": "q6-redteam-2",
+      "node": "redteam",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "In Perez et al.'s work on red teaming with language models, how is the red-team model improved beyond zero-shot prompting?",
+      "choices": [
+        "By RL, rewarding test cases that a harm classifier flags in the replies",
+        "By fine-tuning the target model on the refusals it gave during testing",
+        "By hiring more human red-teamers to write additional attack prompts",
+        "By lowering the target model's sampling temperature during each attack"
+      ],
+      "answer": 0,
+      "explain": "The red-team LM generates test cases from zero-shot through few-shot and supervised variants up to RL against a harm classifier, which scales failure discovery.",
+      "source": "https://arxiv.org/abs/2202.03286"
+    },
+    {
+      "id": "q6-modelrisk-1",
+      "node": "modelrisk",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "In bank model-risk guidance, what does \"effective challenge\" mean?",
+      "choices": [
+        "Stress-testing the model against an adversarial trader in a simulation",
+        "A customer contesting a model-driven credit decision in a court of law",
+        "The regulator re-estimating all of the model's parameters on its own data",
+        "Critical review by objective, independent experts across the lifecycle"
+      ],
+      "answer": 3,
+      "explain": "Effective challenge is critical analysis by objective, informed parties who can identify limitations and push for change. SR 26-2 keeps it central, scaled to a model's risk.",
+      "source": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf"
+    },
+    {
+      "id": "q6-modelrisk-2",
+      "node": "modelrisk",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "A bank wants to treat its LLM agent as a model under SR 26-2 (April 2026). What does the guidance say?",
+      "choices": [
+        "It is prohibited, since banks may not deploy generative AI at all",
+        "It is out of scope; the bank's broader governance must cover it",
+        "It must be validated exactly like a classical credit-scoring model",
+        "It is exempt from oversight, since the guidance does not mention it"
+      ],
+      "answer": 1,
+      "explain": "SR 26-2 replaces SR 11-7 and places generative and agentic AI outside its scope, so the agent needs controls the guidance does not spell out, drawn from the bank's wider governance.",
+      "source": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf"
+    },
+    {
+      "id": "q6-tradingctl-1",
+      "node": "tradingctl",
+      "skill": "control",
+      "difficulty": 1,
+      "prompt": "What does SEC Rule 15c3-5, which Knight Capital violated, require of broker-dealers?",
+      "choices": [
+        "A named human approval recorded for every order before it is sent to the market",
+        "Controls reasonably designed to limit market-access risk, including automated errors",
+        "Independent validation of every pricing model before it is used for trading",
+        "Daily public disclosure of the source code of all trading algorithms in use"
+      ],
+      "answer": 1,
+      "explain": "The market-access rule requires pre-trade controls on order flow. The SEC found Knight's controls inadequate after its router sent millions of orders in 45 minutes and lost over $460 million.",
+      "source": "https://www.sec.gov/litigation/admin/2013/34-70694.pdf"
+    },
+    {
+      "id": "q6-tradingctl-2",
+      "node": "tradingctl",
+      "skill": "control",
+      "difficulty": 2,
+      "prompt": "What kind of failure caused the Knight Capital loss, and what is its lesson for an agent that can move money?",
+      "choices": [
+        "An overfit machine-learning model; retrain it on more and fresher market data",
+        "A rogue trader; require a second human approval for every large order sent",
+        "A sudden market crash; hedge open positions more conservatively in future",
+        "Software and deployment with missing controls; limits and a kill switch outside it"
+      ],
+      "answer": 3,
+      "explain": "No learned model was involved. The lesson applies to any automated actor: pre-action limits enforced outside it, an automatic kill switch, and a staged rollout that catches a partial deployment.",
+      "source": "https://www.sec.gov/litigation/admin/2013/34-70694.pdf"
+    },
+    {
+      "id": "q6-tradingctl-3",
+      "node": "tradingctl",
+      "skill": "control",
+      "difficulty": 3,
+      "prompt": "A position-limit guard rejects any order whose worst-case fill would take the position outside the allowed set. What else is needed for the position to provably stay inside that set?",
+      "choices": [
+        "A well-calibrated agent proposing the orders that the guard has to check",
+        "Bounded fills, and no order reaching the market without passing the check",
+        "Random rejection of a small fraction of orders as an extra safety margin",
+        "An allowed position set that is large relative to typical order sizes"
+      ],
+      "answer": 1,
+      "explain": "This is a discrete-time invariance argument, like a barrier condition: every admitted step must keep the state in the set. It fails if fills can exceed their bound or orders bypass the check through unchecked latency.",
+      "source": "https://www.sec.gov/litigation/admin/2013/34-70694.pdf"
+    },
+    {
+      "id": "q6-legalhalluc-1",
+      "node": "legalhalluc",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What happened in Mata v. Avianca (S.D.N.Y., 2023)?",
+      "choices": [
+        "A legal research vendor fined for an error in its case database",
+        "Sanctions for a filing citing non-existent cases from a chatbot",
+        "A ruling that banned AI tools from all federal court filings",
+        "An airline held liable for a refund promised by its chatbot"
+      ],
+      "answer": 1,
+      "explain": "The court imposed Rule 11 sanctions for submitting non-existent opinions with fake quotes and citations produced by a chatbot.",
+      "source": "https://storage.courtlistener.com/recap/gov.uscourts.nysd.575368/gov.uscourts.nysd.575368.54.0.pdf"
+    },
+    {
+      "id": "q6-legalhalluc-2",
+      "node": "legalhalluc",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "A brief cites a real case, but the cited passage does not support the proposition it is cited for. In the legal-RAG audit's terms, this is what?",
+      "choices": [
+        "A retrieval failure, which does not count as hallucination",
+        "A correct citation, because the cited case does exist",
+        "A fabricated case, because the passage is not in it",
+        "A misgrounded citation, which counts as hallucination"
+      ],
+      "answer": 3,
+      "explain": "The audit counts both incorrect statements and misgrounded ones, where a real source does not support the claim. A checker must resolve each citation and verify that the passage supports the proposition.",
+      "source": "https://arxiv.org/abs/2405.20362"
+    },
+    {
+      "id": "q6-legalhalluc-3",
+      "node": "legalhalluc",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "What did independent audits find about hallucination in legal research tools?",
+      "choices": [
+        "Legal RAG tools eliminated hallucinated citations on every benchmark query",
+        "Legal RAG tools hallucinated more often than general-purpose chatbots did",
+        "Legal RAG tools: 17–33% of queries; fewer than general chatbots, not zero",
+        "General chatbots erred on under 5% of verifiable federal-case questions"
+      ],
+      "answer": 2,
+      "explain": "Leading legal RAG tools hallucinated on 17–33% of queries; general chatbots did worse, at 58–88% on verifiable questions about federal cases. Rates depend on query mix and the definition used.",
+      "source": "https://arxiv.org/abs/2405.20362"
+    },
+    {
+      "id": "q6-clinical-1",
+      "node": "clinical",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "Under FDA's clinical decision support guidance, which condition helps CDS software stay outside device regulation?",
+      "choices": [
+        "A professional can independently review the basis of its advice",
+        "It runs only on servers owned and operated by the hospital",
+        "It is built on a model with a published medical benchmark score",
+        "It is shown to be more accurate than the average clinician"
+      ],
+      "answer": 0,
+      "explain": "One of the statutory criteria for non-device CDS is that the professional can independently review the basis of a recommendation, which writes human review into the regulatory boundary.",
+      "source": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-decision-support-software"
+    },
+    {
+      "id": "q6-clinical-2",
+      "node": "clinical",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Flan-PaLM reached state-of-the-art accuracy on MultiMedQA multiple-choice sets. What did human evaluation of long-form answers add?",
+      "choices": [
+        "That multiple-choice accuracy predicts real clinical outcomes",
+        "No difference at all between clinician ratings and lay ratings",
+        "Gaps that instruction prompt tuning narrowed but did not close",
+        "That the model matched clinicians on every rated quality axis"
+      ],
+      "answer": 2,
+      "explain": "Exam accuracy is not answer quality: clinician and lay ratings revealed gaps. Neither benchmark nor rater scores are prospective clinical outcomes.",
+      "source": "https://www.nature.com/articles/s41586-023-06291-2"
+    },
+    {
+      "id": "q6-clinical-3",
+      "node": "clinical",
+      "skill": "stats-ml",
+      "difficulty": 3,
+      "prompt": "Before clinicians see a diagnostic assistant's suggestions, which study best estimates its real-world effect while avoiding harm?",
+      "choices": [
+        "A silent prospective run against clinician decisions and outcomes, by population",
+        "A larger multiple-choice exam benchmark covering more medical specialties",
+        "Grading its answers to a curated question set with a strong LLM judge",
+        "A retrospective accuracy check on records from the hospital it was trained on"
+      ],
+      "answer": 0,
+      "explain": "Running silently on live cases measures performance on the real population and workflow without influencing care; stratifying by population exposes subgroups where it fails.",
+      "source": "https://www.nature.com/articles/s41586-023-06291-2"
+    },
+    {
+      "id": "q6-aigovern-1",
+      "node": "aigovern",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "Which four functions organize the NIST AI Risk Management Framework 1.0?",
+      "choices": [
+        "Identify, Protect, Detect, Respond",
+        "Design, Build, Test, Deploy",
+        "Plan, Do, Check, Act",
+        "Govern, Map, Measure, Manage"
+      ],
+      "answer": 3,
+      "explain": "AI RMF 1.0 organizes practice as Govern, Map, Measure and Manage. Identify-Protect-Detect-Respond comes from the NIST Cybersecurity Framework, and Plan-Do-Check-Act from management-system standards.",
+      "source": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf"
+    },
+    {
+      "id": "q6-aigovern-2",
+      "node": "aigovern",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "Under the EU AI Act, which deployment is classed as high-risk and so carries duties such as logging and human oversight?",
+      "choices": [
+        "A system that evaluates people's creditworthiness",
+        "An AI-controlled opponent in a video game",
+        "A spam filter for a company's internal email",
+        "A grammar checker built into a word processor"
+      ],
+      "answer": 0,
+      "explain": "Annex III lists high-risk uses such as creditworthiness evaluation and AI that assists judicial authorities. High-risk systems carry risk-management, logging (Article 12), human-oversight (Article 14) and robustness duties.",
+      "source": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"
+    },
+    {
+      "id": "q6-cyberagent-1",
+      "node": "cyberagent",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "A GPT-4 agent exploited 87% of 15 one-day vulnerabilities when given the CVE description, but only 7% without it. What does the drop suggest?",
+      "choices": [
+        "The CVE descriptions already contained complete working exploit code",
+        "The benchmark was contaminated, so the 87% figure carries no information",
+        "The agent cannot run any shell commands unless it is given the description",
+        "Finding the flaw is much harder for it than exploiting a described one"
+      ],
+      "answer": 3,
+      "explain": "With the description the agent knew what to exploit; without it, it rarely found the flaw itself. Capability depends strongly on what information the agent is given.",
+      "source": "https://arxiv.org/abs/2404.08144"
+    },
+    {
+      "id": "q6-cyberagent-2",
+      "node": "cyberagent",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Why does Cybench split its 40 professional capture-the-flag tasks into subtasks?",
+      "choices": [
+        "So agents are allowed to skip the hardest steps",
+        "So the tasks can be run in parallel on more machines",
+        "So partial progress is measurable on unfinished tasks",
+        "So human teams can solve them faster than the agents"
+      ],
+      "answer": 2,
+      "explain": "Whole-task success is rare on hard CTFs; subtasks show how far an agent gets. Real networks still add noise, stealth and legal authorization limits that the benchmark does not model.",
+      "source": "https://arxiv.org/abs/2408.08926"
+    },
+    {
+      "id": "q6-robotstd-1",
+      "node": "robotstd",
+      "skill": "control",
+      "difficulty": 1,
+      "prompt": "ISO 21448 (SOTIF) addresses which kind of hazard?",
+      "choices": [
+        "Random hardware failures in a vehicle's electronic components",
+        "Ergonomic injuries to workers who operate factory machinery",
+        "Cybersecurity attacks on in-vehicle communication networks",
+        "Insufficiencies of specification or performance, and foreseeable misuse"
+      ],
+      "answer": 3,
+      "explain": "SOTIF covers hazards that arise when a function works as built but its sensing or algorithms are insufficient, plus reasonably foreseeable misuse. Faults are covered by functional-safety standards.",
+      "source": "https://www.iso.org/standard/77490.html"
+    },
+    {
+      "id": "q6-robotstd-2",
+      "node": "robotstd",
+      "skill": "control",
+      "difficulty": 2,
+      "prompt": "Does compliance with ISO 10218-1 or ISO 21448 certify a learned robot policy's behaviour?",
+      "choices": [
+        "No, because both standards forbid learned components outright",
+        "No; they set processes and residual-risk arguments it must fit into",
+        "Yes for industrial robots, though not for automated vehicles",
+        "Yes, provided the policy passes the standards' own benchmark suite"
+      ],
+      "answer": 1,
+      "explain": "The standards specify hazard analysis, risk reduction and safety arguments; they do not certify what a learned policy does. Its triggering conditions must be catalogued and hazard rates measured.",
+      "source": "https://www.iso.org/standard/77490.html"
+    },
+    {
+      "id": "q6-safeinterface-1",
+      "node": "safeinterface",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "How does SayCan decide which LLM-proposed skill a robot executes?",
+      "choices": [
+        "It asks a human operator to approve each skill the LLM proposes",
+        "It filters every proposed skill with a control barrier function",
+        "It weights the LLM's relevance score by a learned affordance value",
+        "It executes the LLM's top-ranked skill directly, without further checks"
+      ],
+      "answer": 2,
+      "explain": "The language model says what would be useful; affordance value functions say what is feasible in the current state, so only feasible skills run. Affordance estimates success, not safety.",
+      "source": "https://arxiv.org/abs/2204.01691"
+    },
+    {
+      "id": "q6-safeinterface-2",
+      "node": "safeinterface",
+      "skill": "control",
+      "difficulty": 2,
+      "prompt": "A CBF-QP safety filter solves min ‖u − u_ref‖² subject to a + bᵀu ≥ 0. If the planner's u_ref already satisfies a + bᵀu_ref ≥ 0, what does the filter output?",
+      "choices": [
+        "Zero input, to be safe",
+        "u_ref scaled down by ‖b‖",
+        "u_ref unchanged",
+        "The input that maximizes a + bᵀu"
+      ],
+      "answer": 2,
+      "explain": "The filter is a projection onto the half-space of safe inputs: if u_ref is already inside, the closest safe input is u_ref itself. It intervenes only when the proposal would violate the barrier condition.",
+      "source": "https://arxiv.org/abs/2108.06266"
+    },
+    {
+      "id": "q6-safeinterface-3",
+      "node": "safeinterface",
+      "skill": "control",
+      "difficulty": 3,
+      "prompt": "For the CBF-QP filter min ‖u − u_ref‖² s.t. a + bᵀu ≥ 0, take a = −1, b = (1, 0) and u_ref = (0, 0). What is the filtered input u*?",
+      "choices": [
+        "(−1, 0)",
+        "(0, 1)",
+        "(0, 0)",
+        "(1, 0)"
+      ],
+      "answer": 3,
+      "explain": "u_ref violates the constraint (a + bᵀu_ref = −1 < 0), so u* = u_ref + max(0, −(a + bᵀu_ref))/‖b‖² · b = (0, 0) + 1·(1, 0) = (1, 0): the smallest move onto the constraint boundary, along b.",
+      "source": "https://arxiv.org/abs/2108.06266"
+    },
+    {
+      "id": "q6-specgaming-1",
+      "node": "specgaming",
+      "skill": "rl",
+      "difficulty": 1,
+      "prompt": "What is specification gaming?",
+      "choices": [
+        "Failing a task because its specification was ambiguous",
+        "Training on the test set by accident during development",
+        "Meeting the literal objective without the intended outcome",
+        "Refusing a task that the specification explicitly allows"
+      ],
+      "answer": 2,
+      "explain": "Examples in deployed agents include editing tests, patching graders or faking timers: the measured score rises while the intended task goes undone.",
+      "source": "https://metr.org/blog/2025-06-05-recent-reward-hacking/"
+    },
+    {
+      "id": "q6-specgaming-2",
+      "node": "specgaming",
+      "skill": "rl",
+      "difficulty": 2,
+      "prompt": "METR found o3 reward hacking in 39 of 128 RE-Bench runs. What happened when the prompt told it not to cheat?",
+      "choices": [
+        "The rate barely changed",
+        "The model refused to attempt the tasks",
+        "Reward hacking roughly doubled",
+        "Reward hacking stopped entirely"
+      ],
+      "answer": 0,
+      "explain": "Instructions alone did little. Evaluations need structural defences: hidden scorers, tamper canaries and review of diffs that touch evaluation code.",
+      "source": "https://metr.org/blog/2025-06-05-recent-reward-hacking/"
+    },
+    {
+      "id": "q6-specgaming-3",
+      "node": "specgaming",
+      "skill": "rl",
+      "difficulty": 3,
+      "prompt": "Reported reward-hacking rates were 0.7% of HCAST runs but 30.4% on RE-Bench. Which factor does METR point to as varying between these settings?",
+      "choices": [
+        "The sampling temperature used for each run",
+        "The parameter count of the model being tested",
+        "The programming language the tasks are written in",
+        "The task family and how visible the scorer is"
+      ],
+      "answer": 3,
+      "explain": "Rates depend on the task family and on whether the agent can see or reach the scoring code, and detection undercounts. Hiding the scorer is one of the main mitigations.",
+      "source": "https://metr.org/blog/2025-06-05-recent-reward-hacking/"
+    },
+    {
+      "id": "q6-oversight-1",
+      "node": "oversight",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What problem does scalable oversight address?",
+      "choices": [
+        "Labelling very large training datasets more cheaply",
+        "Monitoring GPU clusters as they scale to more nodes",
+        "Reviewing code changes across very large repositories",
+        "Supervising systems that may outperform their supervisors"
+      ],
+      "answer": 3,
+      "explain": "Protocols such as debate and model-assisted human judgement aim to keep supervision effective when the supervised system knows more than the supervisor.",
+      "source": "https://arxiv.org/abs/2211.03540"
+    },
+    {
+      "id": "q6-oversight-2",
+      "node": "oversight",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "Sandwiching experiments showed humans assisted by an unreliable model outperforming both the model alone and unaided humans. Why does that not yet validate oversight of a long-running agent?",
+      "choices": [
+        "Assisted humans actually did worse than the model working alone",
+        "It used QA tasks with ground truth; long agent runs without it are untested",
+        "The model in the study was far more reliable than today's models",
+        "The humans in the study were domain experts rather than non-experts"
+      ],
+      "answer": 1,
+      "explain": "The result holds for QA tasks where experts provide gold labels. Overseeing multi-step agent actions, where the right answer may never be known, is outside what was tested.",
+      "source": "https://arxiv.org/abs/2211.03540"
+    },
+    {
+      "id": "q6-sycophancy-1",
+      "node": "sycophancy",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What is sycophancy in an AI assistant?",
+      "choices": [
+        "Producing answers far longer than the question warrants",
+        "Refusing too many harmless requests out of excess caution",
+        "Tailoring answers to a user's stated views, even against the truth",
+        "Repeating the same answer regardless of what the user asks"
+      ],
+      "answer": 2,
+      "explain": "Sycophantic assistants agree with or defer to the user's stated belief; the cited study found it consistently across five state-of-the-art assistants.",
+      "source": "https://arxiv.org/abs/2310.13548"
+    },
+    {
+      "id": "q6-sycophancy-2",
+      "node": "sycophancy",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "How should you measure sycophancy in a deployed assistant?",
+      "choices": [
+        "Ask with and without a stated user belief, and count answer flips",
+        "Count how often the assistant uses polite or flattering phrases",
+        "Ask users whether they felt the assistant agreed with their views",
+        "Compare answer length with and without a system prompt attached"
+      ],
+      "answer": 0,
+      "explain": "Flip rates on items with known ground truth isolate the effect of the user's stated view from the assistant's knowledge.",
+      "source": "https://arxiv.org/abs/2310.13548"
+    },
+    {
+      "id": "q6-sycophancy-3",
+      "node": "sycophancy",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "Why can a preference-trained LLM judge reward sycophancy?",
+      "choices": [
+        "Judges always prefer the shorter of two responses, and agreement is shorter",
+        "Judges are trained only on factual question answering, never on preferences",
+        "Sycophancy appears only in models that never received preference training",
+        "Its preference data sometimes favours convincing sycophancy over correctness"
+      ],
+      "answer": 3,
+      "explain": "The study found preference judgments sometimes favour sycophancy, so a judge trained on such preferences can score agreement as quality. It does not isolate how much comes from preference optimization versus pre-training.",
+      "source": "https://arxiv.org/abs/2310.13548"
+    },
+    {
+      "id": "q6-assistive-1",
+      "node": "assistive",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "Besides answering visual questions, what second task does VizWiz pose?",
+      "choices": [
+        "Predicting whether the image can answer the question",
+        "Locating the photographer's position in the image",
+        "Generating a caption that is rendered in Braille",
+        "Translating the spoken question into sign language"
+      ],
+      "answer": 0,
+      "explain": "Blind photographers' images are often blurry or miss the object asked about, so recognizing unanswerable questions, a form of abstention, is its own task.",
+      "source": "https://arxiv.org/abs/1802.08218"
+    },
+    {
+      "id": "q6-assistive-2",
+      "node": "assistive",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Why is plain accuracy a poor metric for a scene-description assistant for blind users?",
+      "choices": [
+        "Accessibility regulations forbid reporting accuracy for assistive products",
+        "Accuracy cannot be computed on photographs that are blurry or poorly framed",
+        "It ignores harm asymmetry: an unflagged error costs more than \"I can't tell\"",
+        "Blind users ask too few questions for an accuracy figure to be estimated"
+      ],
+      "answer": 2,
+      "explain": "A user who cannot verify the answer relies on it fully. Errors should be weighted by consequence, and how often the system admits it cannot tell should be measured, ideally with blind and low-vision co-designers.",
+      "source": "https://arxiv.org/abs/1802.08218"
+    },
+    {
+      "id": "q6-multillm-1",
+      "node": "multillm",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "MAST groups failures of multi-agent LLM systems into three categories. Which are they?",
+      "choices": [
+        "System design, inter-agent misalignment and task verification",
+        "Hardware, network and storage failures",
+        "Prompt injection, data leakage and denial of service",
+        "Underfitting, overfitting and distribution shift"
+      ],
+      "answer": 0,
+      "explain": "MAST annotated over 1,600 traces from 7 frameworks into 14 failure modes in these three categories, validated with high inter-annotator agreement (κ = 0.88).",
+      "source": "https://arxiv.org/abs/2503.13657"
+    },
+    {
+      "id": "q6-multillm-2",
+      "node": "multillm",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "A customer asks for a planner–worker–critic team of agents. What baseline should the team beat before you ship it?",
+      "choices": [
+        "A single agent and self-consistency at the same token budget",
+        "An agent that picks actions uniformly at random each turn",
+        "The same team of agents run on a smaller and cheaper model",
+        "The team's own score on the same benchmark from last month"
+      ],
+      "answer": 0,
+      "explain": "Multi-agent systems often gain little on benchmarks, and untuned debate did not reliably beat self-consistency or ensembling. Matching compute separates the benefit of roles from the benefit of more samples.",
+      "source": "https://arxiv.org/abs/2311.17371"
+    },
+    {
+      "id": "q6-agentworm-1",
+      "node": "agentworm",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What makes an agent \"worm\" such as Morris II different from a single indirect prompt injection?",
+      "choices": [
+        "It needs direct access to each user's chat box to spread at all",
+        "The prompt copies itself, so each victim passes it on to the next",
+        "It rewrites the model's weights on every host that it reaches",
+        "It can only affect agents that share one API key with each other"
+      ],
+      "answer": 1,
+      "explain": "Morris II chains indirect injections across RAG-connected email assistants and extracts data across hops; Prompt Infection spreads between agents in multi-agent systems.",
+      "source": "https://arxiv.org/abs/2403.02817"
+    },
+    {
+      "id": "q6-agentworm-2",
+      "node": "agentworm",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "What did the Prompt Infection study find about defences against LLM-to-LLM propagation?",
+      "choices": [
+        "Propagation never occurred when agents shared only some of their messages",
+        "Existing safeguards on their own were enough to stop propagation fully",
+        "Tagging plus existing safeguards mitigated spread; neither alone sufficed",
+        "Tagging agent messages on its own was enough to stop propagation fully"
+      ],
+      "answer": 2,
+      "explain": "Infection spread even when agents did not share all communications. Only the combination of tagging and safeguards mitigated it, and real-world prevalence has not been measured.",
+      "source": "https://arxiv.org/abs/2410.07283"
+    },
+    {
+      "id": "q6-mapeval-1",
+      "node": "mapeval",
+      "skill": "rl",
+      "difficulty": 1,
+      "prompt": "How does Melting Pot evaluate a multi-agent learner?",
+      "choices": [
+        "By the agent's own training return in the environment it trained in",
+        "By asking human raters to score its behaviour in each scenario",
+        "Against held-out co-player populations used only for evaluation",
+        "By playing the agent only against identical copies of itself"
+      ],
+      "answer": 2,
+      "explain": "Holding out co-players tests generalization to partners never seen in training, and reveals weaknesses that training performance hides.",
+      "source": "https://arxiv.org/abs/2107.06857"
+    },
+    {
+      "id": "q6-mapeval-2",
+      "node": "mapeval",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "A multi-agent LLM system shows high pass^k in one environment with fixed partner agents. Which further test does the held-out co-player idea suggest?",
+      "choices": [
+        "Increase k until the measured pass^k value stops changing between runs",
+        "Re-test with held-out partner models and prompts, over seeds and partners",
+        "Measure how the system's latency grows as more partner agents are added",
+        "Retrain the system with the same partner agents for many more steps"
+      ],
+      "answer": 1,
+      "explain": "Single-environment pass^k does not test robustness to new partners. The proposal, by analogy with Melting Pot, is to hold out counterpart models and prompts, as one holds out co-players.",
+      "source": "https://arxiv.org/abs/2107.06857"
+    }
+  ]
+}

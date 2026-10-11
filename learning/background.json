@@ -76,6 +76,7 @@
     {"id": "goal-generative", "label": "Understand diffusion, flow matching and Schrödinger bridges", "sets": {}, "goal": "generative-transport"},
     {"id": "goal-dynamics", "label": "Understand how deep networks learn during training (NTK, SLT, developmental stages)", "sets": {}, "goal": "how-deep-nets-learn"},
     {"id": "goal-capable", "label": "Understand LLMs, VLMs and robot VLAs as engineered systems", "sets": {}, "goal": "capable-systems-llm-to-vla"},
+    {"id": "goal-fde", "label": "I deploy LLM agents for customers or in regulated industries (finance, legal, health, security, robotics, accessibility) and need them reliable: evals, hallucination detection, guardrails, human escalation", "sets": {}, "goal": "fde-agent-reliability"},
     {"id": "goal-geometry", "label": "See the synthesis: where system-theoretic and statistical-learning quantities connect", "sets": {}, "goal": "capstone-learning-geometry-meets-control"},
     {"id": "goal-alignment", "label": "Study alignment: reward misspecification, preferences and correctable agents", "sets": {}, "goal": "capstone-alignment-belief-state"},
     {"id": "goal-thesis", "label": "I'm joining the team to work on (or stress-test) our alignment thesis", "sets": {}, "goal": "thesis-supporting-case"},
