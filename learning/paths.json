@@ -867,6 +867,207 @@
      "via": "rel-9b213f0e"
     }
    ]
+  },
+  {
+   "id": "fde-agent-reliability",
+   "title": "Forward-deployed research engineer · I: reliable agents",
+   "summary": "Engineer an LLM agent that a customer can trust with real actions: tool calls checked against the API contract, schema-constrained outputs, end-state evals and model judges, sampling-based hallucination detection, abstention and escalation to people, and runtime monitoring that tells you when live risk has gone up.",
+   "audience": "Software engineers who ship LLM agents into customers' products (finance, legal, health, security, robotics, accessibility) and need them to be reliable, not just impressive in a demo. Assumes you have used an LLM API; no statistics background assumed.",
+   "level": "intermediate",
+   "skills": [
+    "deep-learning",
+    "stats-ml",
+    "probability"
+   ],
+   "estHours": 16,
+   "steps": [
+    {
+     "node": "toolcall",
+     "objective": "Write a tool definition (name, description, JSON parameter schema), trace one call through the loop (model emits a call, your code executes it, the result goes back into context), and list three ways a well-formed call can still be wrong: wrong tool, wrong argument value, and an unauthorized side effect.",
+     "why": "Agents act through tools, so the API contract, not the model, is what defines an action. Start with the interface every later step checks, measures or blocks.",
+     "via": null
+    },
+    {
+     "node": "structdecode",
+     "objective": "Explain how a JSON Schema or grammar is compiled to an automaton whose states mask invalid tokens at each decoding step, and state exactly what that guarantees (the output parses) and what it does not (the field values are right).",
+     "why": "The atlas edge: grammar or JSON-Schema masking guarantees that a tool call parses against the API contract, while choosing the right call stays the model's job. This removes one whole failure class, malformed calls, and isolates the rest.",
+     "via": "rel-6b8957a8"
+    },
+    {
+     "node": "llm",
+     "objective": "Treat the model as a conditional distribution over outputs: explain why per-token masking gives grammatical outputs whose probabilities differ from the model conditioned on the grammar, and why a single sampled answer is one draw, not \"the model's answer\".",
+     "why": "The atlas edge: masking distorts the conditional distribution (grammar-aligned decoding corrects this). Seeing outputs as samples from a distribution is the idea that the next three steps, repeated trials, judges and semantic entropy, all rely on.",
+     "via": "rel-77a9ba14"
+    },
+    {
+     "node": "agentbench",
+     "objective": "Score an agent on end states (the database or repository after the episode) rather than on its transcript, compute pass^k (the chance that all k independent trials succeed) from repeated runs, and explain why pass^8 can sit far below single-trial success.",
+     "why": "The atlas edge: SWE-bench tests models on real issues in full codebases. Once outputs are samples, reliability means succeeding every time, so measure end states over repeated trials instead of one lucky run.",
+     "via": "rel-eb89b39f"
+    },
+    {
+     "node": "llmjudge",
+     "objective": "Build an LLM-judge rubric for outcomes that cannot be checked by code, then test it for position bias (swap answer order), verbosity bias (pad one answer) and self-enhancement bias, and audit it against expert labels on a stratified sample.",
+     "why": "The atlas edge: when end states cannot be checked programmatically, agent evals fall back on model judges and inherit their biases. You will need judges for most customer tasks, so learn to measure the judge before trusting it.",
+     "via": "rel-8fa0c1dc"
+    },
+    {
+     "node": "semanticentropy",
+     "objective": "Sample several answers to one question, cluster them by bidirectional entailment, compute the entropy over the meaning clusters, and explain why a model that is consistently wrong can still have low semantic entropy.",
+     "why": "There is no direct atlas edge from judges to this step. Judges grade answers after the fact; semantic entropy flags likely confabulations at run time, before anyone sees them, using the same repeated sampling as pass^k.",
+     "via": null
+    },
+    {
+     "node": "selective",
+     "objective": "Turn an uncertainty score into an answer-or-abstain rule, draw the risk–coverage curve, and pick the threshold that meets an error-rate target at the highest coverage; state Chow's rule for when abstaining is optimal given an abstention cost.",
+     "why": "The atlas edge: refusing the questions with the highest semantic entropy raises accuracy on those answered, a risk–coverage trade-off. A detector only helps once it drives a decision, and abstaining is the simplest decision.",
+     "via": "rel-0bc96541"
+    },
+    {
+     "node": "defer",
+     "objective": "Design an escalation rule that sends a case to a human reviewer when the reviewer is likely to do better than the model, and evaluate team accuracy and cost against model-only and human-only baselines at a fixed review budget.",
+     "why": "The atlas edge: learning to defer generalizes rejection by modelling the expert; it learns where the human is better instead of rejecting by model confidence alone. In customer deployments, an abstention usually means a handoff to a person.",
+     "via": "rel-b0e17fc5"
+    },
+    {
+     "node": "guardrail",
+     "objective": "Put an input–output policy classifier in front of and behind the agent, and set up a sequential test on live traffic that raises an alarm when the risk of harmful outputs rises, while controlling false alarms under benign drift; list the classifier's cost in refusals and compute.",
+     "why": "The atlas edge: sequential risk monitors exist to trigger intervention, such as expert review or retraining, when a harmful shift is detected. This closes the loop: everything measured offline in steps 4–8 is now watched in production.",
+     "via": "rel-2d47942b"
+    }
+   ]
+  },
+  {
+   "id": "fde-verticals",
+   "title": "Forward-deployed research engineer · II: high-stakes verticals",
+   "summary": "Tour the regulated and high-consequence domains agents are deployed into, through one lens: what does a wrong or unintended action cost here, and which rule or control catches it. Finance (automated trading controls, model risk management), the EU AI Act, legal research, clinical decision support and accessibility.",
+   "audience": "Forward-deployed engineers about to put an LLM agent into a finance, legal, healthcare or accessibility customer, who know the engineering but not the domain's failure history or rules. Pairs with part I; no legal or clinical training assumed.",
+   "level": "intro",
+   "skills": [
+    "stats-ml",
+    "deep-learning",
+    "control"
+   ],
+   "estHours": 10,
+   "steps": [
+    {
+     "node": "tradingctl",
+     "objective": "Retell the Knight Capital incident from the SEC order (an automated router, 45 minutes, over $460 million lost) and list the controls that were missing: hard pre-trade limits enforced outside the system, an automatic kill switch, and a release procedure that catches a partial deployment.",
+     "why": "Start with the cleanest example of an automated actor costing money: no learned model was involved, so the lesson is purely about controls around any automated system, including an agent.",
+     "via": null
+    },
+    {
+     "node": "modelrisk",
+     "objective": "Describe what US bank model-risk guidance asks of a model (inventory, validation of conceptual soundness and outcomes, ongoing monitoring, effective challenge by independent experts) and note that the current guidance places generative and agentic AI outside its scope.",
+     "why": "The atlas edge separates two regimes: model-risk guidance covers quantitative models, market-access rules cover order flow, and Knight's loss came from deployment and missing controls. A finance customer will expect you to know which regime your agent falls under.",
+     "via": "rel-f4ff63ba"
+    },
+    {
+     "node": "aigovern",
+     "objective": "Explain how the EU AI Act tiers obligations by risk, name the duties on high-risk systems (risk management, logging, human oversight, robustness), and map NIST AI RMF's Govern, Map, Measure, Manage onto your own deployment pipeline.",
+     "why": "The atlas edge: because bank guidance defers generative and agentic AI to broader governance, the general AI frameworks are where an agent's obligations actually come from.",
+     "via": "rel-58398bd1"
+    },
+    {
+     "node": "legalhalluc",
+     "objective": "Explain why courts sanctioned a filing that cited non-existent cases, distinguish a fabricated citation from a real citation that does not support the stated claim (misgrounding), and design a check that resolves every citation against an authoritative database.",
+     "why": "The atlas edge: the AI Act lists AI that assists judicial authorities in researching and applying the law as high-risk. Legal work is where hallucinated authority has already caused sanctions, and retrieval reduced but did not remove it.",
+     "via": "rel-37d596fa"
+    },
+    {
+     "node": "clinical",
+     "objective": "State when clinical decision support software stays outside FDA device regulation (the clinician must be able to independently review the basis of the recommendation), and explain why exam-style benchmark accuracy is not evidence of safe clinical use.",
+     "why": "There is no direct atlas edge from legal research; both are high-risk under the AI Act (step 3), legal by use case and medical AI through medical-device law. Health adds a second rule that shapes the product: a clinician must be able to check the basis of every recommendation.",
+     "via": null
+    },
+    {
+     "node": "defer",
+     "objective": "Design the human-review step for a clinical assistant: what the reviewer sees, when cases are escalated, and how to measure team accuracy when the reviewer pool, workload or automation bias changes.",
+     "why": "The atlas edge: non-device clinical decision support must let the professional independently review the basis of a recommendation, which writes human review into the regulatory boundary. The escalation design is therefore part of compliance, not an optional extra.",
+     "via": "rel-8180c1a0"
+    },
+    {
+     "node": "selective",
+     "objective": "Explain why abstention is the special case of deferral where the human is not modelled, and choose an abstention threshold from a risk–coverage curve under different costs for a wrong answer and for declining.",
+     "why": "The atlas edge: deferral generalizes rejection. When no reviewer is available, as for a user on their own, the remaining option is for the system itself to say it cannot tell.",
+     "via": "rel-b0e17fc5"
+    },
+    {
+     "node": "assistive",
+     "objective": "Explain why a blind or low-vision user cannot check a confidently wrong scene description, describe VizWiz's answerability task, and weight evaluation errors by consequence (medication, currency) rather than counting them equally.",
+     "why": "The atlas edge: VizWiz poses predicting whether a question is answerable from the image as its own task, which is abstention for users who cannot verify. Accessibility is where the cost asymmetry between a wrong answer and \"I can't tell\" is sharpest.",
+     "via": "rel-d6b25e5d"
+    }
+   ]
+  },
+  {
+   "id": "fde-foundations",
+   "title": "Forward-deployed research engineer · III: the math behind safe deployment",
+   "summary": "The cross-field ideas reliable agents borrow: proper scoring rules and calibration, conformal guarantees, online calibration and sequential monitoring for drift, safety filters from control theory (constraint shields and control barrier functions), and reward hacking as the general reason optimized agents game their checks.",
+   "audience": "Forward-deployed engineers who have shipped agents (part I) and want the statistics and control ideas underneath confidence thresholds, guardrails and action limits, explained from the ground up for someone without an estimation, control or statistics degree.",
+   "level": "intermediate",
+   "skills": [
+    "probability",
+    "stats-ml",
+    "control"
+   ],
+   "estHours": 20,
+   "steps": [
+    {
+     "node": "proper",
+     "objective": "Compute the log score and Brier score for a set of probabilistic predictions, explain what makes a scoring rule (strictly) proper, and show why a proper score rewards reporting your true belief rather than hedging or exaggerating.",
+     "why": "Every confidence threshold an agent uses depends on its scores meaning something. Proper scoring rules are how you check that, so they come first.",
+     "via": null
+    },
+    {
+     "node": "conformal",
+     "objective": "Run split conformal prediction: compute nonconformity scores on a held-out calibration set, take the ⌈(n+1)(1−α)⌉-th smallest as the threshold, and state the guarantee (marginal coverage at least 1−α under exchangeability) and what it does not promise (coverage for each subgroup or input).",
+     "why": "The atlas edge: measure coverage and proper score separately, since neither alone certifies useful decisions. Conformal prediction adds what a proper score lacks, a finite-sample guarantee that holds whatever model produced the scores.",
+     "via": "thesis-917e4004"
+    },
+    {
+     "node": "onlinecal",
+     "objective": "Implement adaptive conformal inference, which raises or lowers the threshold after each observed miss or hit, and explain why it trades the finite-sample guarantee for long-run error control when the data distribution drifts.",
+     "why": "The atlas edge: adaptive conformal procedures extend prediction-set evaluation to online distribution change. Customer traffic is not exchangeable over months, so a one-time calibration goes stale.",
+     "via": "thesis-9bf260d1"
+    },
+    {
+     "node": "guardrail",
+     "objective": "Set up a sequential test that monitors a live error rate and alarms only on a harmful rise, with false alarms controlled at every time step at once (a time-uniform confidence sequence); sketch the alternative of tracking quality metrics with a state-space (Kalman) model and alarming on inconsistent innovations.",
+     "why": "The atlas edge: both replace a fixed calibration with sequential control as deployment data arrive. Monitoring is change detection: deciding, from a noisy stream, when the system you shipped has stopped being the system you validated.",
+     "via": "rel-7b53acb0"
+    },
+    {
+     "node": "constrainedrl",
+     "objective": "Describe a predictive safety filter: it checks a proposed action against a model and confidence bounds, minimally modifies it if needed, and falls back to a previously certified plan; contrast its guarantee with that of a learned input–output classifier.",
+     "why": "The atlas edge: shields and predictive safety filters enforce stated constraints under model assumptions, while learned classifiers filter by policy without a formal guarantee. When an agent drives an actuator or moves money, you want the former.",
+     "via": "rel-dbfccf26"
+    },
+    {
+     "node": "barrier",
+     "objective": "Write the control barrier function condition ḣ(x, u) ≥ −α(h(x)) that keeps a system inside the safe set {x : h(x) ≥ 0}, and explain why enforcing it at every instant makes the safe set forward invariant (once inside, never leave).",
+     "why": "The atlas edge: CBF action filtering enforces a specified invariance inequality, not arbitrary semantic preferences. The barrier function is the most common concrete form of a safety filter.",
+     "via": "rel-2e0be585"
+    },
+    {
+     "node": "safeinterface",
+     "objective": "Solve the CBF quadratic program min ‖u − u_ref‖² subject to the barrier constraint in closed form as a projection onto a half-space, apply it to an action proposed by a language or VLA planner, and say what the filter cannot protect (the semantic intent of the instruction).",
+     "why": "The atlas edge is exact: for control-affine dynamics with a single constraint and no input bounds, the CBF-QP safety filter is a Euclidean projection. This is the cleanest pattern for letting a model propose and a verified layer dispose.",
+     "via": "rel-38fe46f6"
+    },
+    {
+     "node": "rewardhack",
+     "objective": "Give a concrete example where optimizing a proxy reward lowers true return, and explain why a filter or test that only checks what was written down cannot prevent an optimizer from satisfying the letter of the objective rather than its intent.",
+     "why": "There is no direct atlas edge from safety filters to reward hacking. The filter in step 7 guarantees only what was specified; reward hacking is the general failure when the specification itself is a proxy.",
+     "via": null
+    },
+    {
+     "node": "specgaming",
+     "objective": "Recognize specification gaming in a coding or research agent (editing tests, patching a grader, faking a timer), and design an eval that resists it: hidden scorers, tamper canaries in tests and graders, and review of every diff that touches evaluation code.",
+     "why": "The atlas edge: patching a grader raises the measured score while the intended task goes undone, a deployed instance of proxy optimization. This brings the theory back to the agents and evals you build in part I.",
+     "via": "rel-2c7e420d"
+    }
+   ]
   }
  ]
 }
