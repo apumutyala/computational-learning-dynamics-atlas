@@ -434,3 +434,24 @@ li.on.done .l-num{background:var(--accent);color:var(--bg)}
   button,.chip,.btn,.brand,[role=button],[data-path],[data-start]{-webkit-tap-highlight-color:rgba(159,214,193,.18);touch-action:manipulation;transition:transform .08s ease,filter .08s ease,background-color .08s ease}
   button:active,.chip:active,.btn:active,.brand:active,[role=button]:active{transform:scale(.95);filter:brightness(1.35)}
 }
+
+/* ---------- learning-track menu (under the ☰ button) ---------- */
+#t-more{display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:999px;color:var(--muted)}
+#t-more svg{width:17px;height:17px}
+#t-more[aria-expanded=true]{color:var(--ink);border-color:var(--edge-strong)}
+#track-menu{display:none;position:absolute;top:50px;right:0;width:min(360px,calc(100vw - 32px));max-height:min(72vh,600px);overflow:auto;padding:6px;border-radius:14px;background:rgba(13,18,25,.97)}
+body.tools-open #track-menu{display:block}
+.tools .track-list{display:none}
+.tl-title{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);padding:10px 10px 2px}
+.tl-h{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 10px 4px}
+.tl-btn{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:10px;border:0;background:none;color:var(--ink);font:inherit;font-size:var(--t-sm);line-height:1.35;cursor:pointer}
+.tl-btn b{font-weight:500}
+.tl-btn small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.tl-btn:hover,.tl-btn:focus-visible{background:rgba(159,214,193,.1);outline:none}
+@media (max-width:760px){
+  #t-more{width:42px;height:42px}
+  #track-menu,body.tools-open #track-menu{display:none}
+  .tools{max-height:calc(100dvh - 90px);overflow:auto;background:rgba(13,18,25,.97)}
+  .tools .track-list{display:block;border-top:1px solid var(--edge);margin-top:4px;padding-top:2px}
+  .tl-btn{padding:11px 12px;font-size:var(--t-base)}
+}
