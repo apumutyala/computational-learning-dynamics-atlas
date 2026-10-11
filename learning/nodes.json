@@ -1975,6 +1975,400 @@
     "promptinject",
     "multillm"
    ]
+  },
+  "circuits": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "cnn"
+   ]
+  },
+  "superposition": {
+   "level": 3,
+   "skills": [
+    "linear-algebra",
+    "deep-learning",
+    "theory"
+   ],
+   "prereqs": [
+    "circuits",
+    "compressed"
+   ]
+  },
+  "inductionheads": {
+   "level": 3,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "attention",
+    "circuits"
+   ]
+  },
+  "ioi": {
+   "level": 3,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "inductionheads"
+   ]
+  },
+  "actpatching": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "attention"
+   ]
+  },
+  "attrpatching": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "optimization"
+   ],
+   "prereqs": [
+    "actpatching"
+   ]
+  },
+  "causalscrubbing": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "theory"
+   ],
+   "prereqs": [
+    "actpatching"
+   ]
+  },
+  "causalabstraction": {
+   "level": 3,
+   "skills": [
+    "theory",
+    "probability",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "actpatching",
+    "causal"
+   ]
+  },
+  "acdc": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "optimization"
+   ],
+   "prereqs": [
+    "actpatching"
+   ]
+  },
+  "sae": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "linear-algebra",
+    "optimization"
+   ],
+   "prereqs": [
+    "superposition",
+    "lasso"
+   ]
+  },
+  "scalingmono": {
+   "level": 3,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "sae",
+    "llm"
+   ]
+  },
+  "transcoders": {
+   "level": 4,
+   "skills": [
+    "deep-learning",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "sae",
+    "mlp"
+   ]
+  },
+  "attributiongraphs": {
+   "level": 4,
+   "skills": [
+    "deep-learning",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "transcoders",
+    "attrpatching"
+   ]
+  },
+  "linearrep": {
+   "level": 3,
+   "skills": [
+    "linear-algebra",
+    "deep-learning",
+    "theory"
+   ],
+   "prereqs": [
+    "controlprobes"
+   ]
+  },
+  "controlprobes": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "logistic"
+   ]
+  },
+  "tunedlens": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "mlp"
+   ]
+  },
+  "steering": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "linearrep"
+   ]
+  },
+  "grokkingmech": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "theory",
+    "signals-estimation"
+   ],
+   "prereqs": [
+    "circuits",
+    "fourier"
+   ]
+  },
+  "othello": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "controlprobes",
+    "attention"
+   ]
+  },
+  "beliefgeometry": {
+   "level": 4,
+   "skills": [
+    "probability",
+    "deep-learning",
+    "theory"
+   ],
+   "prereqs": [
+    "hmm",
+    "linearrep"
+   ]
+  },
+  "illusions": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "actpatching",
+    "controlprobes"
+   ]
+  },
+  "saebaselines": {
+   "level": 3,
+   "skills": [
+    "stats-ml",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "sae",
+    "logistic"
+   ]
+  },
+  "auditing": {
+   "level": 4,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": [
+    "sae",
+    "rewardhack"
+   ]
+  },
+  "sparsetrees": {
+   "level": 2,
+   "skills": [
+    "optimization",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "trees"
+   ]
+  },
+  "rashomon": {
+   "level": 3,
+   "skills": [
+    "stats-ml",
+    "theory",
+    "optimization"
+   ],
+   "prereqs": [
+    "sparsetrees"
+   ]
+  },
+  "rudin2019": {
+   "level": 1,
+   "skills": [
+    "stats-ml"
+   ],
+   "prereqs": [
+    "trees"
+   ]
+  },
+  "offswitch": {
+   "level": 3,
+   "skills": [
+    "rl",
+    "probability",
+    "theory"
+   ],
+   "prereqs": [
+    "assistance"
+   ]
+  },
+  "ird": {
+   "level": 3,
+   "skills": [
+    "rl",
+    "probability"
+   ],
+   "prereqs": [
+    "rewardhack",
+    "assistance"
+   ]
+  },
+  "gsai": {
+   "level": 4,
+   "skills": [
+    "control",
+    "theory",
+    "probability"
+   ],
+   "prereqs": [
+    "world",
+    "barrier"
+   ]
+  },
+  "rmensemble": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "rl",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "preference"
+   ]
+  },
+  "cirlincorrig": {
+   "level": 4,
+   "skills": [
+    "rl",
+    "probability",
+    "theory"
+   ],
+   "prereqs": [
+    "offswitch"
+   ]
+  },
+  "corrigibility": {
+   "level": 3,
+   "skills": [
+    "theory",
+    "rl"
+   ],
+   "prereqs": [
+    "rl"
+   ]
+  },
+  "goalmisgen": {
+   "level": 3,
+   "skills": [
+    "rl",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "rl",
+    "rewardhack"
+   ]
+  },
+  "sleeperagents": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": [
+    "llm",
+    "preference"
+   ]
+  },
+  "alignfaking": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": [
+    "preference",
+    "sleeperagents"
+   ]
+  },
+  "elk": {
+   "level": 4,
+   "skills": [
+    "theory",
+    "probability",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "world"
+   ]
+  },
+  "bitterlesson": {
+   "level": 1,
+   "skills": [
+    "deep-learning",
+    "theory"
+   ],
+   "prereqs": []
   }
  }
 }

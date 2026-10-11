@@ -1,5 +1,6 @@
 """Recompute cluster counts and the topic/edge totals quoted in README.md and index.html."""
 import collections
+import hashlib
 import json
 import pathlib
 import re
@@ -29,3 +30,9 @@ html = re.sub(r"\b\d+ research topics and \d+ (typed|evidence-labelled) connecti
 html = re.sub(r"\d+ topics · \d+ typed connections", f"{T} topics · {E} typed connections", html)
 (ROOT / "index.html").write_text(html, encoding="utf-8")
 print(f"{T} topics, {C} clusters, {E} edges, types {dict(types)}")
+
+# Cache-bust the atlas fetch with a hash of the final atlas.json, so browsers pick up every data change.
+digest = hashlib.sha1((ROOT / "atlas.json").read_bytes()).hexdigest()[:8]
+app = (ROOT / "app.js").read_text(encoding="utf-8")
+app = re.sub(r"fetch\('atlas\.json\?v=[^']*'\)", f"fetch('atlas.json?v={digest}')", app)
+(ROOT / "app.js").write_text(app, encoding="utf-8")
