@@ -1705,6 +1705,258 @@
     "particle",
     "blockedgibbs"
    ]
+  },
+  "toolcall": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "llm"
+   ]
+  },
+  "structdecode": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "probability"
+   ],
+   "prereqs": [
+    "llm",
+    "toolcall"
+   ]
+  },
+  "mcp": {
+   "level": 1,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "toolcall"
+   ]
+  },
+  "agentbench": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "llm"
+   ]
+  },
+  "llmjudge": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "llm",
+    "preference"
+   ]
+  },
+  "semanticentropy": {
+   "level": 3,
+   "skills": [
+    "probability",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "llm",
+    "info"
+   ]
+  },
+  "selective": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": [
+    "proper",
+    "logistic"
+   ]
+  },
+  "conformallm": {
+   "level": 3,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": [
+    "conformal",
+    "selective"
+   ]
+  },
+  "guardrail": {
+   "level": 3,
+   "skills": [
+    "stats-ml",
+    "probability"
+   ],
+   "prereqs": [
+    "onlinecal",
+    "llm"
+   ]
+  },
+  "promptinject": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "rag",
+    "toolcall"
+   ]
+  },
+  "agentsec": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "promptinject"
+   ]
+  },
+  "defer": {
+   "level": 3,
+   "skills": [
+    "stats-ml",
+    "optimization"
+   ],
+   "prereqs": [
+    "selective"
+   ]
+  },
+  "auditlog": {
+   "level": 1,
+   "skills": [
+    "stats-ml"
+   ],
+   "prereqs": []
+  },
+  "redteam": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "llm"
+   ]
+  },
+  "modelrisk": {
+   "level": 2,
+   "skills": [
+    "stats-ml"
+   ],
+   "prereqs": [
+    "forecastcv"
+   ]
+  },
+  "tradingctl": {
+   "level": 1,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "legalhalluc": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "rag"
+   ]
+  },
+  "clinical": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "llm"
+   ]
+  },
+  "aigovern": {
+   "level": 1,
+   "skills": [
+    "stats-ml"
+   ],
+   "prereqs": []
+  },
+  "cyberagent": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": [
+    "agentbench",
+    "agentsec"
+   ]
+  },
+  "robotstd": {
+   "level": 2,
+   "skills": [
+    "control"
+   ],
+   "prereqs": []
+  },
+  "safeinterface": {
+   "level": 3,
+   "skills": [
+    "control",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "barrier",
+    "vla"
+   ]
+  },
+  "specgaming": {
+   "level": 2,
+   "skills": [
+    "rl",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "rewardhack",
+    "agentbench"
+   ]
+  },
+  "oversight": {
+   "level": 3,
+   "skills": [
+    "deep-learning",
+    "theory"
+   ],
+   "prereqs": [
+    "preference",
+    "llmjudge"
+   ]
+  },
+  "sycophancy": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "preference"
+   ]
+  },
+  "assistive": {
+   "level": 2,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "vlm",
+    "selective"
+   ]
   }
  }
 }
