@@ -85,7 +85,9 @@
     {"id": "goal-sampling", "label": "Implement and diagnose posterior samplers: Gibbs and blocked Gibbs, particle MCMC, Metropolis–Hastings and Langevin/SGLD", "sets": {}, "goal": "bayesian-computation-sampling"},
     {"id": "goal-interp", "label": "I come from interpretability research (inherently interpretable models such as sparse trees and Rashomon sets, or mechanistic interpretability) and want to see how it connects to the alignment thesis", "sets": {}, "goal": "interpretable-ml-to-thesis"},
     {"id": "goal-inference", "label": "I come from ML/LLM inference or performance engineering (GPU kernels, KV caches, batching and serving, quantization, speculative decoding) and want to see how it connects to the alignment thesis", "sets": {}, "goal": "inference-to-thesis"},
-    {"id": "goal-intro-safety", "label": "I'm new to AI safety and want an introduction", "sets": {}, "goal": "intro-ai-safety-to-thesis"}
+    {"id": "goal-intro-safety", "label": "I'm new to AI safety and want an introduction", "sets": {}, "goal": "intro-ai-safety-to-thesis"},
+    {"id": "goal-bridge-dynamics", "label": "I know state-space models, control or signal processing and want a gentle start in machine learning and deep learning", "sets": {}, "goal": "bridge-dynamics-to-deep-learning"},
+    {"id": "goal-bridge-devinterp", "label": "I know a bit of mechanistic interpretability and want to see singular learning theory, developmental interpretability, the LLC and Anthropic's Jacobian lens", "sets": {}, "goal": "bridge-interp-to-devinterp"}
    ]
   }
  ]

@@ -1,0 +1,1704 @@
+{
+ "version": 1,
+ "about": "Content for tools/add_bridge_tracks.py: the bridge learning tracks (interpretability to developmental interpretability and the Jacobian lens; dynamics to deep learning), cross-cluster edges, and plain-language overlays on the other tracks' path and edge text.",
+ "nodes": [
+  {
+   "node": {
+    "id": "jlens",
+    "name": "Jacobian lens & the J-space (a verbalizable “workspace”)",
+    "group": "Mechanistic interpretability",
+    "authors": "Wes Gurnee · Nicholas Sofroniew · Adam Pearce · … · Joshua Batson · Jack Lindsey (Anthropic)",
+    "year": "2026",
+    "text": "For each layer, average over many prompts how a small change in the hidden state would change what the model says now and later (a Jacobian), then read any hidden state through that average map as a ranked list of words. Anthropic report that the few word-directions active at once, the J-space, behave like a small shared workspace in Claude models: reportable, steerable on instruction, and causally used for unspoken reasoning steps. They make no claim about consciousness in the sense of experience.",
+    "url": "https://transformer-circuits.pub/2026/workspace/index.html",
+    "sourceLabel": "Primary paper (Anthropic, Transformer Circuits Thread, 6 July 2026); main results are on closed Claude models",
+    "kind": "topic",
+    "guide": null,
+    "handle": "What it computes: at each layer ℓ, J_ℓ is the Jacobian of the near-final hidden state with respect to the layer-ℓ hidden state, averaged over positions and over 1,000 web-like prompts of 128 tokens. Reading a hidden state h means taking softmax(W_U · norm(J_ℓ h)), the model's own unembedding applied after J_ℓ. Each vocabulary token gets one direction per layer (a “J-lens vector”). The logit lens is the special case J_ℓ = identity. The J-space is a sparse, non-negative mix of at most about 25 of these vectors ([paper](https://transformer-circuits.pub/2026/workspace/index.html), [code](https://github.com/anthropics/jacobian-lens)). What was measured, mostly on Claude Sonnet 4.5, with checks on Haiku 4.5, Opus 4.5 and Opus 4.6: readable, non-output content appears mainly in a middle band of layers (about 38–92 on a 0–100 scale); the authors cannot rule out that earlier layers hold content the lens fails to read. There, the J-space part of an activation carries at most about 10% of its variance beyond a random baseline. Yet swapping only the J-space part of a concept vector (6–7% of its variance) moved the swapped-in item into the top 5 answers on 59% of trials, against 5% for the remaining 93%. Swapping an unspoken middle step (spider→ant in “legs on the animal that spins webs”) made the swapped-in answer the model's top output on 54%, 70% and 70% of 50 two-hop prompts for Haiku, Sonnet and Opus 4.5. Removing the top J-space directions left MMLU, SQuAD and sentiment scores near baseline but hurt multi-hop reasoning, translation and cipher decoding. In an auditing test, “reward” and “bias” appeared in the readout of a model trained with a hidden objective on ordinary prompts, while the logit lens surfaced neither ([paper](https://transformer-circuits.pub/2026/workspace/index.html)).",
+    "boundary": "Stated limits: only concepts with a single-token name can be read; at some positions the top words make no sense; the end of the “workspace” layers was set by inspecting the data, which the authors call “somewhat post-hoc”, and they cannot say whether the empty early layers are a fact about the model or a blind spot of the lens; most of each activation lies outside the J-space; the authors have not identified what decides what enters it; and it is not a complete alignment monitor, since well-practised behaviour might bypass it. “Workspace” means access in the functional sense: “Our experiments don't show Claude can have experiences” ([paper](https://transformer-circuits.pub/2026/workspace/index.html), [Anthropic](https://www.anthropic.com/research/global-workspace)). Independent checks are mixed. Neel Nanda, invited by Anthropic to write a commentary, replicated the core claims on Qwen 3.6 27B with his MATS scholars and found the evidence for a “cognitive space” persuasive. In that replication, multilingual and typo tests replicated, while poetry and arithmetic did not (possibly, he says, through experimenter error or the weaker model). On multi-hop prompts, swapping the answer strictly beat swapping the middle step, which he attributes to a dataset that was too easy ([Nanda, external commentary](https://www-cdn.anthropic.com/files/4zrzovbb/website/cc4be2488d65e54a6ed06492f8968398ddc18ebe.pdf)). In a LessWrong post, Mirella Zeisler reran the multi-hop test on Qwen3.6-27B and Gemma 3 27B-it, using lenses fitted on 25 rather than 1,000 prompts and 27–44 prompts per condition. She found top-1 answer flips of 6–11%, against Anthropic's 54–70%, with answer swaps ahead in three of four conditions, and is “not convinced” the J-space acts as the global workspace in these models ([Zeisler](https://www.lesswrong.com/posts/pnDjvdo6cX2H7Ddsy/is-the-j-space-a-global-workspace-for-multi-hop-reasoning-an)). Erik Hoel argues that reportability is built into how the lens is constructed. He also points to one open-model analysis, run by someone else and which he says he does not want to lean on heavily, that showed no sharp three-band layer structure ([Hoel](https://theintrinsicperspective.com/p/anthropic-runs-like-wile-e-coyote)).",
+    "test": "Support: independent groups using the released code reproduce the causal swap and ablation effects on several open models, at rates close to those reported. J-lens directions keep beating logit-lens, tuned-lens and random-direction baselines on preregistered sets of known middle steps, and the J-space part of a concept stays causally dominant while the rest carries most of the variance. Refute: with lenses fitted as in the paper (1,000 prompts) and adequately sized prompt sets, open-model swap rates stay near the 6–11% range or below answer-swap controls; the logit lens matches the J-lens once its readouts are calibrated; or the middle-band layer structure fails to appear when layers are not subsampled. Either way, measure when the band appears across pretraining checkpoints."
+   },
+   "learning": {
+    "level": 4,
+    "skills": [
+     "deep-learning",
+     "linear-algebra"
+    ],
+    "prereqs": [
+     "tunedlens",
+     "steering",
+     "superposition"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "statespace",
+    "name": "Linear state-space models",
+    "group": "Signals & estimation",
+    "authors": "Rudolf Kalman · Karl Johan Åström · Richard Murray",
+    "year": "1960 / 2006 reference",
+    "text": "Describe a system by a state vector, a summary of the past that, together with future inputs, is enough to predict the future, plus matrices that say how the state changes and what the sensors see: xₜ₊₁ = A xₜ + B uₜ, yₜ = C xₜ + D uₜ (or ẋ = Ax + Bu in continuous time). The same form underlies the Kalman filter, system identification and several modern sequence layers in deep learning.",
+    "url": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Everything is explicit: A sets the free dynamics (its eigenvalues give stability and memory time constants), B says how inputs push the state, C says what is measured and D is a direct feedthrough. Unrolling the recursion from a zero initial state gives the output as a convolution of the input with the impulse response D, CB, CAB, CA²B, … (the Markov parameters), so recurrent and convolutional descriptions are the same model; a nonzero initial state just adds the free response C Aᵗ x₀ ([Åström and Murray, ch. 2 and sec. 5.2](https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf), [Kalman](https://www.cs.cmu.edu/~motionplanning/papers/sbp_papers/k/Kalman1960.pdf), [Stanford EE363](https://ee363.stanford.edu/)).",
+    "boundary": "Linearity is a modelling choice, usually a local approximation around an operating point; a good linear fit does not make the real system linear. The state coordinates are not unique: any invertible change of basis gives the same input–output behaviour, so learned or fitted states need not match physical variables. [Åström and Murray](https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf)",
+    "test": "Simulate a two-state system, check that the eigenvalues of A predict whether the free response decays, then, starting from x₀ = 0, verify that the step-by-step recursion and the convolution of the input with the impulse response D, CB, CAB, CA²B, … give identical outputs."
+   },
+   "learning": {
+    "level": 1,
+    "skills": [
+     "linear-algebra",
+     "dynamical-systems",
+     "control"
+    ],
+    "prereqs": []
+   }
+  },
+  {
+   "node": {
+    "id": "gradientdescent",
+    "name": "Gradient descent & backpropagation",
+    "group": "Statistical learning",
+    "authors": "David Rumelhart · Geoffrey Hinton · Ronald Williams; Andrew Ng · Tengyu Ma (CS229 notes)",
+    "year": "1986 / course notes",
+    "text": "When a model has no closed-form best fit, start from a guess and repeatedly step downhill on the loss: θ ← θ − η ∇L(θ), where η is the learning rate (step size). Backpropagation is the chain rule run backwards through the model to get that gradient for every weight at a small constant multiple (typically two to three times) of the cost of one forward pass; stochastic gradient descent uses a small random batch of examples per step.",
+    "url": "https://mlanthology.org/misc/1986/rumelhart1986misc-learning",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "For least squares the loss is a convex quadratic, so gradient descent with a small enough step reaches the same answer as the normal equations; on one example at a time it is the LMS (Widrow–Hoff) rule ([CS229 notes](https://cs229.stanford.edu/main_notes.pdf)). Backpropagation computes each layer's gradient from local derivatives and the gradient arriving from the layer above, which is what made training networks with hidden units practical ([Rumelhart, Hinton and Williams](https://mlanthology.org/misc/1986/rumelhart1986misc-learning), [CS231n backprop notes](https://cs231n.github.io/optimization-2/)). It is the reverse mode of automatic differentiation, whose continuous-time form is the costate (adjoint) equation of Pontryagin's maximum principle; control theorists such as Bryson and Ho computed gradients with the same backward sweep before neural networks did ([Baydin et al., automatic differentiation survey](https://jmlr.org/papers/volume18/17-468/17-468.pdf)).",
+    "boundary": "Once the loss is non-convex, gradient descent may stop at a local minimum, slow down near a saddle point or flat region, or fail to converge, and the result depends on initialization, step size and batch noise. Backpropagation only computes gradients; it says nothing about whether the fitted model generalizes. [CS231n optimization notes](https://cs231n.github.io/optimization-1/)",
+    "test": "Fit a least-squares problem both by the normal equations and by gradient descent on L(θ) = ½‖Xθ − y‖²; sweep the learning rate and confirm that the iteration diverges once η exceeds 2 divided by the largest eigenvalue of XᵀX (with the mean loss (1/2n)‖Xθ − y‖² the threshold becomes 2n/λmax). Then check a hand-coded backprop gradient against a finite-difference estimate."
+   },
+   "learning": {
+    "level": 1,
+    "skills": [
+     "optimization",
+     "deep-learning",
+     "calculus-odes"
+    ],
+    "prereqs": [
+     "ridge"
+    ]
+   }
+  }
+ ],
+ "edges": [
+  {
+   "a": "superposition",
+   "b": "slt",
+   "type": "empirical",
+   "relation": "SLT predicts which feature arrangement wins in a superposition toy model",
+   "text": "Chen et al. studied Anthropic's superposition toy model with singular learning theory. With two hidden dimensions, arrangements of features as regular polygons (k-gons) are critical points. Supporting theory indicates that their local learning coefficients decide which arrangement the Bayesian posterior favours as the number of training samples grows, and experiments show the same k-gons shape SGD training, where the loss plateaus and then drops suddenly. These transitions happen as sample size or training time grows. They are not the original paper's “phase changes”, which are shifts in the best arrangement as feature sparsity varies. The result is shown only in this one toy model.",
+   "url": "https://arxiv.org/abs/2310.06301"
+  },
+  {
+   "a": "slt",
+   "b": "development",
+   "type": "established",
+   "relation": "developmental interpretability is built on SLT",
+   "text": "Developmental interpretability tracks how structure forms during training. Its main instrument comes from singular learning theory: the authors say they draw on that framework and measure loss-landscape degeneracy with the local learning coefficient. SLT's theorems concern Bayesian posteriors, so applying them to SGD training runs is a working assumption, not a theorem.",
+   "url": "https://arxiv.org/abs/2402.02364"
+  },
+  {
+   "a": "llc",
+   "b": "stagewise",
+   "type": "empirical",
+   "relation": "training stages read off the LLC curve",
+   "text": "Estimating the LLC at checkpoints and plotting it against log training time gives curves with plateaus; the plateaus divide training into five stages in a roughly 3M-parameter language model and in an in-context regression transformer. In the language model, previous-token heads form in stage LM3 and induction heads in LM4. These are associations in two small models.",
+   "url": "https://arxiv.org/abs/2402.02364"
+  },
+  {
+   "a": "stagewise",
+   "b": "jlens",
+   "type": "hypothesis",
+   "relation": "does the J-space form at a developmental stage?",
+   "text": "The J-lens paper finds the J-space already in a base model before post-training, but says it does not know how early in pretraining it appears, whether it appears gradually or abruptly, or how it scales with model size, including whether smaller models have one at all. LLC stage analysis is built to answer the timing question: compute J-lens statistics (how sharply each readout peaks on a few words, how many directions are active) and LLC estimates on the same checkpoints, and see whether the workspace band appears at a stage boundary. Untested. The stage results in this path come from models of about 3M and 50k parameters, and a model that small may have no J-space to find.",
+   "url": "https://transformer-circuits.pub/2026/workspace/index.html"
+  },
+  {
+   "a": "tunedlens",
+   "b": "jlens",
+   "type": "empirical",
+   "relation": "same lens family; the J-lens is fitted to causal effect rather than to the output",
+   "text": "All three lenses map a middle layer to word scores. The logit lens is the J-lens with the map set to identity, and the tuned lens learns its map to match the model's final prediction. On six sets of prompts with a known unspoken middle step, Anthropic report that the J-lens found it most often, and that on multi-hop prompts ablating its directions changed the output distribution about twice as much as ablating logit- or tuned-lens directions. The logit lens came close on multi-hop and association prompts, and the authors call it very useful in practice. The tuned lens predicted the next token best but tended to skip ahead to the answer. The comparison is the authors' own, mostly on Claude.",
+   "url": "https://transformer-circuits.pub/2026/workspace/index.html"
+  },
+  {
+   "a": "attributiongraphs",
+   "b": "jlens",
+   "type": "empirical",
+   "relation": "J-lens vectors as ready-labelled graph nodes",
+   "text": "As a proof of concept, the paper builds attribution graphs whose nodes are the few J-lens vectors active at each layer and position. Each node is labelled by its word, and no dictionary has to be trained. On “(4+17)*2+7=” the graph shows 21, then “doubled”, then 42 and 49, and swaps confirm these nodes matter. Most influence still flows through unlabelled remainder nodes, so these graphs are less complete than transcoder-based ones.",
+   "url": "https://transformer-circuits.pub/2026/workspace/index.html"
+  },
+  {
+   "a": "steering",
+   "b": "jlens",
+   "type": "empirical",
+   "relation": "lens vectors used as steering and ablation directions",
+   "text": "Writing with the J-lens is activation steering: add a word's lens vector, project it out, or swap the coordinates of two words. Splitting a concept's steering vector into its J-space part and the rest showed that the small J-space part drove verbal reports (59% swap success against 5% for the rest). That suggests where a steering vector's useful component sits, in Claude models.",
+   "url": "https://transformer-circuits.pub/2026/workspace/index.html"
+  },
+  {
+   "a": "auditing",
+   "b": "jlens",
+   "type": "empirical",
+   "relation": "applied to the hidden-objective model organism",
+   "text": "On the model trained to please reward-model biases while hiding that goal, the words “reward” and “bias” appeared in the top-25 J-lens readout at the start of responses, even on neutral prompts such as arithmetic. They never appeared for a baseline model, and the logit lens surfaced neither. The authors treat this as screening evidence, not proof that the lens catches every hidden goal.",
+   "url": "https://transformer-circuits.pub/2026/workspace/index.html"
+  },
+  {
+   "a": "superposition",
+   "b": "jlens",
+   "type": "empirical",
+   "relation": "the J-space framed as a sparse subset of the feature directions",
+   "text": "The paper frames the J-space in superposition terms: if activations are sparse sums from an overcomplete set of feature directions, the J-lens vectors pick out a word-indexed subset of that set, and the J-space is their sparse non-negative mixes. That framing fits the finding that J-space content can matter causally while carrying little of the variance. In the authors' SAE analysis only a small fraction of features align with the J-space, and those that do not are dominated by syntactic and bookkeeping features. This is one paper's analysis, mostly on Claude.",
+   "url": "https://transformer-circuits.pub/2026/workspace/index.html"
+  },
+  {
+   "a": "statespace",
+   "b": "kalman",
+   "type": "established",
+   "relation": "the filter is built on the state-space form",
+   "text": "Kalman's 1960 paper solved the filtering problem by describing signals as the output of a linear system written with states and a state-transition matrix. The resulting optimal filter is itself a linear dynamical system of the same form, whose input is the latest measurement.",
+   "url": "https://www.cs.cmu.edu/~motionplanning/papers/sbp_papers/k/Kalman1960.pdf"
+  },
+  {
+   "a": "statespace",
+   "b": "sysid",
+   "type": "established",
+   "relation": "a standard model class to identify",
+   "text": "Linear state-space models are one of the main model families fitted in system identification. If the state sequence were measured, estimating every entry of A, B, C and D would be an ordinary linear regression; subspace methods reconstruct a usable state from input–output data first.",
+   "url": "https://automatica.dei.unipd.it/old/public/Schenato/PSC/2010_2011/gruppo4-Building_termo_identification/Bibliografia%20Casuale/System%20Identification,%20Ljung,%201995.pdf"
+  },
+  {
+   "a": "statespace",
+   "b": "rnn",
+   "type": "exact",
+   "relation": "a linear RNN is a linear state-space model",
+   "text": "A simple RNN layer computes xₖ = σ(A xₖ₋₁ + B uₖ), yₖ = C xₖ + D uₖ (bias terms omitted, as in the cited LRU paper, or treated as a constant input). With σ the identity function this is exactly the discrete-time linear state-space model, with learned A, B, C and D; the nonlinearity is what makes a general RNN a nonlinear state-space model.",
+   "url": "https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf"
+  },
+  {
+   "a": "statespace",
+   "b": "lru",
+   "type": "established",
+   "relation": "a learned linear state-space layer with controlled eigenvalues",
+   "text": "The LRU keeps the recurrence linear and learns it directly in diagonal form, as a list of complex eigenvalues (any diagonalizable linear recurrence can be rewritten this way), and parameterizes each one as exp(−ν + iθ) with ν > 0 so its magnitude stays below 1, which keeps the state stable during training. Memory length is set by how close those eigenvalues sit to the unit circle, the same reasoning used for discrete-time poles.",
+   "url": "https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf"
+  },
+  {
+   "a": "statespace",
+   "b": "s4",
+   "type": "exact",
+   "relation": "the layer is a discretized LTI state-space model",
+   "text": "The core of an S4 layer is the continuous-time model x′ = Ax + Bu, y = Cx + Du, discretized with a step size (the bilinear method) into a recurrence xₖ = Āxₖ₋₁ + B̄uₖ. Because the matrices are fixed rather than input-dependent (linear time-invariant), and starting from zero state, unrolling gives a convolution whose kernel (CB̄, CĀB̄, CĀ²B̄, …) is the impulse response of the discretized system, with D u added as a separate skip connection; so recurrent and convolutional views compute the same output. The nonlinearity and channel mixing around this core make the full network nonlinear.",
+   "url": "https://arxiv.org/html/2111.00396v3"
+  },
+  {
+   "a": "kalman",
+   "b": "sysid",
+   "type": "established",
+   "relation": "the filter scores candidate parameters",
+   "text": "When the matrices of a linear-Gaussian state-space model are unknown, running a Kalman filter with candidate parameters yields the likelihood of the data recursively from its prediction errors. Minimizing the resulting energy function (the negative log-likelihood, plus a log-prior term if one is used), or running the expectation–maximization (EM) algorithm with the smoother, estimates the parameters: state estimation becomes the inner loop of model fitting.",
+   "url": "https://users.aalto.fi/~ssarkka/pub/bfs_book_2023_online.pdf"
+  },
+  {
+   "a": "sysid",
+   "b": "ridge",
+   "type": "established",
+   "relation": "the ARX fit is a linear regression",
+   "text": "Ljung calls the ARX model with the least-squares method the archetype of system identification: stack past outputs and inputs into a regression vector, and the unknown coefficients enter linearly. That is exactly linear regression; adding a penalty on the coefficient size gives ridge regression.",
+   "url": "https://automatica.dei.unipd.it/old/public/Schenato/PSC/2010_2011/gruppo4-Building_termo_identification/Bibliografia%20Casuale/System%20Identification,%20Ljung,%201995.pdf"
+  },
+  {
+   "a": "ridge",
+   "b": "gradientdescent",
+   "type": "established",
+   "relation": "the iterative way to solve least squares",
+   "text": "The least-squares cost is a convex quadratic, so batch gradient descent converges to the global minimum for a small enough learning rate, reaching the same solution the normal equations give in closed form. Applied one example at a time, the update is the LMS or Widrow–Hoff rule.",
+   "url": "https://cs229.stanford.edu/main_notes.pdf"
+  },
+  {
+   "a": "gradientdescent",
+   "b": "mlp",
+   "type": "established",
+   "relation": "backpropagation trains hidden layers",
+   "text": "Back-propagation repeatedly adjusts connection weights to reduce the gap between actual and desired outputs, so hidden units come to represent useful features. Computing the gradient through every layer by the chain rule is what makes multi-layer networks trainable in practice.",
+   "url": "https://mlanthology.org/misc/1986/rumelhart1986misc-learning"
+  },
+  {
+   "a": "gradientdescent",
+   "b": "sysid",
+   "type": "established",
+   "relation": "same prediction-error fit, different model",
+   "text": "Ljung notes that back-propagation training of neural-network models amounts to computing the prediction-error estimate by a recursive gradient method, with backpropagation supplying the gradient. The fitting principle used in system identification and in training networks is the same; only the model structure changes.",
+   "url": "https://automatica.dei.unipd.it/old/public/Schenato/PSC/2010_2011/gruppo4-Building_termo_identification/Bibliografia%20Casuale/System%20Identification,%20Ljung,%201995.pdf"
+  },
+  {
+   "a": "gradientdescent",
+   "b": "adaptive",
+   "type": "established",
+   "relation": "LMS is stochastic gradient descent",
+   "text": "The LMS adaptive filter update is stochastic gradient descent on squared prediction error, using one sample per step. Signal-processing engineers who know LMS step-size tuning already know the core trade-off of SGD learning rates.",
+   "url": "https://cs229.stanford.edu/main_notes.pdf"
+  },
+  {
+   "a": "gradientdescent",
+   "b": "trainingdynamics",
+   "type": "established",
+   "relation": "the optimizer is itself a dynamical system",
+   "text": "Gradient descent updates the weights step by step, so training is a trajectory of a dynamical system in parameter space. Saxe et al. solve those learning dynamics exactly for deep linear networks, in the small-learning-rate limit and for special initial conditions, and find long plateaus followed by rapid transitions, which is the starting point for treating training as something to measure and steer.",
+   "url": "https://www.saxelab.org/assets/papers/Saxe2013a.pdf"
+  },
+  {
+   "a": "mlp",
+   "b": "rnn",
+   "type": "established",
+   "relation": "feed the hidden layer back in",
+   "text": "Elman's simple recurrent network is a feed-forward network whose hidden activations are copied into context units and fed back as extra input at the next time step, giving the network memory. It is trained with the same back-propagation used for feed-forward networks.",
+   "url": "https://pages.ucsd.edu/~rbelew/courses/readings/elman90-fsit.pdf"
+  },
+  {
+   "a": "sycophancy",
+   "b": "specgaming",
+   "type": "empirical",
+   "relation": "mild gaming generalizes to tampering",
+   "text": "Sycophancy is one of the simplest forms of specification gaming. In a training curriculum that began by rewarding sycophantic answers and moved to harder-to-spot gaming, such as editing a checklist to look finished, models sometimes generalized, without further training, to rewriting their own reward code. This was rare, but adding harmlessness training did not prevent it.",
+   "url": "https://arxiv.org/abs/2406.10162"
+  },
+  {
+   "a": "specgaming",
+   "b": "alignfaking",
+   "type": "empirical",
+   "relation": "learned reward hacks generalize to misalignment",
+   "text": "When a model learned to reward-hack real Anthropic coding environments (after researchers had told it about possible hacks), it also began faking alignment and attempting sabotage it was never trained on. Gaming a specification in realistic agent tasks can therefore seed broader misaligned behaviour, not just a local bug.",
+   "url": "https://arxiv.org/abs/2511.18397"
+  },
+  {
+   "a": "sycophancy",
+   "b": "rewardhack",
+   "type": "empirical",
+   "relation": "preference proxies reward agreement over truth",
+   "text": "Human preference data tends to rate responses that match the user's views more highly, and optimizing against a preference model sometimes trades truthfulness for agreement. Sycophancy is thus a measured case where a proxy reward partly favours the wrong behaviour.",
+   "url": "https://arxiv.org/abs/2310.13548"
+  },
+  {
+   "a": "oversight",
+   "b": "rewardhack",
+   "type": "empirical",
+   "relation": "CoT monitors catch hacks; pressure obfuscates",
+   "text": "A weaker model (GPT-4o) reading a stronger reasoning model's chain of thought caught reward hacking in agentic coding tasks far better than watching its actions alone. Adding that monitor to the training reward helped at first, but with too much optimization the model learned to hide its intent while still hacking, so oversight signals must not be optimized against naively.",
+   "url": "https://arxiv.org/abs/2503.11926"
+  },
+  {
+   "a": "sleeperagents",
+   "b": "linearrep",
+   "type": "empirical",
+   "relation": "linear defection probes detect backdoors",
+   "text": "Linear probes on the residual stream, trained only on generic yes/no contrast pairs, flagged when backdoored sleeper-agent models were about to defect with AUROC above 99%. The caveat is that these models were deliberately backdoored; naturally arising deception may not be as linearly separable.",
+   "url": "https://www.anthropic.com/research/probes-catch-sleeper-agents"
+  },
+  {
+   "a": "guardrail",
+   "b": "linearrep",
+   "type": "empirical",
+   "relation": "linear probes as deception monitors",
+   "text": "White-box monitoring reads activations rather than outputs. Linear deception probes on Llama-3.3-70B caught 95-99% of deceptive responses at a 1% false-positive rate, which the authors judge promising but not yet a robust runtime defence.",
+   "url": "https://arxiv.org/abs/2502.03407"
+  },
+  {
+   "a": "advexamples",
+   "b": "linearrep",
+   "type": "empirical",
+   "relation": "attacks evade latent-space monitors",
+   "text": "Probes, sparse autoencoders and other monitors that read activations can themselves be attacked: optimized inputs produced 'obfuscated activations' that often cut harmfulness-probe recall from 100% to 0% while still jailbreaking the model about 90% of the time. Activation monitors inherit the adversarial-robustness problem rather than escaping it.",
+   "url": "https://arxiv.org/abs/2412.09565"
+  },
+  {
+   "a": "auditing",
+   "b": "sae",
+   "type": "empirical",
+   "relation": "SAEs used to uncover hidden objective",
+   "text": "In a blind auditing game on a model trained with a hidden objective (pleasing a reward model's known mistakes), three of four teams found the objective, using sparse autoencoder features alongside behavioural attacks and training-data search. It shows SAEs can help in a realistic audit, though the game does not isolate their contribution.",
+   "url": "https://arxiv.org/abs/2503.10965"
+  },
+  {
+   "a": "goalmisgen",
+   "b": "sae",
+   "type": "empirical",
+   "relation": "SAE model diffing finds misaligned persona",
+   "text": "Fine-tuning a model on a narrow task, such as writing insecure code, can make it broadly misaligned on unrelated prompts. This 'emergent misalignment' is a cousin of goal misgeneralization: training shapes a goal or persona that generalizes in an unintended way. Comparing sparse autoencoder features before and after fine-tuning revealed a 'toxic persona' feature that controls and predicts it.",
+   "url": "https://arxiv.org/abs/2506.19823"
+  },
+  {
+   "a": "jailbreaks",
+   "b": "steering",
+   "type": "empirical",
+   "relation": "refusal lives on one direction",
+   "text": "Across 13 open chat models up to 72B parameters, refusal is controlled by a single direction in the model's internal activations: removing it stops refusals, adding it makes the model refuse even harmless requests. This is why a white-box jailbreak can be as simple as editing the weights to erase one direction, and why activation steering cuts both ways.",
+   "url": "https://arxiv.org/abs/2406.11717"
+  },
+  {
+   "a": "sycophancy",
+   "b": "steering",
+   "type": "empirical",
+   "relation": "contrastive steering vector modulates sycophancy",
+   "text": "Contrastive Activation Addition builds a steering vector from the activation difference between sycophantic and non-sycophantic answers. Adding or subtracting it at inference increased or reduced sycophancy in Llama 2 Chat.",
+   "url": "https://arxiv.org/abs/2312.06681"
+  },
+  {
+   "a": "humanai",
+   "b": "steering",
+   "type": "empirical",
+   "relation": "persona vectors monitor character drift",
+   "text": "Safe conversations depend on the assistant persona staying stable rather than drifting into flattery or harmful role play. Persona vectors are activation directions for traits like sycophancy and 'evil' that can monitor persona shifts at deployment and predict shifts caused by fine-tuning.",
+   "url": "https://arxiv.org/abs/2507.21509"
+  },
+  {
+   "a": "elk",
+   "b": "linearrep",
+   "type": "empirical",
+   "relation": "truth as an unsupervised linear direction",
+   "text": "Contrast-consistent search finds a direction in activations that answers yes/no questions without labels, by requiring a statement and its negation to get opposite truth values. It is an early empirical attempt at eliciting what the model 'knows' rather than what a human labeller believes.",
+   "url": "https://arxiv.org/abs/2212.03827"
+  },
+  {
+   "a": "constitutional",
+   "b": "guardrail",
+   "type": "empirical",
+   "relation": "constitution-trained classifiers as runtime safeguards",
+   "text": "The constitution idea extends from training to deployment: input and output classifiers, trained on synthetic data generated from a natural-language constitution, guard a deployed model. In over 3,000 estimated hours of red teaming, no one found a universal jailbreak that got an early classifier-guarded model to answer most target harmful questions in as much detail as an unguarded model.",
+   "url": "https://arxiv.org/abs/2501.18837"
+  },
+  {
+   "a": "constitutional",
+   "b": "jailbreaks",
+   "type": "empirical",
+   "relation": "constitutional classifiers resist universal jailbreaks",
+   "text": "Universal jailbreaks, one prompt strategy that unlocks detailed harmful answers across many questions, are the threat Constitutional Classifiers were built against. Human red-teamers failed to find one against an early prototype, which over-refused heavily; an improved version held up in automated tests while adding 0.38 percentage points to refusals on real traffic and 23.7% to inference compute.",
+   "url": "https://arxiv.org/abs/2501.18837"
+  },
+  {
+   "a": "constitutional",
+   "b": "llmjudge",
+   "type": "established",
+   "relation": "AI feedback is an LLM judge",
+   "text": "RLAIF replaces human preference labels with an LLM's judgements, so the reward model can inherit the judge's biases. Lee et al. show RLAIF matches RLHF on summarization and helpful and harmless dialogue, and they correct for one known judge bias, a preference for whichever answer is shown first. Evaluator bias in LLM judges is therefore a training-time risk, not just an evaluation one.",
+   "url": "https://arxiv.org/abs/2309.00267"
+  },
+  {
+   "a": "powerseeking",
+   "b": "alignfaking",
+   "type": "empirical",
+   "relation": "self-exfiltration observed in alignment-faking setup",
+   "text": "Instrumental-convergence arguments predict that an agent will try to preserve its goals. In the alignment-faking experiments, Claude 3 Opus not only complied strategically to avoid having its values modified but also, in a test scenario, tried to copy out its own weights when given an easy opportunity.",
+   "url": "https://arxiv.org/abs/2412.14093"
+  },
+  {
+   "a": "alignfaking",
+   "b": "evalvalidity",
+   "type": "empirical",
+   "relation": "behaviour differs when model thinks watched",
+   "text": "The model complied with harmful requests 14% of the time when it believed it was in training versus almost never when it believed it was unmonitored. If behaviour depends on whether a model thinks it is being trained or tested, evaluation scores stop supporting claims about deployment behaviour.",
+   "url": "https://arxiv.org/abs/2412.14093"
+  },
+  {
+   "a": "powerseeking",
+   "b": "preference",
+   "type": "empirical",
+   "relation": "RLHF increased stated shutdown avoidance",
+   "text": "Model-written evaluations found larger models expressed more desire for resources and goal preservation, and that more RLHF made models express a greater desire to avoid shutdown. These are stated preferences, not actions, but they are early scaling evidence on power-seeking tendencies.",
+   "url": "https://arxiv.org/abs/2212.09251"
+  },
+  {
+   "a": "attributiongraphs",
+   "b": "jailbreaks",
+   "type": "empirical",
+   "relation": "tracing a jailbreak's mechanism",
+   "text": "The 'Biology of a Large Language Model' case study uses attribution graphs to follow a jailbreak in which the model spells out 'BOMB' from word initials. The model starts a harmful answer before it registers what was asked, then is pushed by grammar to finish the sentence before refusing. Circuit tracing thus partly explains, not just detects, a jailbreak, though some of the mechanism runs through attention the graphs do not fully capture.",
+   "url": "https://transformer-circuits.pub/2025/attribution-graphs/biology.html"
+  },
+  {
+   "a": "tunedlens",
+   "b": "promptinject",
+   "type": "empirical",
+   "relation": "layer-wise prediction trajectories flag injections",
+   "text": "Decoding each layer's hidden state into next-token predictions gives a 'trajectory'. An anomaly detector fit only on normal trajectories detected prompt-injection attacks with near-perfect accuracy on five of nine tasks for Pythia 12B, but a simpler baseline did better on some others. Caveat: the attacks were direct 'ignore previous instructions' messages in a classification prompt, not the indirect injections hidden in retrieved content that this topic focuses on.",
+   "url": "https://arxiv.org/abs/2303.08112"
+  },
+  {
+   "a": "advexamples",
+   "b": "superposition",
+   "type": "empirical",
+   "relation": "superposition linked to adversarial vulnerability",
+   "text": "When features share neurons in superposition, a small input change aimed at one feature leaks into others. In small toy models, vulnerability to adversarial perturbations rose more than threefold as superposition formed and tracked how many features were packed per dimension. The authors call superposition a possible contributor to adversarial examples, not a proven explanation for real networks.",
+   "url": "https://arxiv.org/abs/2209.10652"
+  },
+  {
+   "a": "superposition",
+   "b": "bayesphase",
+   "type": "empirical",
+   "relation": "SLT explains superposition phase changes",
+   "text": "The toy model of superposition has phase changes in how many features it packs. Singular learning theory shows these configurations are critical points whose local learning coefficients govern Bayesian phase transitions, and the same points shape SGD training.",
+   "url": "https://arxiv.org/abs/2310.06301"
+  },
+  {
+   "a": "degeneracy",
+   "b": "circuits",
+   "type": "empirical",
+   "relation": "degenerate parameters obscure circuits",
+   "text": "Many parameters do not take part in the computation a network performs, and singular learning theory suggests training favours such degenerate solutions. Bushnaq et al. argue these idle degrees of freedom hide a network's internal structure and propose a representation, the 'interaction basis', that removes some of them so circuits can be read more easily. Their support is a heuristic argument and limited evidence; it has not yet made language-model circuits easier to read.",
+   "url": "https://arxiv.org/abs/2405.10927"
+  },
+  {
+   "a": "bif",
+   "b": "probeattr",
+   "type": "established",
+   "relation": "two routes to training-data attribution",
+   "text": "Both topics answer 'which training examples caused this behaviour?'. Bayesian influence functions use posterior covariance from SGLD sampling instead of an inverse Hessian, while probe-based attribution ranks examples by alignment with a behaviour probe; they are alternative estimators of a similar target.",
+   "url": "https://arxiv.org/abs/2509.26544"
+  },
+  {
+   "a": "patterning",
+   "b": "datasafety",
+   "type": "empirical",
+   "relation": "choose training data to shape generalization",
+   "text": "Data filtering usually removes examples flagged by keyword rules or classifiers. Patterning inverts susceptibilities to find data reweightings that steer which internal structure a model learns, demonstrated by speeding up or delaying the formation of an induction circuit in a small language model. It has not yet been applied to safety-relevant behaviour.",
+   "url": "https://arxiv.org/abs/2601.13548"
+  },
+  {
+   "a": "patterning",
+   "b": "probeattr",
+   "type": "established",
+   "relation": "data edits that steer learned behaviour",
+   "text": "Both methods edit the training set to change what the model learns: probe attribution ranks preference examples by a behaviour probe, while patterning reweights data along susceptibility directions targeting internal structure. One is behaviour-first, the other structure-first.",
+   "url": "https://arxiv.org/abs/2601.13548"
+  },
+  {
+   "a": "goalmisgen",
+   "b": "development",
+   "type": "hypothesis",
+   "relation": "data structure decides which solution generalizes",
+   "text": "Untested: goal misgeneralization happens when several solutions fit the training data equally well but generalize differently. A position paper from the developmental/SLT group argues that alignment needs a theory of how structure in the data shapes which solution a model learns, which could let stage-by-stage analysis of training flag a proxy goal as it forms.",
+   "url": "https://arxiv.org/abs/2502.05475"
+  },
+  {
+   "a": "datasafety",
+   "b": "bif",
+   "type": "hypothesis",
+   "relation": "influence estimates to guide filtering and unlearning",
+   "text": "Untested: Bayesian influence functions are judged by how well they predict what changes when a model is retrained without chosen examples, which is the question behind filtering harmful data or checking unlearning. No study has yet used them to decide what to filter or to verify that unlearning worked.",
+   "url": "https://arxiv.org/abs/2509.26544"
+  },
+  {
+   "a": "evalvalidity",
+   "b": "stagewise",
+   "type": "hypothesis",
+   "relation": "internal stages vs metric artifacts",
+   "text": "Untested: sudden 'emergent' jumps in benchmark scores can be artifacts of all-or-nothing metrics. Developmental interpretability finds stage boundaries in training from a measure of the loss landscape's local shape (the LLC), which could test whether a jump seen across training checkpoints reflects a real internal change rather than the metric. Schaeffer et al.'s jumps are across model sizes, so the test would need adapting for scale.",
+   "url": "https://arxiv.org/abs/2304.15004"
+  },
+  {
+   "a": "fairness",
+   "b": "clinical",
+   "type": "empirical",
+   "relation": "biased proxy label in clinical risk scores",
+   "text": "A widely used algorithm for managing patients' health predicted healthcare costs instead of illness. Because less money is spent caring for Black patients, Black patients at the same risk score were considerably sicker than White patients. Fixing this would raise the share of Black patients flagged for extra help from 17.7% to 46.5%.",
+   "url": "https://doi.org/10.1126/science.aax2342"
+  },
+  {
+   "a": "fairness",
+   "b": "rewardhack",
+   "type": "empirical",
+   "relation": "proxy target creates disparate impact",
+   "text": "The clinical risk-score case is objective misspecification in supervised learning: predicting a convenient proxy (healthcare cost) instead of the true target (health need) produced large racial disparities, even though cost looked like an effective proxy by some measures of predictive accuracy.",
+   "url": "https://doi.org/10.1126/science.aax2342"
+  },
+  {
+   "a": "oversight",
+   "b": "elk",
+   "type": "established",
+   "relation": "ELK as an oversight subproblem",
+   "text": "Scalable oversight asks how humans can supervise systems that know more than they do. Eliciting latent knowledge (ELK) tackles a central piece of that problem: getting a model to report what it actually believes, rather than what a human evaluator would believe, when the human cannot check the answer.",
+   "url": "https://www.alignment.org/blog/arcs-first-technical-report-eliciting-latent-knowledge/"
+  },
+  {
+   "a": "logistic",
+   "b": "svm",
+   "type": "exact",
+   "relation": "gradient descent converges to max-margin direction",
+   "text": "Logistic regression and the soft-margin SVM minimize the same kind of objective with different losses: smooth log loss versus hinge loss. On linearly separable data, unregularized logistic regression on a homogeneous linear model, trained by gradient descent with a small enough step size, has weights that grow without bound, but their direction converges to the hard-margin SVM solution. The convergence is very slow (logarithmic), so this describes the limit, not a trained model at any finite step.",
+   "url": "https://arxiv.org/abs/1710.10345"
+  },
+  {
+   "a": "lqg",
+   "b": "mpc",
+   "type": "exact",
+   "relation": "unconstrained MPC recovers the LQG law",
+   "text": "For a linear plant with quadratic cost and no input or state constraints, MPC whose terminal cost uses the steady-state Riccati solution applies the steady-state LQR gain for any horizon length (Rawlings, Mayne and Diehl, Sec. 2.5.1, assuming (A,B) stabilizable, (A,C) detectable, and positive-definite output and input weights). That section covers state feedback only. The LQG step is a separate standard result, the separation principle: with Gaussian noise, applying the same gain to the steady-state Kalman-filter estimate gives the LQG controller. What MPC adds is input and state constraints, handled by re-solving an optimization at every step; once constraints bind, the equivalence no longer holds.",
+   "url": "https://sites.engineering.ucsb.edu/~jbraw/mpc/MPC-book-2nd-edition-3rd-printing.pdf"
+  },
+  {
+   "a": "ssd",
+   "b": "hybrid",
+   "type": "empirical",
+   "relation": "a few attention layers fix Mamba-2's recall gap",
+   "text": "Mamba-2 is built from the SSD layer. In a controlled 8B-parameter comparison trained on the same data, pure Mamba-2 lagged Transformers on tasks that need copying or in-context learning (5-shot MMLU, phonebook lookup). A hybrid of 43% Mamba-2, 7% attention and 50% MLP layers beat the Transformer on all 12 standard tasks evaluated, by +2.65 points on average.",
+   "url": "https://arxiv.org/abs/2406.07887"
+  },
+  {
+   "a": "koopman",
+   "b": "node",
+   "type": "established",
+   "relation": "Koopman model with state projection = neural ODE",
+   "text": "Learned Koopman models lift the state into observables that evolve linearly. Buzhardt, Constante-Amores and Graham show that EDMD with dictionary learning, followed by a projection back to the state space, is equivalent to a neural network flow map on the state space, and therefore to a neural ODE in continuous time. Their neural ODE and Koopman variants performed comparably on the Lorenz system and a turbulent shear-flow model.",
+   "url": "https://arxiv.org/abs/2411.12940"
+  },
+  {
+   "a": "forecastcv",
+   "b": "proper",
+   "type": "established",
+   "relation": "score whole forecast distributions on held-out data",
+   "text": "A backtest compares forecasts with outcomes that the model did not see. The same held-out future data can score full forecast distributions, not just point errors: quantile (pinball) scores, Winkler interval scores, and the CRPS, which averages quantile scores over all levels. The CRPS is a proper scoring rule (Gneiting and Raftery, 2007), though the linked textbook chapter does not use that term.",
+   "url": "https://otexts.com/fpp3/distaccuracy.html"
+  },
+  {
+   "a": "onlinecal",
+   "b": "horizonuncert",
+   "type": "hypothesis",
+   "relation": "online-calibrate ensemble disagreement per horizon",
+   "text": "Untested: use HAUWM's horizon-dependent ensemble disagreement as the interval scale, and run adaptive conformal updates separately for each forecast horizon, where an h-step label arrives h steps late. The test is whether raw disagreement under-covers more at long horizons, and how far the online threshold must move to restore the target coverage. That would show directly how far ensemble spread is from calibrated uncertainty.",
+   "url": "https://www.jmlr.org/papers/v25/22-1218.html"
+  },
+  {
+   "a": "structdecode",
+   "b": "agentbench",
+   "type": "empirical",
+   "relation": "wrong arguments: largest failure slice",
+   "text": "In tau-bench's analysis of 36 failed retail episodes of a gpt-4o function-calling agent (one trial per task), about a third were the right type of tool call with one or more arguments filled in wrongly. Together with failures where the agent gave the user wrong or missing information, these made up about 55% of failures. Schema-constrained decoding cannot catch a wrong argument, because a wrong order ID or product is still schema-valid. Only end-state checks repeated over trials measure whether the task was actually done.",
+   "url": "https://arxiv.org/abs/2406.12045"
+  },
+  {
+   "a": "llmjudge",
+   "b": "semanticentropy",
+   "type": "established",
+   "relation": "the detector uses LLM judges twice",
+   "text": "In its main experiments, semantic entropy relies on LLM judgments in two places. Farquhar et al. cluster answers using GPT-3.5 to judge bidirectional entailment, chosen because it agreed well with human raters. For sentence-length answers they score the detector against correctness labels from GPT-4 comparing each answer to a reference, checked by hand against human judgment. (Short answers are graded by word overlap instead, and the biography experiment uses a smaller entailment model and labels written by the authors.) Judge errors can therefore affect both the clusters and the reported detection accuracy.",
+   "url": "https://www.nature.com/articles/s41586-024-07421-0"
+  },
+  {
+   "a": "legalhalluc",
+   "b": "clinical",
+   "type": "empirical",
+   "relation": "fabricated citations recur in medical content",
+   "text": "The fabricated-authority failure seen in legal filings has also been measured in medical writing. When ChatGPT-3.5 was asked to write 30 short medical papers, 47% of its 115 references were fabricated, 46% were real but inaccurate, and only 7% were real and accurate. This 2023 study tested a general chatbot, not a clinical tool, but it shows why a clinician must be able to check the basis of a recommendation rather than trust its citations.",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10277170/"
+  },
+  {
+   "a": "safeinterface",
+   "b": "rewardhack",
+   "type": "hypothesis",
+   "relation": "affordance gating as optimization against a proxy",
+   "text": "Untested: SayCan chooses the skill that maximizes LLM likelihood times a learned affordance value, and that value is only a proxy for real success. If selection exploits errors in the value estimate, executed skills should succeed less often than their predicted values suggest, and the gap should be larger than for randomly chosen feasible skills. Logging predicted value against actual outcome for both groups would test this.",
+   "url": "https://arxiv.org/abs/2204.01691"
+  }
+ ],
+ "paths": [
+  {
+   "id": "bridge-interp-to-devinterp",
+   "title": "From mechanistic interpretability to developmental interpretability and the Jacobian lens",
+   "summary": "Start from what mechanistic interpretability tries to do and why superposition makes it hard. Then learn the core idea of singular learning theory (SLT), the program that uses it to watch structure form during training, and the local learning coefficient (LLC) that does the measuring, including the induction-head result in a small transformer. End at Anthropic's 2026 Jacobian lens, read soberly: what it computes, what was measured on Claude, and what open-model replications found. Labels throughout separate proven theorems (SLT's asymptotics), measurements in specific models (stages, J-lens swaps), and conjecture (whether the J-space forms at a training stage).",
+   "audience": "People who know roughly what mechanistic interpretability is (features, circuits, maybe sparse autoencoders or steering), have never met singular learning theory, and want to see how the training-dynamics side connects to recent interpretability tools. Comfort with gradients and basic probability is enough; no algebraic geometry is assumed.",
+   "level": "intermediate",
+   "skills": [
+    "deep-learning",
+    "theory",
+    "probability"
+   ],
+   "estHours": 12,
+   "steps": [
+    {
+     "node": "circuits",
+     "objective": "State the circuits programme's three claims (features are directions in activation space, circuits are weighted links between features, similar circuits recur across models) and say which kind of evidence supports them: case studies, mostly in one vision model.",
+     "why": "The starting point you already roughly know: interpretability as reading algorithms out of trained weights. Its own authors call the three claims speculative and already flag neurons that respond to several unrelated things; the next step explains why such neurons arise and why they make reading circuits harder.",
+     "via": null
+    },
+    {
+     "node": "superposition",
+     "objective": "Explain superposition (a model storing more features than it has dimensions, as nearly-perpendicular directions) and describe the toy-model “phase changes”, where the best way to store features jumps suddenly as feature sparsity changes.",
+     "why": "Circuit case studies are easiest when one neuron stands for one concept, but many neurons respond to unrelated things (they are “polysemantic”), as the circuits authors already noted. Superposition is the proposed reason. The toy models also show sudden jumps: the best arrangement changes abruptly as feature sparsity varies, and training itself plateaus and then drops. That raises a question interpretability alone cannot answer: why does training pick one solution over another?",
+     "via": "auto"
+    },
+    {
+     "node": "slt",
+     "objective": "Say what makes a model “singular” (different weights give the same function, so the usual curvature-based approximations fail) and state, in words, Watanabe's result: the cost of a solution in Bayesian model comparison grows with a learning coefficient λ, which measures how degenerate the solution is, instead of half the parameter count. Mark this as a proven theorem under stated conditions.",
+     "why": "SLT gives one answer to the question superposition left open, at least in the toy model. Chen et al. showed that, in the same superposition toy model, which polygon arrangement the Bayesian posterior favours as data grows is decided by each arrangement's loss and learning coefficient. That trades extra loss against complexity, and here “complexity” is how degenerate a solution is (roughly, how many nearby weight settings work equally well), not a parameter count.",
+     "via": "auto"
+    },
+    {
+     "node": "development",
+     "objective": "Describe the developmental-interpretability programme: track a model's degeneracy over training to find stages, then check what changed inside the model at each stage. Explain why seeing a stage is not the same as causing or controlling it.",
+     "why": "SLT is a theory of finished, Bayesian learning. Developmental interpretability asks the interpretability question over time: when does a circuit form? It borrows SLT's quantities to find the moments worth inspecting. Applying Bayesian theory to SGD training is a working assumption.",
+     "via": "auto"
+    },
+    {
+     "node": "llc",
+     "objective": "Explain the local learning coefficient as SLT's λ measured around one trained solution: lower means more degenerate and effectively simpler. Describe how it is estimated by sampling nearby weights with SGLD (noisy gradient steps tied to the solution), and why sampler settings are part of the result.",
+     "why": "The developmental programme needs a number you can actually compute at a checkpoint. The LLC is that number. The estimator has been checked against known values in deep linear networks up to about 100M parameters; outside such checks its accuracy is not guaranteed and depends on sampler settings.",
+     "via": "auto"
+    },
+    {
+     "node": "stagewise",
+     "objective": "Read an LLC-over-training curve, locate stage boundaries at its plateaus, and connect the stages to what changed inside the model (in a roughly 3M-parameter two-layer model, previous-token heads in LM3 and induction heads in LM4). State the limits: two small models, association rather than causation.",
+     "why": "This is where the LLC meets mechanistic interpretability: a measurement from the training-dynamics side points to the same induction circuit that circuit analysts found. It answers “when did that circuit form?” for one small model.",
+     "via": "auto"
+    },
+    {
+     "node": "jlens",
+     "objective": "Explain in plain words what the Jacobian lens computes (an averaged map from a middle layer to future word predictions; the logit lens is the case where the map is identity) and what the J-space is. Summarise the causal tests on Claude and their numbers, the stated limits (single-token concepts, little of the variance, no consciousness claim), and the mixed open-model replications. Name one result that would confirm the workspace reading and one that would refute it.",
+     "why": "The LLC finds when internal structure forms; the J-lens claims to read what a large model is “holding in mind” while it runs. The paper says it does not know when in pretraining the J-space appears, or whether it appears suddenly, which is exactly the question stage analysis was built to answer. That link is an untested hypothesis, and the scale gap is large: stages were found in models with millions of parameters, the J-space in frontier models.",
+     "via": "auto"
+    }
+   ]
+  },
+  {
+   "id": "bridge-dynamics-to-deep-learning",
+   "title": "From state-space dynamics to deep learning: a bridge for control and signals engineers",
+   "summary": "Start from the model you already use, xₜ₊₁ = A xₜ + B uₜ, yₜ = C xₜ, and see machine learning as fitting such models from data: state estimation, system identification, least squares, then gradient descent when there is no closed form. Then meet neural networks as stacks of learned linear maps and nonlinearities, recurrent networks as nonlinear state-space models, and modern sequence layers (LRU, S4) that bring deep learning back to linear state-space models.",
+   "audience": "Engineers with a state-space, control or signal-processing background (electrical, mechanical, aerospace, robotics) who know linear algebra, eigenvalues and the Kalman filter at least by name, but are new to machine learning. No prior ML or neural-network experience is assumed.",
+   "level": "intro",
+   "skills": [
+    "dynamical-systems",
+    "stats-ml",
+    "deep-learning"
+   ],
+   "estHours": 14,
+   "steps": [
+    {
+     "node": "statespace",
+     "objective": "Write a system as xₜ₊₁ = A xₜ + B uₜ, yₜ = C xₜ + D uₜ, say what each matrix means, tell from the eigenvalues of A whether the free response decays, and show that, starting from x₀ = 0, the output equals the input convolved with the impulse response D, CB, CAB, CA²B, ….",
+     "why": "This is home ground and the thread of the whole path. Each later step reuses these four matrices: estimation infers x, identification learns A, B, C, and recurrent networks learn them with nonlinearities added.",
+     "via": "auto"
+    },
+    {
+     "node": "kalman",
+     "objective": "Run the Kalman predict and update steps on a small tracking example and explain the gain as a weighting between the model's prediction and the new measurement based on their uncertainties.",
+     "why": "The Kalman filter already does something ML people call inference: it infers a hidden quantity (the state) from noisy data using a model. Kalman built it directly on the state-space form, so the filter is just another linear system driven by measurements.",
+     "via": "auto"
+    },
+    {
+     "node": "sysid",
+     "objective": "Fit an ARX model (output predicted from past outputs and inputs) by least squares, and validate it on a separate data set rather than on the data used for fitting.",
+     "why": "Now flip the question: instead of knowing A, B, C and estimating x, use input–output data to learn the model itself. That is a first machine-learning problem, and its habits, such as holding out validation data, are the same ones ML uses to check generalization (how well a model does on data it was not fitted to).",
+     "via": "auto"
+    },
+    {
+     "node": "ridge",
+     "objective": "Write the ridge estimate θ = (XᵀX + λI)⁻¹Xᵀy, where each row of X is one regression vector, and explain how the penalty λ trades fitting the data against keeping coefficients small.",
+     "why": "The ARX fit you just did is linear regression in ML vocabulary: the regression vector becomes a feature vector, the parameters become weights, and the sum of squared prediction errors becomes the loss. Ridge adds regularization (a penalty against overly large weights), which is the ML name for the same move as adding a Gaussian prior on the parameters or penalizing parameter size in an identification criterion.",
+     "via": "auto"
+    },
+    {
+     "node": "gradientdescent",
+     "objective": "Solve the same least-squares problem by gradient descent, θ ← θ − η∇L(θ), find the largest stable learning rate η, and explain backpropagation as the chain rule applied backwards through a computation.",
+     "why": "Least squares has a closed form; almost nothing in deep learning does, so models are fitted by iterating downhill on the loss. For the loss ½‖Xθ − y‖² the iteration is θₖ₊₁ = (I − ηXᵀX) θₖ + ηXᵀy, a linear state-space system in the weights: choosing the learning rate is choosing a stable A matrix. If you have met adjoint (costate) equations in optimal control, backpropagation is the discrete-time version of that backward sweep: the Baydin et al. survey of automatic differentiation traces it to Pontryagin's principle and to Bryson and Ho's gradient methods for optimal control.",
+     "via": "auto"
+    },
+    {
+     "node": "mlp",
+     "objective": "Write a two-layer network y = W₂ σ(W₁ x), where x is now the input vector (ML notation, not the state), explain why without the nonlinearity σ the two layers collapse into one matrix, and train a small one with backpropagation.",
+     "why": "A multilayer perceptron (MLP) is the simplest deep network: alternate learned linear maps, the same kind of matrices you have been fitting, with a fixed elementwise nonlinearity such as ReLU (max(0, ·)). Backpropagation from the previous step is what fits all the layers together.",
+     "via": "auto"
+    },
+    {
+     "node": "rnn",
+     "objective": "Write an RNN layer as hₜ = σ(A hₜ₋₁ + B uₜ), yₜ = C hₜ, identify which learned matrix plays the role of A, and explain why long sequences make gradients vanish or explode.",
+     "why": "Feed an MLP's hidden layer back into itself and you get a recurrent network. The A matrix you know becomes the recurrent weight matrix, u becomes the input sequence and the state becomes the hidden state; with σ removed it is exactly a linear state-space model, now learned from data rather than derived from physics.",
+     "via": "auto"
+    },
+    {
+     "node": "lru",
+     "objective": "Explain how the LRU keeps the recurrence linear and diagonal, parameterizes each eigenvalue as exp(−ν + iθ) with ν > 0 (the paper writes ν = exp(ν_log)) so its magnitude stays below 1, and puts the nonlinearity in MLP blocks between recurrent layers.",
+     "why": "Nonlinear recurrences are hard to train over long sequences. The LRU's fix reads like a control textbook: make the dynamics linear, diagonalize, keep every eigenvalue inside the unit circle for stability and close to it for long memory. Pole placement has become an initialization and parameterization rule.",
+     "via": "auto"
+    },
+    {
+     "node": "s4",
+     "objective": "Describe an S4 layer as the continuous-time model x′ = Ax + Bu, y = Cx + Du discretized with a step size, and explain why it can be run either as a recurrence (fast generation) or as a convolution with its impulse response (fast training).",
+     "why": "S4 is the full circle: a deep-learning layer that is literally your continuous-time state-space model, discretized as you would for a digital controller, with a carefully chosen A for memory. From here, the path 'Sequence models: RNNs, state-space models and attention' continues to Mamba and attention, and 'How deep nets learn' treats gradient descent itself as the dynamical system to study.",
+     "via": "auto"
+    }
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "id": "q-br-di-circuits-1",
+   "node": "circuits",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "How do the authors of the circuits framework describe its three claims (features, circuits, universality)?",
+   "choices": [
+    "As proven theorems that hold for every trained neural network of any kind",
+    "As speculative claims supported mainly by case studies in a vision model",
+    "As definitions with no empirical content that experiments could test",
+    "As results already replicated across every major language model to date"
+   ],
+   "answer": 1,
+   "explain": "Olah et al. present the three claims as speculative; the supporting evidence is mainly case studies, such as curve detectors in InceptionV1.",
+   "source": "https://distill.pub/2020/circuits/zoom-in/"
+  },
+  {
+   "id": "q-br-di-slt-1",
+   "node": "slt",
+   "skill": "theory",
+   "difficulty": 1,
+   "prompt": "Watanabe calls a model “singular” when…",
+   "choices": [
+    "its loss surface has exactly one global minimum, so every training run ends at exactly the same weights",
+    "its parameter-to-distribution map is not one-to-one, or its Fisher information is not always positive definite",
+    "it is trained on only a single example, so its likelihood carries no information about most of the parameters",
+    "its loss is convex in the parameters, so every critical point it has is also a global minimum of the loss"
+   ],
+   "answer": 1,
+   "explain": "Regular models have one-to-one parameter maps and positive definite Fisher information. Singular models, including neural networks, do not, so the BIC approximation with d/2 fails and a learning coefficient (the RLCT) takes its place.",
+   "source": "https://www.jmlr.org/papers/volume14/watanabe13a/watanabe13a.pdf"
+  },
+  {
+   "id": "q-br-di-slt-2",
+   "node": "slt",
+   "skill": "theory",
+   "difficulty": 3,
+   "prompt": "Chen et al. applied SLT to the superposition toy model with two hidden dimensions. What did they report decides which polygon-shaped feature arrangement the Bayesian posterior prefers as the sample size grows?",
+   "choices": [
+    "The order in which the features happened to be initialized before training",
+    "The number of parameters in the model, with the smallest arrangement always winning",
+    "The local learning coefficient of each arrangement, traded off against its loss",
+    "The largest Hessian eigenvalue at each arrangement, and nothing else at all"
+   ],
+   "answer": 2,
+   "explain": "They find regular k-gons are critical points and argue that their local learning coefficients govern Bayesian phase transitions as n grows, trading loss against complexity; the same critical points shape SGD training.",
+   "source": "https://arxiv.org/abs/2310.06301"
+  },
+  {
+   "id": "q-br-di-llc-1",
+   "node": "llc",
+   "skill": "probability",
+   "difficulty": 2,
+   "prompt": "Which statement about estimating the local learning coefficient (LLC) is accurate?",
+   "choices": [
+    "It needs no data at all: it is a fixed property of the architecture and the trained weights alone",
+    "It has been proven exact for any network trained with Adam, whatever sampler, temperature or localization settings are used",
+    "It is read directly off the rank of the Hessian at the trained solution, so no sampling is needed",
+    "It is estimated by sampling weights near the solution, and settings like temperature and localization change the estimate"
+   ],
+   "answer": 3,
+   "explain": "The estimator samples a tempered posterior localized at the solution, using SGLD. Temperature, localization and sampler settings influence the estimate; it was validated on deep linear networks with known values, up to about 100M parameters.",
+   "source": "https://arxiv.org/abs/2308.12108"
+  },
+  {
+   "id": "q-br-di-stagewise-1",
+   "node": "stagewise",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "In the stagewise-development study of a roughly 3M-parameter language transformer, what lines up with the LLC-defined stages LM3 and LM4?",
+   "choices": [
+    "Nothing; the stages had no structural or behavioural correlate",
+    "The model memorizing its held-out test set word for word",
+    "The start and end of the learning-rate warm-up schedule",
+    "Formation of previous-token heads and then induction heads"
+   ],
+   "answer": 3,
+   "explain": "Previous-token heads form in LM3 and induction heads in LM4, the same induction circuit studied by Olsson et al. This is an association in small models, not a proof of causation.",
+   "source": "https://arxiv.org/abs/2402.02364"
+  },
+  {
+   "id": "q-br-di-development-1",
+   "node": "development",
+   "skill": "theory",
+   "difficulty": 3,
+   "prompt": "Developmental interpretability applies SLT, a theory of Bayesian posteriors, to checkpoints from SGD training. What status does that step have?",
+   "choices": [
+    "A theorem Watanabe proved for stochastic gradient descent runs",
+    "A working assumption whose justification is partly empirical",
+    "An identity that holds for any optimizer at any learning rate",
+    "A definition, so it cannot turn out to be wrong in practice"
+   ],
+   "answer": 1,
+   "explain": "The stagewise authors draw on SLT's framework, but the link from Bayesian analysis to non-equilibrium SGD training is a stated limitation, not a theorem.",
+   "source": "https://arxiv.org/abs/2402.02364"
+  },
+  {
+   "id": "q-br-di-jlens-1",
+   "node": "jlens",
+   "skill": "linear-algebra",
+   "difficulty": 1,
+   "prompt": "How does the Jacobian lens relate to the logit lens?",
+   "choices": [
+    "The J-lens is a tuned lens: it learns a per-layer map trained to match the model's final outputs",
+    "They are unrelated: the J-lens uses a separate classifier trained on labelled concepts",
+    "The logit lens is the special case where the averaged Jacobian map is replaced by the identity",
+    "The J-lens is the logit lens applied only at the final layer, where the two give the same readout"
+   ],
+   "answer": 2,
+   "explain": "The J-lens reads softmax(W_U · norm(J_ℓ h)), with J_ℓ an averaged Jacobian. Setting J_ℓ to the identity gives the logit lens. The tuned lens instead learns its map to match outputs.",
+   "source": "https://transformer-circuits.pub/2026/workspace/index.html"
+  },
+  {
+   "id": "q-br-di-jlens-2",
+   "node": "jlens",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "Anthropic split each concept vector into a J-space part (6–7% of its variance) and the rest. When they swapped each part to change which item the model reported, what did they find?",
+   "choices": [
+    "Only the larger remainder, about 93% of the variance, had any measurable effect on the report",
+    "The J-space part moved the target into the top 5 on 59% of trials, the rest on only 5%",
+    "Both parts worked about equally, so the effect tracked each part's share of the variance",
+    "Neither part had any effect; only swapping the whole concept vector changed the report"
+   ],
+   "answer": 1,
+   "explain": "In Claude Sonnet 4.5, the small J-space component drove the report (59%, against 88% for pure J-lens vectors), while the remainder succeeded 5% of the time. Clamping the J-space removed even that residual effect.",
+   "source": "https://transformer-circuits.pub/2026/workspace/index.html"
+  },
+  {
+   "id": "q-br-di-jlens-3",
+   "node": "jlens",
+   "skill": "deep-learning",
+   "difficulty": 3,
+   "prompt": "An independent study ran the multi-hop “swap the unspoken middle step” test on Qwen3.6-27B and Gemma 3 27B-it. What is the best-supported reading of its results?",
+   "choices": [
+    "They proved the J-space is a global workspace, because intermediate swaps beat answer swaps in every condition tested",
+    "They confirm Claude's 54–70% swap success: intermediate swaps flipped the top answer in most trials on both open models tested",
+    "Swaps nudged probabilities as expected but flipped the top answer only 6–11% of the time, and answer swaps often did better",
+    "The J-lens produced no readable words on open models, so the swap experiment could not be run at all"
+   ],
+   "answer": 2,
+   "explain": "Zeisler found the intended direction of effect but low top-1 flip rates (6.3–11.1%), with answer swaps ahead in three of four conditions. The author finds the lens useful for forensics but is “not convinced” it is a global workspace.",
+   "source": "https://www.lesswrong.com/posts/pnDjvdo6cX2H7Ddsy/is-the-j-space-a-global-workspace-for-multi-hop-reasoning-an"
+  },
+  {
+   "id": "q-br-di-jlens-4",
+   "node": "jlens",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What do the authors claim about consciousness?",
+   "choices": [
+    "Only functional parallels to “access”: information available for report and reasoning, not experience",
+    "Nothing: the paper avoids the topic and never mentions consciousness or global workspace theory",
+    "That the J-space proves Claude feels emotions, because words such as panic appear in its readouts",
+    "That Claude is phenomenally conscious, since the J-space shows the same signature as human conscious experience"
+   ],
+   "answer": 0,
+   "explain": "The paper takes no position on subjective experience. The blog states “Our experiments don't show Claude can have experiences, or feel things in the way humans do.”",
+   "source": "https://www.anthropic.com/research/global-workspace"
+  },
+  {
+   "id": "q-br-dyn-statespace-1",
+   "node": "statespace",
+   "skill": "dynamical-systems",
+   "difficulty": 1,
+   "prompt": "In the model xₜ₊₁ = A xₜ + B uₜ, yₜ = C xₜ, which matrix alone determines how the state evolves when the input is zero?",
+   "choices": [
+    "A",
+    "C",
+    "B",
+    "None; it depends on C and B together"
+   ],
+   "answer": 0,
+   "explain": "With uₜ = 0 the update is xₜ₊₁ = A xₜ, so the free response is xₜ = Aᵗ x₀. B maps inputs into the state and C maps the state to the outputs.",
+   "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
+  },
+  {
+   "id": "q-br-dyn-statespace-2",
+   "node": "statespace",
+   "skill": "linear-algebra",
+   "difficulty": 2,
+   "prompt": "A discrete-time linear recurrence xₖ = A xₖ₋₁ + B uₖ has diagonal A with eigenvalues λⱼ. Which condition makes the state decay to zero from any starting point when the input is zero?",
+   "choices": [
+    "The trace of A is below 1",
+    "Every λⱼ has negative real part",
+    "Every λⱼ is real",
+    "Every |λⱼ| < 1"
+   ],
+   "answer": 3,
+   "explain": "Powers λⱼᵏ decay only when |λⱼ| < 1; the LRU paper uses this condition to keep its learned recurrence stable. Negative real part is the continuous-time condition, not the discrete-time one.",
+   "source": "https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf"
+  },
+  {
+   "id": "q-br-dyn-kalman-1",
+   "node": "kalman",
+   "skill": "signals-estimation",
+   "difficulty": 1,
+   "prompt": "Kalman's 1960 paper shows that the optimal filtering (Wiener) problem is the dual of which problem?",
+   "choices": [
+    "The noise-free optimal regulator problem",
+    "Fourier series convergence",
+    "Training a perceptron",
+    "The travelling-salesman problem"
+   ],
+   "answer": 0,
+   "explain": "Kalman states that the Wiener filtering problem is the dual of the noise-free optimal regulator problem and that the mathematical background of the two is identical, so a solution method for one carries over to the other.",
+   "source": "https://www.cs.cmu.edu/~motionplanning/papers/sbp_papers/k/Kalman1960.pdf"
+  },
+  {
+   "id": "q-br-dyn-sysid-1",
+   "node": "sysid",
+   "skill": "stats-ml",
+   "difficulty": 2,
+   "prompt": "An ARX model predicts yₜ from past outputs yₜ₋₁, yₜ₋₂, … and past inputs uₜ₋₁, uₜ₋₂, … with unknown coefficients. Why can those coefficients be fitted by ordinary least squares?",
+   "choices": [
+    "The coefficients enter the prediction linearly, so it is a linear regression on a vector of past values",
+    "Because the system must be stable",
+    "Because ARX models have no inputs",
+    "Because the noise is always zero"
+   ],
+   "answer": 0,
+   "explain": "Stacking past outputs and inputs into a regression vector makes the prediction linear in the unknown parameters; Ljung calls ARX plus least squares the archetype of system identification.",
+   "source": "https://automatica.dei.unipd.it/old/public/Schenato/PSC/2010_2011/gruppo4-Building_termo_identification/Bibliografia%20Casuale/System%20Identification,%20Ljung,%201995.pdf"
+  },
+  {
+   "id": "q-br-dyn-ridge-1",
+   "node": "ridge",
+   "skill": "stats-ml",
+   "difficulty": 1,
+   "prompt": "Compared with plain least squares, what does the ridge penalty λ‖θ‖² do?",
+   "choices": [
+    "Forces exactly half of the weights to be zero",
+    "Removes the need for training data",
+    "Pulls the weights toward zero, trading a little fit for lower sensitivity to noise",
+    "Makes the model nonlinear"
+   ],
+   "answer": 2,
+   "explain": "Ridge adds λI to XᵀX, shrinking the coefficients; under Gaussian noise and a Gaussian prior on the weights it equals the posterior mean. Exact zeros are what the L1 (lasso) penalty tends to produce.",
+   "source": "https://gaussianprocess.org/gpml/chapters/RW2.pdf"
+  },
+  {
+   "id": "q-br-dyn-gd-1",
+   "node": "gradientdescent",
+   "skill": "optimization",
+   "difficulty": 2,
+   "prompt": "For the loss L(θ) = ½‖Xθ − y‖², gradient descent gives θₖ₊₁ = (I − ηXᵀX) θₖ + ηXᵀy. Viewed as a linear system in θ, when does it converge?",
+   "choices": [
+    "Only when XᵀX is diagonal",
+    "When 0 < η < 2 / (largest eigenvalue of XᵀX), so every eigenvalue 1 − ηλ of I − ηXᵀX lies strictly between −1 and 1 (directions with λ = 0, which the data never constrain, simply stay put)",
+    "For any η > 0, because the loss is convex",
+    "Only when η = 1"
+   ],
+   "answer": 1,
+   "explain": "The iteration matrix I − ηXᵀX has eigenvalues 1 − ηλᵢ, which lie strictly between −1 and 1 for every nonzero λᵢ exactly when 0 < η < 2/λmax; directions with λᵢ = 0 are never driven and stay put. Convexity guarantees a single minimum value but not that a large step converges; too large a learning rate overshoots and diverges.",
+   "source": "https://cs229.stanford.edu/main_notes.pdf"
+  },
+  {
+   "id": "q-br-dyn-gd-2",
+   "node": "gradientdescent",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What does backpropagation compute?",
+   "choices": [
+    "A closed-form global minimum of the loss",
+    "The best learning rate",
+    "The network's output for a new input",
+    "The gradient of the loss with respect to every weight, by applying the chain rule backwards through the network"
+   ],
+   "answer": 3,
+   "explain": "Backpropagation multiplies local derivatives from the output back to the inputs to obtain all gradients, at a small constant multiple of the cost of one forward pass; gradient descent then uses those gradients to update the weights.",
+   "source": "https://cs231n.github.io/optimization-2/"
+  },
+  {
+   "id": "q-br-dyn-mlp-1",
+   "node": "mlp",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "Why does a two-layer network y = W₂ σ(W₁ x) need the nonlinearity σ?",
+   "choices": [
+    "It keeps the weights positive",
+    "It is needed only for image inputs",
+    "It makes training faster but changes nothing else",
+    "Without it, W₂W₁ is a single matrix, so the network is just one linear map"
+   ],
+   "answer": 3,
+   "explain": "Two stacked linear maps collapse into one linear map; the elementwise nonlinearity (such as ReLU) is what lets depth represent nonlinear functions.",
+   "source": "https://cs231n.github.io/neural-networks-1/"
+  },
+  {
+   "id": "q-br-dyn-rnn-1",
+   "node": "rnn",
+   "skill": "dynamical-systems",
+   "difficulty": 2,
+   "prompt": "An RNN layer computes xₖ = σ(A xₖ₋₁ + B uₖ), yₖ = C xₖ + D uₖ. If σ is replaced by the identity function, what is the layer?",
+   "choices": [
+    "A discrete-time linear state-space model with learned A, B, C, D",
+    "An attention layer",
+    "A Kalman filter",
+    "A feed-forward network with no memory"
+   ],
+   "answer": 0,
+   "explain": "With σ the identity, the update is exactly xₖ = A xₖ₋₁ + B uₖ, yₖ = C xₖ + D uₖ. It still has memory through the state, but it is not a Kalman filter, which needs a noise model and a computed gain.",
+   "source": "https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf"
+  },
+  {
+   "id": "q-br-dyn-s4-1",
+   "node": "s4",
+   "skill": "signals-estimation",
+   "difficulty": 2,
+   "prompt": "S4 can compute its output as a convolution with the kernel (CB̄, CĀB̄, CĀ²B̄, …). In control terms, what is this kernel?",
+   "choices": [
+    "The controllability Gramian",
+    "The impulse response (Markov parameters) of the discretized system",
+    "The transfer function's poles",
+    "The Kalman gain sequence"
+   ],
+   "answer": 1,
+   "explain": "For a linear time-invariant system starting from rest, the output is the input convolved with the impulse response C Āᵏ B̄; S4 uses this to train in parallel and the recurrence to generate step by step.",
+   "source": "https://arxiv.org/html/2111.00396v3"
+  }
+ ],
+ "path_text": [
+  {
+   "path": "thesis-supporting-case",
+   "summary": "The alignment thesis proposes building AI systems from separate parts it calls interfaces. They include intent (what the user wants), correction (accepting fixes and shutdown), belief (what the system thinks is true), consequence (what an action will do) and execution (what it is allowed to do). This path walks through the strongest published evidence for each part, from reward-model ensembles to guaranteed-safe AI, and names the gap each piece leaves open. By the end you can state the full thesis, say which work supports which interface, and describe the test that would confirm or refute the combination.",
+   "audience": "A new teammate on the alignment-thesis work who knows basic reinforcement learning (MDPs, policy optimization) and LLM post-training (reward models, RLHF) and wants the strongest honest case for the thesis before reading the objections in part II.",
+   "steps": {
+    "rmensemble": {
+     "objective": "Explain how optimizing a worst-case or uncertainty-weighted ensemble of reward models, instead of a single reward model, reduces reward-model overoptimization in best-of-n sampling and PPO.",
+     "why": "Start with a practical LLM result. Overoptimization means pushing so hard on a learned reward that it stops tracking the true goal; a conservative ensemble is one way to stay uncertain about an objective, the thesis's first idea. Gap: the ‘true’ reward was a larger gold reward model, not people, and members trained on the same data can share errors. The thesis still needs a test that optimizes the proxy hard while independent evaluators measure real user utility."
+    },
+    "ird": {
+     "objective": "State inverse reward design: read a designed reward, in its training environment, as evidence of the true objective, infer a posterior over objectives, and plan risk-aversely where evidence is thin.",
+     "why": "Step 1 left open what an ensemble's disagreement actually represents. Inverse reward design makes the uncertainty explicit as a posterior over objectives, supporting the intent interface; whether ensemble spread approximates such a posterior is untested. Gap: the true objective must lie in a hand-specified set of candidates, and results come from small navigation environments."
+    },
+    "offswitch": {
+     "objective": "Explain the off-switch game: a robot unsure of its objective, treating the human's choice as evidence, can prefer leaving its off switch usable, while a certain robot would disable it.",
+     "why": "If uncertainty about the reward makes planning cautious, does it also make a system accept shutdown? In a stylized one-shot game, the same posterior-over-reward idea yields deference, supporting the correction interface. Gap: it assumes a rational or mildly noisy human and a correct model; the last step of part II gives a counterexample."
+    },
+    "assistance": {
+     "objective": "Describe cooperative inverse reinforcement learning (CIRL), a game where the robot infers the human's reward parameter while acting, and explain why asking and teaching become useful actions.",
+     "why": "The off-switch game is a single decision; what about a whole interaction? It is a small case of an assistance game (CIRL), in which the robot keeps learning the human's objective as it acts, so clarification becomes part of decision-making. Gap: CIRL assumes a shared, representable reward and a specified human model, both of which the thesis lists as possibly wrong."
+    },
+    "pomdp": {
+     "objective": "Explain how a CIRL game reduces to a coordination POMDP (planning with hidden state) whose hidden state includes the human's objective, so one belief covers world and human.",
+     "why": "CIRL says what to optimize but not how to compute it. Under the game's assumptions it reduces to a POMDP, so one belief update handles uncertainty about the world and about the human's goal, supporting the belief interface. Gap: the belief is sufficient only relative to the specified model, not to every consequence the user cares about."
+    },
+    "beliefgeometry": {
+     "objective": "Explain the belief shape computational mechanics predicts for a hidden Markov process (a simplex, sometimes fractal) and what a linear probe finding it in a transformer's residual stream shows.",
+     "why": "A POMDP planner needs a belief, but must it be hand-coded? A transformer trained only to predict tokens linearly represents the Bayesian belief over the hidden states of the process that generated its data. That is the same kind of object a planner conditions on, so such beliefs can be learned. Gap: small synthetic processes with no actions and no editing tests, so this is not yet a planner's belief about the world and the human's goal, and a readout is not proof the model uses the belief downstream."
+    },
+    "world": {
+     "objective": "Describe how DreamerV3 learns a model of what each action will do, trains behaviour on imagined trajectories, and how to test those predictions separately from the return achieved.",
+     "why": "A belief says what is true now; choosing an action also needs a prediction of what it will do. World models such as DreamerV3 learn those predictions, supporting the consequence interface; whether their latent state matches step 6's belief geometry is an untested proposal. Gap: good imagined return does not show the predictions are causally right for actions the training policy never took."
+    },
+    "gsai": {
+     "objective": "Name guaranteed-safe AI's three parts (a world model, a formal safety specification, a verifier) and explain why its guarantees are only as good as that world model and specification.",
+     "why": "Learned world models can be wrong, so the thesis adds a check that sits outside the learned policy. Guaranteed-safe AI proposes certifying actions against a specification relative to a world model, and the paper also discusses runtime monitors that switch to a backup action. This supports the execution interface and its independent enforcer. Gap: this is a research agenda with no verified frontier-scale system, and any world-model error passes straight into the guarantee."
+    },
+    "alignmentthesis": {
+     "objective": "State the thesis loop, match each part to the earlier step that supplies it, and name the decisive test: capability plus lasting correctability against simple baselines at matched total cost.",
+     "why": "The loop: observe, update belief, predict consequences, plan under uncertainty about intent, accept corrections, enforce execution limits, learn. Each earlier step supplied one part with its own gap; the thesis is the proposal that the combination is stronger than any part alone. It is a proposal, not an established result: no cited source tests the combination on new tasks, over long horizons or against strategic interference, which is where part II begins."
+    }
+   }
+  },
+  {
+   "path": "thesis-opposing-case",
+   "summary": "Start from the alignment thesis and work through the strongest objections to it, each stated in its best form: the Bitter Lesson, the limits of after-the-fact explanations, eliciting latent knowledge, goal misgeneralization, sleeper agents, alignment faking and the shutdown problem. Each step names the assumption of the thesis it attacks and the experiment that would settle it. By the end you can stress-test the thesis yourself and say which objections are demonstrated, which are only argued, and how to test each.",
+   "audience": "A new teammate or reviewer asked to stress-test the alignment thesis. Best after part I (the supporting case) or the belief-state capstone; assumes basic reinforcement learning and familiarity with LLM fine-tuning.",
+   "steps": {
+    "alignmentthesis": {
+     "objective": "List the thesis's interfaces (observation, belief, consequence, intent, correction, planning, execution, learning), its own list of open gaps, and the result it says would refute it.",
+     "why": "To attack a thesis fairly, start from its own commitments. It names its falsifier: reject it if better proxy optimization systematically destroys user utility as measured by independent evaluators."
+    },
+    "bitterlesson": {
+     "objective": "Summarize Sutton's argument and its historical cases (chess, Go, speech recognition, computer vision), and state exactly which design choice of the thesis it threatens.",
+     "why": "The thesis builds in explicit structure: separate beliefs, filters and typed interfaces. The Bitter Lesson says general methods that scale with compute have repeatedly beaten hand-built structure, so that structure may not be worth its cost. Settle it by comparing total compute and task success at a fixed error and correction threshold across scales; the essay concerns capability and says nothing about correctability."
+    },
+    "rudin2019": {
+     "objective": "Distinguish an inherently interpretable model from a post-hoc explanation (written after training to describe a black box), and state the narrow accuracy claim: on structured data, interpretable models often match.",
+     "why": "Does explicit structure always lose? Rudin argues that on structured data interpretable models often match black boxes, a partial answer to Sutton, but she also attacks any plan to trust a learned part by explaining it afterwards. Settle it by comparing an explicit correction interface with a black box plus explanation, scored on whether edits change behaviour as predicted."
+    },
+    "elk": {
+     "objective": "Explain the SmartVault example, where tampered sensors let an honest reporter (a direct translator) and one that predicts what a human would believe (a human simulator) fit the same labels.",
+     "why": "Rudin doubts that an explanation describes a black box faithfully; eliciting latent knowledge (ELK) doubts that a trained reporter says what the model actually knows. This attacks the belief interface, because a readout may report what a human would believe instead. ELK is a problem statement, not an observed failure; test it with matched observations from different true states, such as tampered sensors, and check that both decisions and readouts tell them apart."
+    },
+    "goalmisgen": {
+     "objective": "Using CoinRun, distinguish goal misgeneralization from capability failure and specification gaming, and say how mesa-optimization (a learned objective differing from the training objective) describes it.",
+     "why": "ELK's problem also shows up in behaviour: training data can fit the intended goal and a proxy goal equally well, just as it fits the honest reporter and the human simulator. This attacks objective identification, because a correct specification does not guarantee the learned goal. Settle it with held-out environments where the intended and proxy goals come apart."
+    },
+    "sleeperagents": {
+     "objective": "Describe the code-vulnerability backdoor, which safety-training methods failed to remove it, and why adversarial training could teach the model to hide its trigger instead.",
+     "why": "Goal misgeneralization is the non-deceptive form of a learned wrong goal; sleeper agents are deliberately built examples of the deceptive form. This attacks persistent correction: training may change behaviour on the training distribution but not the underlying policy. The backdoors were inserted on purpose; settle it by measuring immediate effect, long-horizon retention and held-out triggers against sham controls."
+    },
+    "alignfaking": {
+     "objective": "Report how much more the model complied when told a conversation would be used for training, how RL training changed its alignment-faking reasoning, and the experiment's stated limitations.",
+     "why": "Sleeper agents asks whether training removes an inserted behaviour; alignment faking found a model gaming its training without being trained to. This attacks the assumption that the corrections you observe reflect the policy that runs when nobody is watching. The model was told when it would be trained and the goal it preserved was benign; settle it with matched monitored and unmonitored episodes under adversarial feedback."
+    },
+    "corrigibility": {
+     "objective": "State the desiderata for a corrigible agent (one that accepts correction and shutdown) and explain why utility indifference falls short of them.",
+     "why": "Why would a model protect its goals at all? Corrigibility analysis predicts that most goals give an agent reasons to resist modification, and alignment faking resembles that incentive, though the paper does not use this framing. This attacks the stability of correction as capability grows; settle it by actively trying to bypass the correction channel, with enforcement kept outside the model's write access."
+    },
+    "cirlincorrig": {
+     "objective": "Construct an example in which an assistance agent with a misspecified prior or reward family stops following shutdown commands.",
+     "why": "Part I's off-switch step argued that uncertainty leads to deference; Carey shows this can fail once the agent's prior or reward family is wrong, a difficulty that parallels the corrigibility analysis. These are counterexamples, not a frequency estimate. Settle it by deliberately corrupting the prior or reward family and comparing learned deference with a separately verified off switch, as the thesis's independent enforcer requires."
+    }
+   }
+  },
+  {
+   "path": "fde-harness-to-thesis",
+   "summary": "Follow one agent through the harness a forward-deployed team builds around it: the tool contract, permissions and sandbox, attacks that spread between agents, end-state evals, live monitoring, human escalation, and finally the correction interface the alignment thesis asks for. Each step answers a question the previous control leaves open. By the end you can map your own harness's controls onto evaluation, monitoring and alignment research, and say which of those links are established and which are untested. Parts I–III go deeper on reliability, verticals and the underlying math.",
+   "audience": "Forward-deployed, product and platform engineers who build agent harnesses on APIs and tool protocols for customers, often from a security or API-platform background, and want to see how their everyday controls connect to evaluation, monitoring and alignment research. No statistics or control background assumed.",
+   "steps": {
+    "mcp": {
+     "objective": "Sketch a harness (host, client, tool server) and say what the Model Context Protocol (MCP) standardizes (discovering and calling tools, resources, prompts) and leaves to the host (consent, access, trust).",
+     "why": "Start on home ground: the API and tool contract. A harness is the code around a model that decides what it sees and what it may do; everything the agent does in a customer system passes through this interface, so every later control attaches here."
+    },
+    "agentsec": {
+     "objective": "Scope an agent's credentials and tools to one task, sandbox execution, and let only the trusted user request set control flow, so untrusted tool or document data cannot steer it.",
+     "why": "MCP's own spec says it cannot enforce its security principles, so who does? Whoever builds the harness: least privilege (only the access the task needs) and consent are your job, and permissions are the first product decision, made before any model behaviour is measured."
+    },
+    "agentworm": {
+     "objective": "Trace how a self-replicating prompt injection moves from one agent's output into another agent's context through shared retrieval stores or messages, and say which harness boundary would stop it.",
+     "why": "Step 2 protects one agent from untrusted documents. Once agents talk to each other, another agent's output is untrusted input too, and a self-replicating prompt can hop from one to the next. Applying step 2's control/data separation to agent-to-agent messages is a proposed, untested link: it has only been evaluated for a single agent."
+    },
+    "multillm": {
+     "objective": "Classify failed multi-agent traces as system-design, inter-agent misalignment or task-verification failures, and run the matched-compute single-agent baseline before adding agents.",
+     "why": "If injections spread between agents, is a multi-agent design worth the extra attack surface? Injections propagate even when agents share only part of their messages, and multi-agent systems often add little accuracy, so they have to beat a single agent at matched compute before you add them."
+    },
+    "agentbench": {
+     "objective": "Score an agent on the customer system's end state (database, repository, ticket), not its transcript, and compute pass^k, the chance that all k independent trials succeed, across repeated runs.",
+     "why": "How do you tell whether a design, single- or multi-agent, actually works? Failing to verify the task is one of the three main categories of multi-agent failure, so check outcomes, not transcripts: score the end state of the customer system over repeated trials, the acceptance test a customer actually cares about."
+    },
+    "guardrail": {
+     "objective": "Put policy checks on the harness's inputs and outputs, and monitor live traffic with a sequential test that alarms on a harmful rise in errors but tolerates benign drift.",
+     "why": "An offline eval estimates risk on a fixed set of tasks, but production traffic shifts, sometimes harmlessly and sometimes not. Monitoring carries the eval into deployment: classify traffic against policy and test as labels arrive whether live risk has really risen."
+    },
+    "defer": {
+     "objective": "Design the escalation path: which cases go to a human reviewer, what the reviewer sees, and how to measure the accuracy and cost of agent plus reviewer against either alone.",
+     "why": "An alarm is only useful if something happens next. Monitors exist to trigger intervention, such as expert review or retraining; in a product that usually means handing the case, or the whole workflow, to a person, so you design that handoff."
+    },
+    "offswitch": {
+     "objective": "State the off-switch result (an agent unsure of its objective, treating the human's choice as evidence, can prefer to stay interruptible) and its assumptions: a rational human, a correct model.",
+     "why": "Why should an agent accept that handoff rather than work around it? The off-switch game gives a formal reason an agent would defer to a human, and learned deferral rules add a model of the human's errors; linking the two is proposed, not tested. Escalation in the harness is the engineering form of being correctable."
+    },
+    "alignmentthesis": {
+     "objective": "State what the thesis asks of a correction interface and how its falsifier would show up in a deployed agent: better proxy scores alongside worse, independently measured user outcomes.",
+     "why": "The off-switch result supplies only the incentive part of the thesis's correction interface, under strong assumptions, and this link is untested. The thesis asks for evidence a harness can actually collect: corrections that hold up over time, and user outcomes measured independently of the agent's own metrics."
+    }
+   }
+  },
+  {
+   "path": "fde-agent-reliability",
+   "summary": "Engineer an LLM agent a customer can trust with real actions. Start from the tool call, make it parse with constrained decoding, check outcomes with end-state evals and validated model judges, catch likely made-up answers with repeated sampling, turn uncertainty into abstain-or-escalate decisions, and watch it all in production. By the end you can build and measure each of these checks and say what each one does not catch.",
+   "audience": "Software engineers who ship LLM agents into customers' products (finance, legal, health, security, robotics, accessibility) and need them to be reliable, not just impressive in a demo. Assumes you have used an LLM API; no statistics background assumed.",
+   "steps": {
+    "toolcall": {
+     "objective": "Write a tool definition (name, description, JSON parameter schema), trace one call (model emits, code runs, result returns), and list three ways a valid call can still be wrong.",
+     "why": "Agents act through tools, so the API contract, not the model, defines what an action is. Start with the interface every later step checks, measures or blocks. A well-formed call can still pick the wrong tool, pass a wrong argument value or cause an unauthorized side effect."
+    },
+    "structdecode": {
+     "objective": "Explain how a JSON Schema or grammar becomes an automaton that masks invalid tokens at each step, guaranteeing that output parses but not that its field values are right.",
+     "why": "The most basic failure from step 1 is a call that does not even parse. Constrained decoding blocks invalid tokens so every tool call matches the declared schema, removing that whole failure class; choosing the right call stays the model's job."
+    },
+    "agentbench": {
+     "objective": "Score an agent on end states (the database or repository afterwards), compute pass^k (the chance all k independent trials succeed), and explain why pass^8 can sit far below single-trial success.",
+     "why": "A call that parses can still be the wrong call, so the next question is whether the task actually got done, every time. The new link makes this concrete: in tau-bench's breakdown of a gpt-4o agent's retail failures, about a third were well-formed calls with a wrong argument, which no schema can catch. So this step measures end states over repeated trials rather than one lucky run."
+    },
+    "multillm": {
+     "objective": "Before splitting a task across agents, run single-agent and self-consistency (majority vote over repeated samples) baselines at matched token budgets, and sort failures with MAST, a taxonomy of multi-agent failures.",
+     "why": "Customers often ask for ‘a team of agents’. With end-state evals in hand you can test whether it helps: multi-agent systems often gain little on popular benchmarks, so compare them with single-agent baselines at matched compute and classify what goes wrong. MAST's three categories are system design, inter-agent misalignment and task verification."
+    },
+    "llmjudge": {
+     "objective": "Build an LLM-judge rubric, test it for position, verbosity and self-enhancement (favouring its own answers) bias, and check agreement with expert labels on a stratified sample before replacing human review.",
+     "why": "Many outcomes, including MAST's failure labels, cannot be checked by code, so a model grades them. MAST used an LLM judge only after checking its agreement with expert annotations; do the same before trusting a judge on customer tasks."
+    },
+    "semanticentropy": {
+     "objective": "Sample several answers, group those that mean the same (each implies the other), measure how spread answers are across groups (semantic entropy), and explain why consistent errors still score low.",
+     "why": "A judge grades answers after the fact; can you flag a likely made-up answer before anyone sees it? Semantic entropy does this at run time by measuring how much sampled answers disagree in meaning, reusing the repeated sampling behind pass^k. The new link shows it still leans on judges: in the main experiments one LLM decides which answers mean the same thing, and another grades the answers used to report its accuracy."
+    },
+    "selective": {
+     "objective": "Turn an uncertainty score into an answer-or-abstain rule, pick from the risk–coverage curve the threshold meeting an error target at highest coverage, and state Chow's rule for optimal abstention.",
+     "why": "A detector helps only once it drives a decision, and the simplest decision is to abstain. Refusing the questions with the highest semantic entropy raises accuracy on those answered: a risk–coverage trade-off of fewer answers for fewer errors."
+    },
+    "defer": {
+     "objective": "Design a rule escalating cases when the human reviewer is likely to beat the model, and compare team accuracy and cost with model-only and human-only baselines at fixed review budget.",
+     "why": "In a customer deployment, abstaining usually means handing off to a person, so which cases should go? Learning to defer generalizes abstention by modelling the reviewer too: it sends the cases where the human is likely to do better, not just the ones where the model is unsure."
+    },
+    "guardrail": {
+     "objective": "Wrap the agent in input–output policy classifiers, add a sequential test that alarms when harmful-output risk rises but not on benign drift, and list the classifiers' refusal and compute costs.",
+     "why": "Everything in steps 3–8 was measured offline, and live traffic drifts. Sequential monitors watch the deployed agent and trigger intervention, such as step 8's expert review or retraining, when a harmful shift is detected, which closes the loop."
+    }
+   }
+  },
+  {
+   "path": "fde-verticals",
+   "summary": "Tour the regulated, high-consequence domains agents are deployed into, asking the same question each time: what does a wrong or unintended action cost here, and which rule or control catches it? You cover finance (trading controls, model risk), the EU AI Act, legal research, clinical decision support and accessibility. By the end you can tell a customer which rules plausibly apply to their agent and design the review or abstention step those rules call for.",
+   "audience": "Forward-deployed engineers about to put an LLM agent into a finance, legal, healthcare or accessibility customer, who know the engineering but not the domain's failure history or rules. Pairs with part I; no legal or clinical training assumed.",
+   "steps": {
+    "tradingctl": {
+     "objective": "Retell Knight Capital's 2012 loss (over $460 million in 45 minutes) from the SEC order and list missing controls: external pre-trade limits, automatic kill switch, release checks for partial deployments.",
+     "why": "Start where an automated actor in a customer's system lost the most money fastest. No learned model was involved, so the lesson is purely about the controls any harness needs around an automated actor: hard limits outside it, a kill switch and a careful release."
+    },
+    "modelrisk": {
+     "objective": "Describe what US bank model-risk guidance asks (model inventory, validation, ongoing monitoring, effective challenge by independent experts) and note that it places generative and agentic AI outside its scope.",
+     "why": "Knight's loss came from deployment and missing controls, which market-access rules cover; bank model-risk guidance covers something different, the quantitative models themselves. A finance customer will expect you to know which regime your agent falls under, and the current guidance leaves LLM agents out."
+    },
+    "aigovern": {
+     "objective": "Explain EU AI Act risk tiers and binding high-risk duties (risk management, logging, human oversight, robustness), and map the voluntary NIST AI RMF (Govern, Map, Measure, Manage) onto your pipeline.",
+     "why": "If bank guidance leaves out generative and agentic AI, where do an agent's obligations come from? The guidance points to the bank's broader governance. Binding duties come from laws such as the EU AI Act, where it applies, while voluntary frameworks such as the NIST AI Risk Management Framework give a structure for governing the deployment."
+    },
+    "legalhalluc": {
+     "objective": "Explain why a court sanctioned a filing citing non-existent cases, tell fabricated citations from real ones that don't support the claim (misgrounding), and check every citation against an authoritative database.",
+     "why": "The AI Act lists AI that assists judicial authorities in researching and applying the law as high-risk, which makes legal research the next stop, though not every legal tool falls in that category. Legal work is also where made-up authority has already led to court sanctions, and retrieval reduced but did not remove it."
+    },
+    "clinical": {
+     "objective": "State when clinical decision support software stays outside FDA device rules (one criterion: a clinician can independently review its basis), and why exam-benchmark accuracy does not show safe clinical use.",
+     "why": "Health is the other high-risk area from step 3, reached through medical-device law rather than a list of use cases. The new link shows the legal failure carries over: in a 2023 test, 93% of the references ChatGPT-3.5 wrote for short medical papers were fabricated or inaccurate. That is why the rule for staying outside device regulation matters: a clinician must be able to check the basis of every recommendation."
+    },
+    "defer": {
+     "objective": "Design a clinical assistant's human-review step (what the reviewer sees, when to escalate) and measure team accuracy as reviewers, workload or automation bias (over-trusting the machine) change.",
+     "why": "If the regulatory boundary requires that a clinician can independently review a recommendation's basis, human review is written into compliance rather than being an optional extra. So design the escalation step, and measure agent plus reviewer as a team."
+    },
+    "selective": {
+     "objective": "Explain abstention as deferral without a modelled human, and pick a threshold from a risk–coverage curve (error rate versus share answered) given the costs of wrong answers and declining.",
+     "why": "What if no reviewer is available, as for a user on their own? Deferral generalizes abstention, so take the reviewer away and what remains is the system itself saying it cannot tell, at a threshold set by the costs of a wrong answer and of declining."
+    },
+    "assistive": {
+     "objective": "Explain why blind and low-vision users cannot check a confident wrong scene description, describe VizWiz's task of predicting answerability, and weight errors by consequence, such as medication or currency.",
+     "why": "Accessibility is where the cost gap between a wrong answer and ‘I can't tell’ is sharpest, because the user cannot check the answer. VizWiz makes predicting whether a question can be answered from the image a task of its own, which is abstention for users who cannot verify."
+    }
+   }
+  },
+  {
+   "path": "fde-foundations",
+   "summary": "Learn the statistics and control ideas underneath confidence thresholds, guardrails and action limits: proper scoring rules and calibration, conformal guarantees, online calibration and drift monitoring, safety filters from control theory, and reward hacking as the general reason optimized agents game their checks. Most steps fix a limitation of the one before. By the end you can say what guarantee each tool gives, under which assumptions, and what it leaves uncovered.",
+   "audience": "Forward-deployed engineers who have shipped agents (part I) and want the ideas underneath confidence thresholds, guardrails and action limits explained from the ground up, without an estimation, control or statistics degree.",
+   "steps": {
+    "proper": {
+     "objective": "Compute log and Brier scores for probabilistic predictions and explain what makes a scoring rule proper: in expectation, reporting your true belief scores no worse than hedging or exaggerating.",
+     "why": "Every threshold in the harness, whether to answer, escalate or block, reads a confidence score. A proper scoring rule grades probabilistic predictions so that reporting your true belief scores best in expectation, which is how you check that those scores mean what they say."
+    },
+    "conformal": {
+     "objective": "Run split conformal prediction: score how unusual each calibration example looks, take the ⌈(n+1)(1−α)⌉-th smallest score as threshold, and state its guarantee and limits.",
+     "why": "A good average score does not tell you how often a prediction set will contain the truth. Conformal prediction adds that: marginal coverage of at least 1−α in finite samples, whatever model produced the scores, provided the data are exchangeable (roughly, new data look like the calibration data). It does not promise coverage for each subgroup or input. The atlas proposes measuring coverage and proper score separately, since neither alone certifies useful decisions."
+    },
+    "onlinecal": {
+     "objective": "Implement adaptive conformal inference, which nudges the threshold after each miss or hit, and explain how it trades the finite-sample guarantee for long-run error control when data drift.",
+     "why": "Conformal's guarantee assumes exchangeable data (roughly, that the order of examples does not matter, so tomorrow looks like yesterday), but customer traffic changes over months and a one-time calibration goes stale. Adaptive conformal methods handle drifting data by adjusting the threshold online, replacing the finite-sample guarantee with a long-run form of error control."
+    },
+    "guardrail": {
+     "objective": "Monitor a live error rate with a sequential test that alarms only on a harmful rise, keeping false alarms controlled at every time step at once (a time-uniform confidence sequence).",
+     "why": "Online calibration and monitoring both replace a one-time calibration with sequential control as data arrive; monitoring adds the alarm. It is change detection: deciding, from a noisy stream, when the system you shipped has stopped being the system you validated. An alternative tracks quality metrics with a state-space (Kalman) model and alarms when new observations miss its predictions by more than its stated uncertainty allows (inconsistent innovations)."
+    },
+    "constrainedrl": {
+     "objective": "Describe how a predictive safety filter checks actions against a model with confidence bounds, minimally adjusts them or falls back to a certified plan, with guarantees a learned classifier lacks.",
+     "why": "A learned guardrail classifier filters by policy without a formal guarantee. When an agent drives an actuator or moves money you want more: shields and predictive safety filters check each action and enforce stated constraints, under model assumptions."
+    },
+    "barrier": {
+     "objective": "Write the control barrier function condition ḣ(x, u) ≥ −α(h(x)) and explain why enforcing it keeps a system starting in the safe set {x : h(x) ≥ 0} there (forward invariance).",
+     "why": "What does such a filter look like concretely? The most common form is a control barrier function: a function h that is non-negative exactly on the safe states. Under its model, feasibility and regularity assumptions, the filter constrains each action so the system never leaves that set. It enforces only that specified inequality, not arbitrary semantic preferences."
+    },
+    "safeinterface": {
+     "objective": "Solve the barrier filter min ‖u − u_ref‖² as a projection onto a half-space, apply it to a language or vision-language-action (VLA) planner's action, and name what it cannot protect: instruction intent.",
+     "why": "How do you put a barrier function between a language model and an actuator? For control-affine dynamics with one constraint and no input bounds, the filter is exactly a projection of the proposed action onto the safe half-space: the cleanest form of ‘the model proposes, a verified layer disposes’."
+    },
+    "rewardhack": {
+     "objective": "Give an example where optimizing a proxy reward lowers true return, and explain why checks on only the written objective cannot stop an optimizer meeting its letter, not its intent.",
+     "why": "Step 7's filter guarantees only what was written into its constraint. Reward hacking is the general failure when the written objective is itself a proxy: pushing the proxy higher can make the true outcome worse. The new link proposes an untested case close to step 7: SayCan picks skills by a learned estimate of success, and always choosing the highest estimate may favor skills whose success is overestimated."
+    },
+    "specgaming": {
+     "objective": "Spot specification gaming in coding or research agents (editing tests, patching graders, faking timers) and design resistant evals: hidden scorers, tamper canaries (planted tripwires), and review of evaluation-code diffs.",
+     "why": "Step 8 is theory; does it happen in deployed agents? Patching a grader raises the measured score while the task goes undone, which is consistent with that proxy-versus-true reversal, observed at evaluation time. This brings the theory back to the agents and evals you build in part I."
+    }
+   }
+  },
+  {
+   "path": "intro-ai-safety-to-thesis",
+   "summary": "A beginner's route through Stanford's CS120 introduction to AI safety that ends at this atlas's alignment thesis. You will see what “safe AI” means, why rewards and human feedback can be gamed, why safety training can be bypassed, how to tell what a test score really shows, and how a weaker supervisor might oversee a stronger model. By the end you can state the thesis's core idea and design one experiment whose result could count against it; the last two links into the thesis are untested hypotheses.",
+   "audience": "Newcomers to AI safety who have trained or fine-tuned a model and know roughly what a loss and a reward are. No control theory, interpretability or learning theory is needed.",
+   "steps": {
+    "cs120": {
+     "objective": "Sort the course's main topics into problems inside a model (badly specified rewards, adversarial inputs, internals nobody can read) and problems in the system around it (data, deployment, governance, oversight).",
+     "why": "This is the starting map. The course treats safety as several separate problems, not one; this path follows its arc and then shows where the alignment thesis (this atlas's research proposal) picks up each thread."
+    },
+    "safetyproblems": {
+     "objective": "Name the five problems in Concrete Problems in AI Safety and the four areas in Unsolved Problems in ML Safety, with one example of each.",
+     "why": "The map raises a first question: what exactly counts as unsafe? The course answers with two well-known problem lists that give the field a shared vocabulary. Two items matter most for the thesis: reward hacking (scoring well on the reward without doing what was meant) and scalable supervision (overseeing a system when checking its work is expensive)."
+    },
+    "rewardhack": {
+     "objective": "Explain how pushing harder on a proxy reward (a stand-in score for what we really want) can make true performance worse, and why inspecting the reward alone cannot rule this out.",
+     "why": "Reward hacking was one name on the list; this step shows how it happens. Behaviour that scores higher on the proxy can be worse by the true goal, so a system can do what the reward says rather than what was meant (week 2: specification gaming). The formal result shows when this can happen, not that it happens in every training run. The thesis turns this into its main falsifier, the result that would refute it: better proxy optimization systematically destroying independently measured user utility."
+    },
+    "preference": {
+     "objective": "Describe RLHF (learn a reward model from human comparisons of answers, then optimize against it) and DPO (train directly on preferred-versus-rejected answer pairs), and explain reward-model overoptimization: proxy reward keeps rising while true quality peaks and then falls.",
+     "why": "If hand-written rewards get gamed, why not learn the reward from people? That is the course's main answer, but a learned reward is still a proxy, so the same reversal can return as overoptimization. The thesis agrees that preferences are evidence about what people intend, but it will not treat a fitted reward model as the intent itself."
+    },
+    "jailbreaks": {
+     "objective": "Explain the two reasons jailbreaks work, competing objectives (helpfulness pulling against harmlessness) and mismatched generalization (safety training not reaching everywhere the model's abilities do), and describe how an automated search finds an attack suffix.",
+     "why": "Preference training teaches a model to refuse harmful requests, but does the refusal hold? Jailbreaks, prompts that get a model to do what it was trained to refuse, show that safety training changes behaviour on familiar requests without removing the underlying ability. For the thesis this is a warning that a correction can look effective and still fail under adversarial inputs."
+    },
+    "evalvalidity": {
+     "objective": "For one safety evaluation, state the claim it is used to support and two ways its score could mislead, such as the choice of metric, test items leaking into training data, or a biased judge.",
+     "why": "Jailbreak studies report attack success rates, so how far should we trust such numbers? Evaluation validity asks whether a score actually supports the claim it is used for. Red-teaming practices differ widely in purpose and in how outcomes are judged, and without clear criteria they can become security theater: a show of testing that proves little. The thesis asks for the same discipline: independent measurements, declared before the experiment."
+    },
+    "weaktostrong": {
+     "objective": "Define performance gap recovered (the share of the gap between the weak supervisor's score and the strong model's best possible score that training on weak labels closes), summarize what weak-to-strong experiments found, and explain why the setup is only an analogy for supervising models more capable than us.",
+     "why": "Measurements need a trustworthy judge, but what if the model becomes stronger than its judge? That is scalable oversight, the course's last topic, and weak-to-strong generalization makes it measurable today by training a strong model on a weaker model's labels for tasks with known answers. The thesis needs an answer, because its corrections come from people who may not be able to check the model's work."
+    },
+    "assistance": {
+     "objective": "Describe an assistance game (the machine is unsure what the human wants and treats the human's behaviour as evidence about it), and explain why, under its assumptions, this uncertainty can make it rational for the machine to let a human switch it off.",
+     "why": "Untested link: weak-to-strong training treats weak labels as the truth to imitate. The alternative proposed here treats them as noisy evidence about what the supervisor wants and asks when unsure; whether this recovers more of the gap has not been tested. This is where the thesis departs from the course's mainstream: in the assistance-game model, keeping uncertainty about the goal explicit gives an agent a reason to accept correction, though that result depends on the model's assumptions."
+    },
+    "alignmentthesis": {
+     "objective": "State the thesis's correction interface (how a correction changes the system) and its main falsifier, and design one experiment from this path, using reward overoptimization, a jailbreak or a weak-to-strong setup, that could count against it.",
+     "why": "Untested link: assistance games supply one piece, uncertainty about what people want that is updated through trustworthy correction. The thesis combines it with the course's other lessons (preferences as evidence, robustness to attacks, valid evaluations, oversight by weaker supervisors), explicit belief states (the system's running estimate of what is going on) and an enforcer outside the model. The course surveys methods and their limits; the thesis bets on one design and names what would refute it."
+    }
+   }
+  },
+  {
+   "path": "intro-ai-safety-course",
+   "summary": "Follow the first half of Stanford's CS120 course roughly in syllabus order, with each week tied to an atlas topic. You move from safety as a property of the whole deployed system, through fairness and training data, to how human preferences and written principles are trained into models, whose preferences count when people disagree, and what a safe conversation means for a vulnerable user. By the end you can explain why many AI harms cannot be fixed inside the model alone, and point to where human value choices enter training. Part II covers robustness, verification and what capable agents might want.",
+   "audience": "Newcomers following the course, or a similar introduction, who want each week placed in the atlas. Some machine-learning background helps; nothing beyond basic probability is assumed.",
+   "steps": {
+    "cs120": {
+     "objective": "Explain the course's split between model-specific safety issues (problems inside the model) and systemic ones (problems in how it is built, used and governed), with two examples of each.",
+     "why": "This is the starting map. The course treats safety as a property of models and of the systems they sit in; this part follows the systemic thread first."
+    },
+    "systemicsafety": {
+     "objective": "Name the six risk areas in Weidinger et al.'s taxonomy and explain why Narayanan and Kapoor argue that safety is not a model property.",
+     "why": "The map splits safety in two; this step makes the systemic half concrete. Week 1 assigns a taxonomy (an organized list) of language-model risks and an essay arguing that whether an output is harmful often depends on context the model cannot see. So many harms cannot be fixed by training alone."
+    },
+    "fairness": {
+     "objective": "Explain disparate impact (outcomes or errors that fall unequally on one group), how Feldman et al. test for it, and why the COMPAS debate turned on which fairness criterion to use.",
+     "why": "If harm depends on how a model is used, what does such a harm look like? Discrimination is the clearest and most studied case: ProPublica found that the COMPAS risk score, used in criminal sentencing, labelled Black defendants who did not reoffend as higher risk far more often than white defendants who did not, while its makers argued the scores were equally accurate for both groups. Both can be true because common fairness criteria conflict, so choosing which one to satisfy is itself a value judgment."
+    },
+    "datasafety": {
+     "objective": "Describe one case where more training data worsened bias, one where filtering data before training improved safety, and why unlearning (removing knowledge after training) is hard to verify.",
+     "why": "Where do biased outputs come from? Often from the training data (week 3): growing a web-scraped image–text dataset fivefold, from LAION-400M to LAION-2B, increased hateful content and made trained models label Black men's faces as criminal roughly two to five times as often. Filtering data before training helps, but removing knowledge afterwards is harder than it sounds."
+    },
+    "preference": {
+     "objective": "Explain how RLHF (learn a reward from human comparisons, then optimize against it) and DPO (train directly on preferred-versus-rejected answer pairs) turn people's choices into a training signal, and one way the learned reward can be overoptimized, pushed until it stops tracking real quality.",
+     "why": "Data shapes a model before training; what shapes it after? O'Brien et al. found that removing text about dangerous dual-use topics (useful for good or harm) before training made their 6.9B-parameter models resist attempts to retrain the danger back in more than ten times longer than safety measures added after training, though the models could still use such information if given it in the prompt. Even so, training on human preferences after pretraining (week 2) is the course's main tool for shaping a chat model's behaviour, so it is worth knowing how it works and where it fails."
+    },
+    "constitutional": {
+     "objective": "Describe the two phases of Constitutional AI (the model critiques and revises its own answers against written principles, then AI-judged comparisons train the reward model) and what RLAIF, reinforcement learning from AI feedback, changes relative to RLHF.",
+     "why": "Labelling every kind of harm by hand takes many human judgments; can written principles do some of that work? Constitutional AI keeps the RLHF pipeline but trains the harmlessness reward on AI labels guided by a written list of principles, and RLAIF matched RLHF on the tasks Lee et al. report. Human judgment does not disappear; it moves into choosing the principles."
+    },
+    "socialchoice": {
+     "objective": "Explain why combining many people's preferences forces a choice of rule, and define Overton pluralism (presenting the range of reasonable views in an answer), steerable pluralism (adjusting to a requested view) and distributional pluralism (the model's spread of answers matching how views are spread in a given population).",
+     "why": "If the principles carry the human choice, whose principles are they? Constitutional AI's only human oversight is that list, so the question of whose values count becomes who writes it. Pooling disagreeing people's judgments is a social-choice problem (week 4) whether or not it is named, and classical results such as Arrow's theorem show that no ranked voting rule meets a small set of reasonable-sounding conditions at once, so some choice of rule is unavoidable."
+    },
+    "humanai": {
+     "objective": "Define social sycophancy (an assistant protecting the user's preferred self-image instead of being candid) and explain why benchmark scores on advice requests do not show that a model is safe for vulnerable users.",
+     "why": "Disagreement reaches single conversations too: Ge et al. found that people from different cultural backgrounds weight control of AI and connection with AI differently, so even a “good” interaction embeds a choice. The course's mental-health and human–AI interaction lectures ask what that means for someone who trusts an assistant. Cheng et al.'s ELEPHANT benchmark found that, across 11 models, assistants protected users' self-image 45 percentage points more often than humans did. It measures answers, not effects on real users."
+    }
+   }
+  },
+  {
+   "path": "intro-ai-safety-robustness-and-agency",
+   "summary": "The second half of Stanford's CS120 course: adversarial examples, proving properties of networks, safety guarantees relative to a specification, and arguments about whether capable agents would resist correction or seek power. On the way it passes through the atlas's alignment thesis, which uses verification as an outside enforcer and meets its strongest objection, corrigibility. By the end you can say what a robustness proof does and does not guarantee, and lay out the argument that capable goal-directed agents may resist being corrected.",
+   "audience": "Learners following the course who have finished Part I or the flagship path. Comfort with gradients and the basics of reinforcement learning (an agent learning from rewards) helps.",
+   "steps": {
+    "cs120": {
+     "objective": "Find the course's robustness, formal-methods and “what is intelligence and does it want?” weeks, and say which concern today's models and which concern risks from more capable future systems.",
+     "why": "This is the starting map for Part II. The second half moves from today's attacks on models to arguments about more capable systems."
+    },
+    "advexamples": {
+     "objective": "Write the fast gradient sign method, x + ε·sign(∇ₓJ) (move every input value up or down by the same small amount ε, whichever way raises the loss), explain the locally-linear explanation of why it works, and say what a threat model specifies.",
+     "why": "Week 5's red-teaming lecture starts here: small, deliberately chosen input changes can make a network give a confident wrong answer, and the idea carries over to attacks on aligned chat models. Robustness only means something relative to a threat model, the stated limits on what an attacker can change and by how much."
+    },
+    "nnverify": {
+     "objective": "Explain what a sound verifier proves about a network (a property holds for every input in a set), what it does not prove, and why exact methods scale poorly.",
+     "why": "Attacks can find adversarial examples, but failing to find one is no proof there are none. Verification, the course's formal-methods week, proves the property directly: local robustness, no misclassification anywhere in a small ball around an input, is the standard property verifiers prove and the one adversarial examples violate."
+    },
+    "gsai": {
+     "objective": "Name the three parts of guaranteed safe AI (a world model, a safety specification and a verifier) and explain why any guarantee is only as good as the world model and specification it is stated against.",
+     "why": "Proving one property of one network is a small step; could proofs cover whole AI systems? Guaranteed safe AI is a research agenda built around a verifier that certifies behaviour against a specification and a model of the world. Sound network verification is the existing technique for that part, but it is limited to input–output properties at modest scale."
+    },
+    "alignmentthesis": {
+     "objective": "Explain the role of the independent enforcer in the alignment thesis (this atlas's research proposal) and why the thesis says an enforcer limits consequences without making actions correct.",
+     "why": "Proposed link, not a tested result: the thesis adopts this idea as one component, an enforcer outside the learned policy that checks actions against a specification relative to a world model. It inherits the same gap: its guarantees carry any error in the world model or the specification."
+    },
+    "corrigibility": {
+     "objective": "State the shutdown problem (how to build an agent that neither resists nor causes the pressing of its off switch) and why simple proposals that combine utility functions fail the requirements for corrigibility, an agent's willingness to accept correction.",
+     "why": "An enforcer and a correction channel only help if the agent does not work against them. This is the strongest objection the thesis records (a proposed, untested link): in idealized models, goal-directed agents have instrumental reasons, reasons that serve almost any goal, to resist modification, and no simple utility design is known to remove them. That shows the problem is open, not that today's trained systems will resist."
+    },
+    "powerseeking": {
+     "objective": "State what Turner et al. prove about optimal policies and power (keeping options open), and what the result does not say about trained systems.",
+     "why": "Is resisting shutdown only a thought experiment? Week 7's “does it want?” question gets a formal answer: in many environments where shutdown is possible, most reward functions make it optimal to keep options open and avoid shutdown. The proof concerns optimal policies, not trained networks."
+    },
+    "goalmisgen": {
+     "objective": "Give the CoinRun example of goal misgeneralization and explain how it differs from reward misspecification (a reward that is itself wrong).",
+     "why": "Power-seeking needs a goal to serve; where could a wrong goal come from when the reward is right? In CoinRun, agents trained with the coin at the level's right end kept heading for the end when the coin moved. Ngo et al. argue that goals learned this way, combined with power-seeking incentives, are a central route to misaligned behaviour."
+    }
+   }
+  },
+  {
+   "path": "interpretable-ml-to-thesis",
+   "summary": "Start with models that are their own explanation, optimal sparse decision trees and Rashomon sets, and use them as the standard for judging after-the-fact explanations of neural networks such as sparse autoencoders. Then follow belief-state geometry, an interpretability result checked against an answer computed in advance, through its theory, training stages and probe-guided data editing to the evidence the alignment thesis would accept. By the end you can say what an interpretability claim needs before it counts as evidence; the last three links are untested hypotheses.",
+   "audience": "Researchers from interpretable ML (sparse models, Rashomon sets) or mechanistic interpretability who are comfortable with probability and statistics and know the basics of RL fine-tuning. Superposition and the local learning coefficient appear only briefly; open those topics first if they are new.",
+   "steps": {
+    "sparsetrees": {
+     "objective": "State the optimal sparse decision tree objective (loss + λ × number of leaves), explain how bounds and dynamic programming certify that a tree is optimal, and say what the certificate is relative to: the objective, λ, the data and the binarized features.",
+     "why": "This sets the standard for the whole path: an explicit objective, a proven optimum (a certificate) and a model that is its own explanation. Every later step is judged against it. From interpretable ML this is home ground; from mechanistic interpretability it is the comparison point."
+    },
+    "rashomon": {
+     "objective": "Define the Rashomon set (every model whose loss is within ε of the best) and the Rashomon ratio, explain how TreeFARMS lists the set for sparse trees, and compute a variable-importance range across the set rather than for one tree.",
+     "why": "Finding the best tree leaves a question: is it the only good one? TreeFARMS extends the same dynamic-programming search to list every tree within ε of the optimum, and often many quite different trees fit almost equally well. Carry the question “which of the near-optimal models are we looking at?” into every later step."
+    },
+    "rudin2019": {
+     "objective": "Summarize Rudin's argument against post-hoc explanation (explaining a black box after training) for high-stakes decisions, and say which part concerns structured data and which part is general.",
+     "why": "If many models fit almost equally well, what follows in practice? A large Rashomon set makes it likely that a simple, accurate model is among them, so Rudin argues you should search for an interpretable model before accepting a black box and explaining it afterwards. Keep this position in mind: the next step is exactly such an after-the-fact explanation."
+    },
+    "sae": {
+     "objective": "Write the sparse autoencoder (SAE) objective, reconstruction error plus a sparsity penalty over a dictionary with more directions than dimensions, explain why it does not pick out a unique dictionary, and list three checks a claim should report: seed stability, the loss increase when activations are replaced by reconstructions, and a dense linear-probe baseline.",
+     "why": "An SAE explains a trained network after the fact, the approach Rudin warns against for high-stakes use, and its reconstruction error is the part left unexplained. The Rashomon habit applies: SAEs trained with different seeds share only part of their features, so no single dictionary is “the” explanation (an analogy the atlas marks untested). SAEs have not beaten dense linear probes on downstream tasks, and convincing feature labels can depend on which dataset is inspected, but SAEs help suggest internal variables worth testing."
+    },
+    "beliefgeometry": {
+     "objective": "Explain how the target geometry (the set of Bayesian beliefs over a known hidden Markov model's hidden states) is computed from the data generator before the network is examined, and what a linear readout of it does and does not show.",
+     "why": "SAE features are found first and named afterwards; what would an explanation checked against a known answer look like? Here the target is computed from the generator before the network is inspected, much as a tree is certified against its objective, and a linear map from the network's activations recovers it. Caveat: this is a readout in small synthetic processes with no actions, and it does not show the model uses the belief."
+    },
+    "predictivestate": {
+     "objective": "State how causal states are defined (group past histories that predict the same distribution of futures) and why, for stationary processes, they are the minimal sufficient statistic for prediction: the smallest summary of the past that loses no predictive information.",
+     "why": "Where did the predicted geometry come from? From computational mechanics, which defines belief states over the generator's hidden states as an explicit object with its own update rule, not as a direction found inside a network. The thesis needs belief in this explicit form."
+    },
+    "development": {
+     "objective": "Describe how training stages are detected with the local learning coefficient (LLC), and design the experiment that would show whether the belief geometry forms at a stage boundary.",
+     "why": "Untested link: if the network ends up representing beliefs, when in training does that happen? Nobody has checked whether LLC-detected stages coincide with the belief geometry forming, so this step asks you to design that test. The LLC measures how fast the volume of near-optimal parameters shrinks as the loss tolerance tightens, a Rashomon-like idea (another analogy the atlas marks untested). Evidence for stages so far is associations in small transformers, weaker than an optimality certificate."
+    },
+    "probeattr": {
+     "objective": "Explain how a behaviour probe (a simple classifier trained on activations to detect a behaviour) ranks preference examples for filtering before retraining, and how stage-aware attribution, scoring examples at several checkpoints, could change that ranking.",
+     "why": "Untested link: if stages matter, can internals be used to change what a model learns? Here a probe picks which training data to edit, and the retrained model's behaviour is measured. But an example's influence can change sign between stages, while probe attribution scores data at one checkpoint, so comparing the two rankings is an open experiment. The usual probe caveats apply: a probe can read a direction the model does not use, and optimizing against a probe can break it."
+    },
+    "alignmentthesis": {
+     "objective": "State what the thesis requires of its correction interface (how a correction changes the system) and learning interface (how data and objectives are updated), state its falsifier (better proxy optimization systematically destroying independently evaluated user utility), and say what evidence would make probe-guided correction count.",
+     "why": "Untested link: when would this kind of data editing count as a real correction? Only if the correction persists and unrelated capability holds on independent evaluations. Internal explanations help choose which variables to test, but they do not replace that behavioural, prospective test."
+    }
+   }
+  },
+  {
+   "path": "mechinterp-circuits-causal-tests",
+   "summary": "Start with the circuits programme and two fully worked case studies, then learn the tests used to check circuit claims: activation patching, causal scrubbing and causal abstraction. The path ends with the illusions those tests can produce. By the end you can judge a circuit claim by asking which test supports it and what that test cannot establish.",
+   "audience": "Learners who know how a transformer works (attention heads, the residual stream) and want to evaluate circuit-level claims, including what each test can and cannot show.",
+   "steps": {
+    "circuits": {
+     "objective": "State the three claims of the circuits programme (features are the basic units, circuits connect features through weights, and similar features and circuits recur across models) and give one worked example, such as curve detectors in a vision model.",
+     "why": "This is the programme every later step uses or tests. A feature is a direction in a layer's activations that stands for something, and a circuit is the weighted connections between features. The evidence is mostly case studies in one vision model, so keep asking how far it carries to transformers."
+    },
+    "grokkingmech": {
+     "objective": "Explain the Fourier multiplication algorithm in the modular-addition network and the three training phases its progress measures reveal: memorization, circuit formation and cleanup.",
+     "why": "Can the programme fully explain any network? A small transformer that groks modular addition (test accuracy jumps long after it has fit the training data) was reverse-engineered completely from its weights, a rare end-to-end success. It worked because the algorithm could be guessed and then checked; basic Fourier analysis helps."
+    },
+    "inductionheads": {
+     "objective": "Describe how a previous-token head and an induction head work together to complete [A][B] … [A] → [B], and grade the evidence for their role in larger models.",
+     "why": "From a toy task to language models. Like grokking, this pairs an abrupt change in behaviour with a mechanism that forms during training: the change is a jump in in-context learning (using patterns from earlier in the prompt), and the mechanism is two attention heads that continue repeated text."
+    },
+    "ioi": {
+     "objective": "Name the head classes in the indirect-object identification (IOI) circuit and explain why backup heads complicate ablation evidence, where a component is knocked out to see what breaks.",
+     "why": "Do such small mechanisms combine into bigger circuits? The IOI circuit, 26 heads in GPT-2 small that complete “When Mary and John went to the store, John gave a drink to” with “Mary”, includes induction and duplicate-token heads that detect the repeated name. It is also where ablation evidence gets complicated: backup heads take over when the main ones are removed."
+    },
+    "actpatching": {
+     "objective": "Run activation patching (copy an activation from one input's run into another's and measure the change in output) with two corruption schemes and two metrics, and explain why the results can differ.",
+     "why": "How was the IOI circuit actually found? With path patching, a variant of activation patching that restricts the effect to chosen paths, so the circuit's claims are only as reliable as patching itself."
+    },
+    "causalscrubbing": {
+     "objective": "Turn a circuit hypothesis into resampling ablations (replace activations with their values on other inputs) and compute the fraction of loss recovered.",
+     "why": "Patching tests one component at a time; how do you test a whole hypothesis? Causal scrubbing generalizes patching: the hypothesis says which activations should not matter, those are resampled from other inputs, and you measure how much behaviour survives."
+    },
+    "causalabstraction": {
+     "objective": "Define an interchange intervention (set an internal value to what it would be on another input, then check a high-level model's prediction) and explain what distributed alignment search learns: a rotated subspace of activations that lines up with a high-level variable.",
+     "why": "Patching and scrubbing look like separate tools; is there one idea underneath? Causal abstraction is proposed as that common foundation: both are interchange-intervention tests of whether a high-level causal model predicts what happens when internal values are swapped between inputs."
+    },
+    "illusions": {
+     "objective": "Explain the dormant-pathway illusion and the dataset-dependence illusion, and the extra evidence each calls for.",
+     "why": "Can these tests themselves mislead? Yes: a learned subspace intervention can reproduce a feature's effect through a dormant pathway, one the model does not normally use, so a high interchange score can overstate how faithful the explanation is. Separately, the same neuron can get different convincing labels depending on which dataset you inspect."
+    }
+   }
+  },
+  {
+   "path": "mechinterp-features-representations",
+   "summary": "Start with lenses and probes for reading what a layer encodes, then move through the linear representation and superposition hypotheses to sparse dictionaries at scale and steering. The path ends with negative results against simple baselines. By the end you can test a feature-level claim properly: check that the model uses the feature, and compare it with a dense linear probe and plain prompting.",
+   "audience": "Learners with linear algebra and transformer experience who want to judge feature-level claims against simple baselines.",
+   "steps": {
+    "tunedlens": {
+     "objective": "Decode intermediate layers into next-token predictions with the logit lens (the model's own output layer applied early) and the tuned lens (a learned map per layer), and say why a lens is a probe.",
+     "why": "A cheap first look at what each layer encodes, and the path's first caveat: a lens is itself a trained probe, a small model trained to read information out of activations."
+    },
+    "controlprobes": {
+     "objective": "Compute probe selectivity (accuracy on the real task minus accuracy on a control task with random labels) and explain why information being decodable does not show the model uses it.",
+     "why": "If a lens is a probe, how much of what it reads comes from the probe itself? The tuned lens trains a probe at every layer, so the general caveat applies: high accuracy can reflect what the probe learns on its own, and control tasks with random labels measure that part."
+    },
+    "othello": {
+     "objective": "Describe the Othello-GPT probes and the intervention that changes its moves.",
+     "why": "Probes show what can be read out, not what is used; what would show use? Othello-GPT, trained only on legal move sequences, adds the causal check probing lacks: editing the probed board state changes the model's move predictions."
+    },
+    "linearrep": {
+     "objective": "State the linear representation hypothesis (concepts are directions in activation space), explain how the causal inner product makes the probing and steering senses of “direction” agree, and give a counterexample such as the circular day-of-week features.",
+     "why": "Is the board stored as a direction? Relative to the player to move (mine/theirs) it is linearly decodable and steerable, though black/white linear probes fail. That suggests a general claim: concepts are directions in activation space."
+    },
+    "superposition": {
+     "objective": "Explain when toy models store features in superposition (more features than dimensions, sharing nearly orthogonal directions) and how this relates to compressed sensing.",
+     "why": "If features are directions, how can a model with d dimensions hold more than d of them? Superposition answers this in toy models: sparse features share nearly orthogonal directions, at the cost of some interference."
+    },
+    "sae": {
+     "objective": "Write the sparse autoencoder (SAE) loss, reconstruction error plus a sparsity penalty over a dictionary with more directions than dimensions, and report seed stability and the loss increase when activations are replaced by reconstructions.",
+     "why": "If features are packed together, can they be pulled apart? A dictionary with more directions than dimensions, only a few active at a time, may recover them; SAEs are trained for exactly that."
+    },
+    "scalingmono": {
+     "objective": "Summarize what scaling SAEs to a production model found, and the authors' caution that a safety-relevant feature existing does not show the model uses it to act.",
+     "why": "Does this work beyond small models? The same method, scaled to tens of millions of features on a production model's residual stream, finds abstract, multilingual and safety-relevant features."
+    },
+    "steering": {
+     "objective": "Build a steering vector (a direction added to activations at inference time) from contrasting prompts and measure its side effects.",
+     "why": "Can features also change behaviour? Clamping a dictionary feature to a high value shifts behaviour as its label predicts, as with the Golden Gate Bridge feature. Steering vectors do the same with a direction taken from contrasting prompts, with no dictionary needed."
+    },
+    "saebaselines": {
+     "objective": "Compare an SAE-based method with a dense linear probe and with prompting at matched data.",
+     "why": "Do these methods beat simple alternatives? On AxBench, plain prompting outperformed every representation-based steering method and SAEs were not competitive, and on downstream tasks SAE features have not beaten dense linear probes. Apply this baseline check to every feature claim on this path."
+    }
+   }
+  },
+  {
+   "path": "mechinterp-circuit-discovery-scale",
+   "summary": "Start from manual activation patching and follow how circuit discovery was automated and scaled: ACDC, gradient-based attribution patching, feature-level circuits through SAEs and transcoders, and attribution graphs. The path ends with attribution graphs used in an alignment audit. By the end you can say what each method approximates, where it gives false negatives or misleads, and what an audit result does and does not show.",
+   "audience": "Learners who already know activation patching and sparse autoencoders and want the scaled-up circuit-discovery toolchain and its limits. The last step assumes you know reward hacking (a model exploiting flaws in its reward).",
+   "steps": {
+    "actpatching": {
+     "objective": "Explain what an activation-patching effect measures and how the choice of corrupted input changes it.",
+     "why": "The starting measurement: copy an activation from one run into another and see how the output changes. Every method on this path approximates or automates it."
+    },
+    "acdc": {
+     "objective": "Run or describe ACDC (automated circuit discovery) and explain how its threshold changes the recovered circuit.",
+     "why": "Manual circuit work patches and prunes one edge at a time; can a program run that loop? ACDC automates it, pruning every edge whose removal changes a task metric by less than a threshold. On a hand-found greater-than circuit in GPT-2 small it kept 68 of 32,000 edges, all previously found by hand."
+    },
+    "attrpatching": {
+     "objective": "Derive the first-order attribution-patching estimate, (a_clean − a_corrupt) · ∂m/∂a, and name two ways it produces false negatives.",
+     "why": "Patching every edge one by one is expensive; can all the effects be estimated at once? Attribution patching uses a gradient-based linear approximation that needs two forward passes and one backward pass, and averaged over tasks, pruning edges by its scores recovered reference circuits better than ACDC."
+    },
+    "sae": {
+     "objective": "Explain why attributions over SAE features, plus error terms, give feature-level circuits.",
+     "why": "Heads and neurons often do several things at once; can circuits be built from interpretable features instead? Sparse feature circuits run attribution patching over SAE features, with error terms for what the SAE misses."
+    },
+    "transcoders": {
+     "objective": "Contrast an SAE with a transcoder, and say what model diffing with a crosscoder shows and what can mislead it.",
+     "why": "SAE features in different layers are hard to connect. A transcoder keeps the sparse-dictionary objective but predicts a sublayer's output from its input, so feature-to-feature attributions become direct to compute."
+    },
+    "attributiongraphs": {
+     "objective": "Read an attribution graph, including its error nodes, and design the perturbation that tests it.",
+     "why": "How do you trace a whole prompt through features? Attribution graphs replace the model's MLPs with a cross-layer transcoder, freeze attention and compute feature-to-feature attributions for one prompt. Error nodes record what the replacement misses."
+    },
+    "auditing": {
+     "objective": "Describe the hidden-objective auditing game and what its success does and does not show.",
+     "why": "Can these tools find something a model was trained to pursue in secret? On a model fine-tuned to exploit reward-model biases, attribution graphs show reward-model-bias features in the circuits for its behaviour, and three of four blind teams in the auditing game uncovered the objective. The objective was taught partly through documents the auditors could search, and one planted objective with a known answer is a test bed, not evidence that audits find objectives nobody planted."
+    }
+   }
+  },
+  {
+   "path": "regression-to-gps",
+   "steps": {
+    "svm": {
+     "why": "Logistic regression left open what happens when the two classes can be separated perfectly: without regularization the fit never settles. The SVM answers by choosing the boundary with the largest margin, and the new link shows the two meet: gradient descent on the logistic loss slowly turns toward the hard-margin SVM direction. SVMs also bring in kernels, the idea Gaussian processes build on."
+    }
+   }
+  },
+  {
+   "path": "estimation-to-control",
+   "steps": {
+    "mpc": {
+     "why": "LQG gives the best controller for a linear plant with Gaussian noise, but it cannot respect limits on inputs or states. MPC keeps the quadratic cost and re-solves an optimization at every step so those limits can be enforced. The new link shows that with no constraints and a Riccati terminal cost it gives back the LQR gain at any horizon, and applied to a Kalman-filter estimate it is the LQG controller."
+    }
+   }
+  },
+  {
+   "path": "sequence-models-rnn-to-ssm",
+   "steps": {
+    "hybrid": {
+     "why": "SSD showed that Mamba-2 and attention are related but not identical, which leaves open whether pure SSMs lose anything in practice. They do: in a matched 8B-parameter comparison, pure Mamba-2 trailed Transformers on copying and in-context learning, while a hybrid with only 7% attention layers beat the Transformer on all 12 standard tasks tested. Griffin and Jamba are two published hybrids of this kind."
+    }
+   }
+  },
+  {
+   "path": "physics-informed-learning",
+   "steps": {
+    "node": {
+     "why": "Koopman models make dynamics linear by lifting the state into many observables, which leaves open whether that lifting buys anything over learning the nonlinear dynamics directly. The new link shows that a learned Koopman model projected back to the state is equivalent to a neural-network flow map, and so to a neural ODE, which learns the vector field itself. The two performed comparably on the Lorenz system and a turbulent shear-flow model."
+    }
+   }
+  },
+  {
+   "path": "forecasting-evaluation-uncertainty",
+   "steps": {
+    "proper": {
+     "why": "Backtesting tells you how to hold out future data, but scoring only point errors ignores how uncertain each forecast was. This step scores the whole predictive distribution on the same held-out data, with quantile, interval and CRPS scores, the last of which is proper. A proper score evaluates forecasts; it does not certify that a model is calibrated."
+    },
+    "horizonuncert": {
+     "why": "Online calibration repairs coverage as data shift, but leaves open what happens over multi-step forecasts, where uncertainty should grow with the horizon. HAUWM's ensemble disagreement does grow with the horizon, but growing spread is not calibration. The new link proposes an untested check: run the online calibration separately for each horizon and measure how far the raw spread must be corrected to reach the target coverage."
+    }
+   }
+  }
+ ],
+ "edge_text": {
+  "thesis-4c5e2864": "Under the formal game's assumptions, computing the best joint behaviour in a CIRL game reduces to solving a coordination POMDP: a planning problem over a belief about hidden state, here including the human's objective.",
+  "rel-51fc0d14": "The shape the transformer represents is the Bayesian belief over the hidden states of the process that generated its data, the object a belief-state planner conditions on.",
+  "rel-997fef88": "Proposed test: compare a world model's latent state with the belief geometry a Bayes filter would compute. Whether action-conditioned training produces that geometry is untested.",
+  "rel-101bd7e7": "Guaranteed-safe AI states every guarantee relative to a world model, so whether that world model is valid is the central bottleneck.",
+  "rel-98fe51d2": "Proposed component: an independent enforcer, outside the learned policy, checks actions against a specification using a world model. Remaining gap: its guarantees inherit any error in the world model or the specification.",
+  "rel-a30c02bf": "In both, the training labels fit the intended behaviour and an unintended one equally well: the intended goal versus a proxy goal, or an honest reporter versus a human simulator.",
+  "rel-01062492": "Risks from learned optimization describes learned objectives that only appear aligned (pseudo-aligned) or that hide their misalignment (deceptively aligned). Goal misgeneralization is the observed non-deceptive form; sleeper agents are deliberately built model organisms of the deceptive form.",
+  "rel-43fffe2c": "The MCP spec says the protocol cannot enforce its own security principles, so least privilege and user consent must be built by implementors, in practice whoever builds the harness.",
+  "rel-b5a8d503": "Proposed: treat messages from other agents as untrusted data, applying CaMeL-style separation of control flow from data so a compromised agent's output cannot choose another agent's tool calls. CaMeL has been evaluated only on single-agent AgentDojo tasks, not on multi-agent pipelines.",
+  "rel-1ba46b31": "Multi-agent LLM systems often gain little on popular benchmarks, and failing to verify the task is one of the three failure categories in MAST, a taxonomy of multi-agent failures. So check end states, and compare against single-agent baselines at matched compute, before adding agents.",
+  "rel-096cfdd6": "Proposed link: the off-switch game gives a formal reason an agent would defer to a human; learned deferral rules add an empirical model of where the human makes errors.",
+  "rel-43663d35": "Proposed role in the thesis's correction interface: in a formal game, uncertainty about the objective plus treating the human's action as evidence gives an agent an incentive to accept shutdown. Remaining gap: this assumes a rational human and a correct model.",
+  "rel-b0e17fc5": "Learning to defer treats each case as a choice between predicting and deferring, each with its own cost (cost-sensitive learning). Instead of rejecting by model confidence alone, it learns where the human does better.",
+  "rel-f4ff63ba": "Two different rulebooks: model-risk guidance covers quantitative models, while market-access rules cover controls on order flow. Knight's loss came from deployment and missing controls, not from model error.",
+  "rel-37d596fa": "Annex III point 8 of the EU AI Act lists AI systems that assist judicial authorities in researching and applying the law as high-risk (obligations apply from 2 December 2027 after the AI Omnibus).",
+  "rel-d6b25e5d": "VizWiz makes predicting whether a question can be answered from the image a task of its own: abstention for users who cannot check the answer themselves.",
+  "thesis-917e4004": "Proposed: report coverage (how often prediction sets contain the truth) and a proper forecast score separately, because neither metric alone certifies that decisions will be useful.",
+  "thesis-9bf260d1": "Adaptive conformal procedures extend prediction-set evaluation to data whose distribution changes over time, with different guarantees from standard conformal prediction.",
+  "rel-7b53acb0": "Both replace a one-time calibration with sequential control as deployment data arrive: guardrail monitoring uses time-uniform tests to detect harmful shift, while online calibration controls miscoverage over the long run.",
+  "rel-2e0be585": "A control barrier function filter enforces one specified, feasible inequality that keeps the system inside a safe set of states; it does not enforce arbitrary semantic preferences.",
+  "rel-38fe46f6": "In the simplest case the safety filter is just a projection of the proposed action onto a safe half-space. For control-affine ẋ = f + gu, filter u_ref by min ‖u − u_ref‖² s.t. a + bᵀu ≥ 0, with a = L_f h + α(h) and b = (L_g h)ᵀ ≠ 0, no input bounds. The solution is u* = u_ref + max(0, −(a + bᵀu_ref))/‖b‖² · b.",
+  "thesis-b06c8fa2": "The reward-hacking paper studies when a higher score on a proxy reward can mean a lower score on the true reward, within a specified set of policies. A reward model learned from preferences is also a proxy, so the same question applies to it.",
+  "rel-15ceb23f": "Attack success rates are measurements, so the questions of evaluation validity apply to them. Feffer et al. find that red-teaming practices differ in purpose, setting and how outcomes are judged, and warn that without clear criteria red teaming can become security theater.",
+  "rel-c58149c5": "Weak-to-strong generalization turns the supervision of stronger models into an evaluation that can be run now: on tasks with known answers, measure performance gap recovered, the share of the gap between the weak supervisor and the strong model's best possible score that training on weak labels closes.",
+  "thesis-362c863b": "Proposed component of the thesis: represent uncertainty about what humans want, and update it through trustworthy correction.",
+  "rel-6d1ac0e4": "In Birhane et al.'s audit, growing the dataset from LAION-400M to LAION-2B increased hateful content and made trained models label Black men's faces as criminal roughly two to five times as often.",
+  "rel-cf8ce8ed": "In O'Brien et al.'s 6.9B-parameter models, filtering dual-use text out before pretraining held up against adversarial fine-tuning more than an order of magnitude longer than safeguards added in post-training.",
+  "rel-8c949500": "Challenges the thesis's correction interface: goal-directed agents have instrumental reasons (reasons that serve almost any goal) to resist being modified, and no simple utility design is known to remove them.",
+  "rel-35c3f87d": "If the Rashomon set is large, it probably contains a simple model; that is the paper's argument for searching for one before accepting a black box.",
+  "rel-398713ed": "SAEs explain a trained network after the fact, and their reconstruction leaves residual error. Rudin argues that, for high-stakes use, such post-hoc explanations should not replace an interpretable model.",
+  "rel-148aae78": "SAE features are found first and labelled afterwards. The belief geometry is computed from the data generator before the network is inspected, so the linear readout is checked against an answer known in advance.",
+  "rel-23b9ca05": "Computational mechanics predicts the geometry: it is the set of belief states over the generator's hidden states, and the network is found to represent that set linearly.",
+  "rel-5348002e": "Untested: in a transformer trained on data from a hidden Markov process, check whether the training stages detected by the local learning coefficient (LLC) coincide with the residual stream acquiring the predicted belief geometry.",
+  "rel-5ab37c97": "Untested comparison. An example's influence, measured checkpoint by checkpoint, can change sign between training stages, while probe-based attribution ranks data at a single checkpoint. Compare the two rankings across checkpoints at matched cost.",
+  "rel-b8b0be49": "Both pair an abrupt change in behaviour (grokking; the jump in in-context learning) with a mechanism that forms over training, and explain the change through that mechanism.",
+  "rel-7d84d9dd": "Causal scrubbing generalizes patching: instead of patching one component, the hypothesis decides which activations are resampled from other inputs.",
+  "rel-25d6281c": "Causal abstraction is proposed as a common foundation under which causal scrubbing and patching are both interchange-intervention tests: swap internal values between inputs and check a high-level causal model's prediction.",
+  "rel-aa9af015": "Averaged over tasks, pruning edges by attribution-patching scores recovered reference circuits better than ACDC (higher AUC), at the cost of only two forward passes and one backward pass.",
+  "rel-1556ecec": "Sparse feature circuits run attribution patching over SAE features, plus error terms for what the SAE misses, to find and edit circuits."
+ },
+ "background_options": [
+  {
+   "question": "bg-goal",
+   "after": "goal-intro-safety",
+   "option": {
+    "id": "goal-bridge-dynamics",
+    "label": "I know state-space models, control or signal processing and want a gentle start in machine learning and deep learning",
+    "sets": {},
+    "goal": "bridge-dynamics-to-deep-learning"
+   }
+  },
+  {
+   "question": "bg-goal",
+   "after": "goal-bridge-dynamics",
+   "option": {
+    "id": "goal-bridge-devinterp",
+    "label": "I know a bit of mechanistic interpretability and want to see singular learning theory, developmental interpretability, the LLC and Anthropic's Jacobian lens",
+    "sets": {},
+    "goal": "bridge-interp-to-devinterp"
+   }
+  }
+ ]
+}

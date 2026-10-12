@@ -22,7 +22,7 @@ const EV_ORDER = ['exact', 'established', 'empirical', 'hypothesis'];
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isMobile = () => innerWidth <= 760;
 
-const data = await (await fetch('atlas.json?v=917c02cd')).json();
+const data = await (await fetch('atlas.json?v=65559209')).json();
 const nodes = data.nodes, edges = data.edges;
 const byId = new Map(nodes.map((n, i) => (n.i = i, [n.id, n])));
 const clusterOf = new Map(data.clusters.map(c => [c.name, c]));
@@ -724,9 +724,18 @@ document.addEventListener('keydown', e => {
   if (e.key === '/' && !typing) { e.preventDefault(); q.focus(); }
   if (e.key === 'Escape' && !typing) { if (!sat.hidden) closeSatellite(); else if (S.mode === 'crossing' || S.mode === 'route') enter(S.focusFrom || S.current); else if (!panel.hidden) closePanel(); else if (S.chatOpen) closeChat(); }
 });
-const starts = ['kalman', 'factorgraph', 'world', 'hankel', 'alignmentthesis', 'attention'].filter(id => byId.has(id));
-$('#starts').innerHTML = starts.map(id => { const n = byId.get(id); return `<button class="chip" data-start="${id}"><span class="dot" style="color:${clusterOf.get(n.group).color}"></span>${esc(shortName(n.name))}</button>`; }).join('');
-$('#starts').addEventListener('click', e => { const b = e.target.closest('[data-start]'); if (b) travel(b.dataset.start, 'start'); });
+// Welcome "start a track" buttons: each opens a track's entry path (learn.js handles [data-track-path] clicks).
+const TRACK_STARTS = [
+  ['intro-ai-safety-to-thesis', 'Intro to AI safety', 'cs120', 'New to AI safety: rewards, preferences, robustness, oversight'],
+  ['bridge-dynamics-to-deep-learning', 'Dynamics → deep learning', 'kalman', 'From state-space models and Kalman filters to neural networks'],
+  ['bridge-interp-to-devinterp', 'Interpretability → SLT → J-lens', 'circuits', 'Mechanistic interpretability, singular learning theory, developmental interpretability, the LLC and the Jacobian lens'],
+  ['fde-harness-to-thesis', 'Forward-deployed engineer', 'mcp', 'Shipping LLM agents into high-stakes products: harnesses, evals, monitoring, escalation'],
+  ['thesis-supporting-case', 'Alignment thesis', 'alignmentthesis', "The atlas's alignment thesis: the case for it, then the case against"],
+  ['inference-to-thesis', 'Inference engineer', 'roofline', 'LLM serving and performance engineering, then what it means for alignment'],
+].filter(t => byId.has(t[2]));
+$('#starts').innerHTML = TRACK_STARTS.map(([path, label, node, sub]) => `<button class="chip" data-track-path="${path}" data-track-node="${node}" title="${esc(sub)}" aria-label="${esc(label + ': ' + sub)}"><span class="dot" style="color:${clusterOf.get(byId.get(node).group).color}"></span>${esc(label)}</button>`).join('');
+// learn.js opens the path; if the learning layer failed to load, fall back to the track's first topic.
+$('#starts').addEventListener('click', e => { const b = e.target.closest('[data-track-path]'); if (!b) return; hideWelcome(); setTimeout(() => { if (!document.querySelector('#learn-side:not([hidden])')) travel(b.dataset.trackNode, 'start'); }, 1500); });
 
 /* ---------------- resize & loop ---------------- */
 function resize() {
@@ -765,4 +774,4 @@ addEventListener('hashchange', () => { const id = decodeURIComponent(location.ha
 window.__atlas = { S, travel, byId, project, enter };
 // Learning harness (learn.js) gets only this surface; the atlas keeps working if it fails to load.
 const learnAPI = { S, byId, edges, nodes, EV, enter, travel, showRoute, highlightRoute, clearRoute, closePanel, updateOffset, isMobile, esc, clusterColor: id => clusterOf.get(byId.get(id).group).color, edgeById: id => edges.find(e => e.id === id) || null, edgeBetween: (a, b) => adj.get(a)?.find(e => other(e, a) === b) || null };
-import('./learn.js?v=20261012a').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
+import('./learn.js?v=20261012b').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));

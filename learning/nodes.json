@@ -2657,6 +2657,38 @@
    "prereqs": [
     "oversight"
    ]
+  },
+  "jlens": {
+   "level": 4,
+   "skills": [
+    "deep-learning",
+    "linear-algebra"
+   ],
+   "prereqs": [
+    "tunedlens",
+    "steering",
+    "superposition"
+   ]
+  },
+  "statespace": {
+   "level": 1,
+   "skills": [
+    "linear-algebra",
+    "dynamical-systems",
+    "control"
+   ],
+   "prereqs": []
+  },
+  "gradientdescent": {
+   "level": 1,
+   "skills": [
+    "optimization",
+    "deep-learning",
+    "calculus-odes"
+   ],
+   "prereqs": [
+    "ridge"
+   ]
   }
  }
 }

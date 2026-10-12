@@ -475,12 +475,14 @@ function renderWelcome() {
 const TRACKS = [
   ['Intro to AI safety', p => p.id.startsWith('intro-ai-safety-')],
   ['Alignment thesis', p => p.id.startsWith('thesis-')],
+  ['Interpretability → singular learning theory → J-lens', p => ['bridge-interp-to-devinterp', 'how-deep-nets-learn', 'slt-in-practice'].includes(p.id)],
+  ['Dynamics → machine learning → deep learning', p => ['bridge-dynamics-to-deep-learning', 'estimation-to-control', 'sequence-models-rnn-to-ssm'].includes(p.id)],
   ['Forward-deployed research engineer', p => p.id.startsWith('fde-')],
   ['Interpretable-ML researcher', p => p.id === 'interpretable-ml-to-thesis' || p.id.startsWith('mechinterp-')],
   ['Inference & performance engineer', p => p.id.startsWith('inference-')],
 ];
 // Reading order within a track; paths not listed fall back to title order.
-const TRACK_ORDER = ['intro-ai-safety-to-thesis', 'intro-ai-safety-course', 'intro-ai-safety-robustness-and-agency', 'fde-harness-to-thesis', 'fde-agent-reliability', 'fde-verticals', 'fde-foundations', 'interpretable-ml-to-thesis', 'mechinterp-circuits-causal-tests', 'mechinterp-features-representations', 'mechinterp-circuit-discovery-scale', 'inference-to-thesis', 'inference-serving-systems', 'inference-compression-and-decoding'];
+const TRACK_ORDER = ['intro-ai-safety-to-thesis', 'intro-ai-safety-course', 'intro-ai-safety-robustness-and-agency', 'thesis-supporting-case', 'thesis-opposing-case', 'bridge-interp-to-devinterp', 'how-deep-nets-learn', 'slt-in-practice', 'bridge-dynamics-to-deep-learning', 'estimation-to-control', 'sequence-models-rnn-to-ssm', 'fde-harness-to-thesis', 'fde-agent-reliability', 'fde-verticals', 'fde-foundations', 'interpretable-ml-to-thesis', 'mechinterp-circuits-causal-tests', 'mechinterp-features-representations', 'mechinterp-circuit-discovery-scale', 'inference-to-thesis', 'inference-serving-systems', 'inference-compression-and-decoding'];
 const trackRank = p => { const i = TRACK_ORDER.indexOf(p.id); return i < 0 ? TRACK_ORDER.length : i; };
 function renderTrackMenu() {
   const used = new Set(), groups = [];

@@ -1,0 +1,325 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "q-br-di-circuits-1",
+      "node": "circuits",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "How do the authors of the circuits framework describe its three claims (features, circuits, universality)?",
+      "choices": [
+        "As proven theorems that hold for every trained neural network of any kind",
+        "As speculative claims supported mainly by case studies in a vision model",
+        "As definitions with no empirical content that experiments could test",
+        "As results already replicated across every major language model to date"
+      ],
+      "answer": 1,
+      "explain": "Olah et al. present the three claims as speculative; the supporting evidence is mainly case studies, such as curve detectors in InceptionV1.",
+      "source": "https://distill.pub/2020/circuits/zoom-in/"
+    },
+    {
+      "id": "q-br-di-slt-1",
+      "node": "slt",
+      "skill": "theory",
+      "difficulty": 1,
+      "prompt": "Watanabe calls a model “singular” when…",
+      "choices": [
+        "its loss surface has exactly one global minimum, so every training run ends at exactly the same weights",
+        "its parameter-to-distribution map is not one-to-one, or its Fisher information is not always positive definite",
+        "it is trained on only a single example, so its likelihood carries no information about most of the parameters",
+        "its loss is convex in the parameters, so every critical point it has is also a global minimum of the loss"
+      ],
+      "answer": 1,
+      "explain": "Regular models have one-to-one parameter maps and positive definite Fisher information. Singular models, including neural networks, do not, so the BIC approximation with d/2 fails and a learning coefficient (the RLCT) takes its place.",
+      "source": "https://www.jmlr.org/papers/volume14/watanabe13a/watanabe13a.pdf"
+    },
+    {
+      "id": "q-br-di-slt-2",
+      "node": "slt",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "Chen et al. applied SLT to the superposition toy model with two hidden dimensions. What did they report decides which polygon-shaped feature arrangement the Bayesian posterior prefers as the sample size grows?",
+      "choices": [
+        "The order in which the features happened to be initialized before training",
+        "The number of parameters in the model, with the smallest arrangement always winning",
+        "The local learning coefficient of each arrangement, traded off against its loss",
+        "The largest Hessian eigenvalue at each arrangement, and nothing else at all"
+      ],
+      "answer": 2,
+      "explain": "They find regular k-gons are critical points and argue that their local learning coefficients govern Bayesian phase transitions as n grows, trading loss against complexity; the same critical points shape SGD training.",
+      "source": "https://arxiv.org/abs/2310.06301"
+    },
+    {
+      "id": "q-br-di-llc-1",
+      "node": "llc",
+      "skill": "probability",
+      "difficulty": 2,
+      "prompt": "Which statement about estimating the local learning coefficient (LLC) is accurate?",
+      "choices": [
+        "It needs no data at all: it is a fixed property of the architecture and the trained weights alone",
+        "It has been proven exact for any network trained with Adam, whatever sampler, temperature or localization settings are used",
+        "It is read directly off the rank of the Hessian at the trained solution, so no sampling is needed",
+        "It is estimated by sampling weights near the solution, and settings like temperature and localization change the estimate"
+      ],
+      "answer": 3,
+      "explain": "The estimator samples a tempered posterior localized at the solution, using SGLD. Temperature, localization and sampler settings influence the estimate; it was validated on deep linear networks with known values, up to about 100M parameters.",
+      "source": "https://arxiv.org/abs/2308.12108"
+    },
+    {
+      "id": "q-br-di-stagewise-1",
+      "node": "stagewise",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "In the stagewise-development study of a roughly 3M-parameter language transformer, what lines up with the LLC-defined stages LM3 and LM4?",
+      "choices": [
+        "Nothing; the stages had no structural or behavioural correlate",
+        "The model memorizing its held-out test set word for word",
+        "The start and end of the learning-rate warm-up schedule",
+        "Formation of previous-token heads and then induction heads"
+      ],
+      "answer": 3,
+      "explain": "Previous-token heads form in LM3 and induction heads in LM4, the same induction circuit studied by Olsson et al. This is an association in small models, not a proof of causation.",
+      "source": "https://arxiv.org/abs/2402.02364"
+    },
+    {
+      "id": "q-br-di-development-1",
+      "node": "development",
+      "skill": "theory",
+      "difficulty": 3,
+      "prompt": "Developmental interpretability applies SLT, a theory of Bayesian posteriors, to checkpoints from SGD training. What status does that step have?",
+      "choices": [
+        "A theorem Watanabe proved for stochastic gradient descent runs",
+        "A working assumption whose justification is partly empirical",
+        "An identity that holds for any optimizer at any learning rate",
+        "A definition, so it cannot turn out to be wrong in practice"
+      ],
+      "answer": 1,
+      "explain": "The stagewise authors draw on SLT's framework, but the link from Bayesian analysis to non-equilibrium SGD training is a stated limitation, not a theorem.",
+      "source": "https://arxiv.org/abs/2402.02364"
+    },
+    {
+      "id": "q-br-di-jlens-1",
+      "node": "jlens",
+      "skill": "linear-algebra",
+      "difficulty": 1,
+      "prompt": "How does the Jacobian lens relate to the logit lens?",
+      "choices": [
+        "The J-lens is a tuned lens: it learns a per-layer map trained to match the model's final outputs",
+        "They are unrelated: the J-lens uses a separate classifier trained on labelled concepts",
+        "The logit lens is the special case where the averaged Jacobian map is replaced by the identity",
+        "The J-lens is the logit lens applied only at the final layer, where the two give the same readout"
+      ],
+      "answer": 2,
+      "explain": "The J-lens reads softmax(W_U · norm(J_ℓ h)), with J_ℓ an averaged Jacobian. Setting J_ℓ to the identity gives the logit lens. The tuned lens instead learns its map to match outputs.",
+      "source": "https://transformer-circuits.pub/2026/workspace/index.html"
+    },
+    {
+      "id": "q-br-di-jlens-2",
+      "node": "jlens",
+      "skill": "deep-learning",
+      "difficulty": 2,
+      "prompt": "Anthropic split each concept vector into a J-space part (6–7% of its variance) and the rest. When they swapped each part to change which item the model reported, what did they find?",
+      "choices": [
+        "Only the larger remainder, about 93% of the variance, had any measurable effect on the report",
+        "The J-space part moved the target into the top 5 on 59% of trials, the rest on only 5%",
+        "Both parts worked about equally, so the effect tracked each part's share of the variance",
+        "Neither part had any effect; only swapping the whole concept vector changed the report"
+      ],
+      "answer": 1,
+      "explain": "In Claude Sonnet 4.5, the small J-space component drove the report (59%, against 88% for pure J-lens vectors), while the remainder succeeded 5% of the time. Clamping the J-space removed even that residual effect.",
+      "source": "https://transformer-circuits.pub/2026/workspace/index.html"
+    },
+    {
+      "id": "q-br-di-jlens-3",
+      "node": "jlens",
+      "skill": "deep-learning",
+      "difficulty": 3,
+      "prompt": "An independent study ran the multi-hop “swap the unspoken middle step” test on Qwen3.6-27B and Gemma 3 27B-it. What is the best-supported reading of its results?",
+      "choices": [
+        "They proved the J-space is a global workspace, because intermediate swaps beat answer swaps in every condition tested",
+        "They confirm Claude's 54–70% swap success: intermediate swaps flipped the top answer in most trials on both open models tested",
+        "Swaps nudged probabilities as expected but flipped the top answer only 6–11% of the time, and answer swaps often did better",
+        "The J-lens produced no readable words on open models, so the swap experiment could not be run at all"
+      ],
+      "answer": 2,
+      "explain": "Zeisler found the intended direction of effect but low top-1 flip rates (6.3–11.1%), with answer swaps ahead in three of four conditions. The author finds the lens useful for forensics but is “not convinced” it is a global workspace.",
+      "source": "https://www.lesswrong.com/posts/pnDjvdo6cX2H7Ddsy/is-the-j-space-a-global-workspace-for-multi-hop-reasoning-an"
+    },
+    {
+      "id": "q-br-di-jlens-4",
+      "node": "jlens",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What do the authors claim about consciousness?",
+      "choices": [
+        "Only functional parallels to “access”: information available for report and reasoning, not experience",
+        "Nothing: the paper avoids the topic and never mentions consciousness or global workspace theory",
+        "That the J-space proves Claude feels emotions, because words such as panic appear in its readouts",
+        "That Claude is phenomenally conscious, since the J-space shows the same signature as human conscious experience"
+      ],
+      "answer": 0,
+      "explain": "The paper takes no position on subjective experience. The blog states “Our experiments don't show Claude can have experiences, or feel things in the way humans do.”",
+      "source": "https://www.anthropic.com/research/global-workspace"
+    },
+    {
+      "id": "q-br-dyn-statespace-1",
+      "node": "statespace",
+      "skill": "dynamical-systems",
+      "difficulty": 1,
+      "prompt": "In the model xₜ₊₁ = A xₜ + B uₜ, yₜ = C xₜ, which matrix alone determines how the state evolves when the input is zero?",
+      "choices": [
+        "A",
+        "C",
+        "B",
+        "None; it depends on C and B together"
+      ],
+      "answer": 0,
+      "explain": "With uₜ = 0 the update is xₜ₊₁ = A xₜ, so the free response is xₜ = Aᵗ x₀. B maps inputs into the state and C maps the state to the outputs.",
+      "source": "https://people.duke.edu/~hpgavin/SystemID/References/Astrom-Feedback-2006.pdf"
+    },
+    {
+      "id": "q-br-dyn-statespace-2",
+      "node": "statespace",
+      "skill": "linear-algebra",
+      "difficulty": 2,
+      "prompt": "A discrete-time linear recurrence xₖ = A xₖ₋₁ + B uₖ has diagonal A with eigenvalues λⱼ. Which condition makes the state decay to zero from any starting point when the input is zero?",
+      "choices": [
+        "The trace of A is below 1",
+        "Every λⱼ has negative real part",
+        "Every λⱼ is real",
+        "Every |λⱼ| < 1"
+      ],
+      "answer": 3,
+      "explain": "Powers λⱼᵏ decay only when |λⱼ| < 1; the LRU paper uses this condition to keep its learned recurrence stable. Negative real part is the continuous-time condition, not the discrete-time one.",
+      "source": "https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf"
+    },
+    {
+      "id": "q-br-dyn-kalman-1",
+      "node": "kalman",
+      "skill": "signals-estimation",
+      "difficulty": 1,
+      "prompt": "Kalman's 1960 paper shows that the optimal filtering (Wiener) problem is the dual of which problem?",
+      "choices": [
+        "The noise-free optimal regulator problem",
+        "Fourier series convergence",
+        "Training a perceptron",
+        "The travelling-salesman problem"
+      ],
+      "answer": 0,
+      "explain": "Kalman states that the Wiener filtering problem is the dual of the noise-free optimal regulator problem and that the mathematical background of the two is identical, so a solution method for one carries over to the other.",
+      "source": "https://www.cs.cmu.edu/~motionplanning/papers/sbp_papers/k/Kalman1960.pdf"
+    },
+    {
+      "id": "q-br-dyn-sysid-1",
+      "node": "sysid",
+      "skill": "stats-ml",
+      "difficulty": 2,
+      "prompt": "An ARX model predicts yₜ from past outputs yₜ₋₁, yₜ₋₂, … and past inputs uₜ₋₁, uₜ₋₂, … with unknown coefficients. Why can those coefficients be fitted by ordinary least squares?",
+      "choices": [
+        "The coefficients enter the prediction linearly, so it is a linear regression on a vector of past values",
+        "Because the system must be stable",
+        "Because ARX models have no inputs",
+        "Because the noise is always zero"
+      ],
+      "answer": 0,
+      "explain": "Stacking past outputs and inputs into a regression vector makes the prediction linear in the unknown parameters; Ljung calls ARX plus least squares the archetype of system identification.",
+      "source": "https://automatica.dei.unipd.it/old/public/Schenato/PSC/2010_2011/gruppo4-Building_termo_identification/Bibliografia%20Casuale/System%20Identification,%20Ljung,%201995.pdf"
+    },
+    {
+      "id": "q-br-dyn-ridge-1",
+      "node": "ridge",
+      "skill": "stats-ml",
+      "difficulty": 1,
+      "prompt": "Compared with plain least squares, what does the ridge penalty λ‖θ‖² do?",
+      "choices": [
+        "Forces exactly half of the weights to be zero",
+        "Removes the need for training data",
+        "Pulls the weights toward zero, trading a little fit for lower sensitivity to noise",
+        "Makes the model nonlinear"
+      ],
+      "answer": 2,
+      "explain": "Ridge adds λI to XᵀX, shrinking the coefficients; under Gaussian noise and a Gaussian prior on the weights it equals the posterior mean. Exact zeros are what the L1 (lasso) penalty tends to produce.",
+      "source": "https://gaussianprocess.org/gpml/chapters/RW2.pdf"
+    },
+    {
+      "id": "q-br-dyn-gd-1",
+      "node": "gradientdescent",
+      "skill": "optimization",
+      "difficulty": 2,
+      "prompt": "For the loss L(θ) = ½‖Xθ − y‖², gradient descent gives θₖ₊₁ = (I − ηXᵀX) θₖ + ηXᵀy. Viewed as a linear system in θ, when does it converge?",
+      "choices": [
+        "Only when XᵀX is diagonal",
+        "When 0 < η < 2 / (largest eigenvalue of XᵀX), so every eigenvalue 1 − ηλ of I − ηXᵀX lies strictly between −1 and 1 (directions with λ = 0, which the data never constrain, simply stay put)",
+        "For any η > 0, because the loss is convex",
+        "Only when η = 1"
+      ],
+      "answer": 1,
+      "explain": "The iteration matrix I − ηXᵀX has eigenvalues 1 − ηλᵢ, which lie strictly between −1 and 1 for every nonzero λᵢ exactly when 0 < η < 2/λmax; directions with λᵢ = 0 are never driven and stay put. Convexity guarantees a single minimum value but not that a large step converges; too large a learning rate overshoots and diverges.",
+      "source": "https://cs229.stanford.edu/main_notes.pdf"
+    },
+    {
+      "id": "q-br-dyn-gd-2",
+      "node": "gradientdescent",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "What does backpropagation compute?",
+      "choices": [
+        "A closed-form global minimum of the loss",
+        "The best learning rate",
+        "The network's output for a new input",
+        "The gradient of the loss with respect to every weight, by applying the chain rule backwards through the network"
+      ],
+      "answer": 3,
+      "explain": "Backpropagation multiplies local derivatives from the output back to the inputs to obtain all gradients, at a small constant multiple of the cost of one forward pass; gradient descent then uses those gradients to update the weights.",
+      "source": "https://cs231n.github.io/optimization-2/"
+    },
+    {
+      "id": "q-br-dyn-mlp-1",
+      "node": "mlp",
+      "skill": "deep-learning",
+      "difficulty": 1,
+      "prompt": "Why does a two-layer network y = W₂ σ(W₁ x) need the nonlinearity σ?",
+      "choices": [
+        "It keeps the weights positive",
+        "It is needed only for image inputs",
+        "It makes training faster but changes nothing else",
+        "Without it, W₂W₁ is a single matrix, so the network is just one linear map"
+      ],
+      "answer": 3,
+      "explain": "Two stacked linear maps collapse into one linear map; the elementwise nonlinearity (such as ReLU) is what lets depth represent nonlinear functions.",
+      "source": "https://cs231n.github.io/neural-networks-1/"
+    },
+    {
+      "id": "q-br-dyn-rnn-1",
+      "node": "rnn",
+      "skill": "dynamical-systems",
+      "difficulty": 2,
+      "prompt": "An RNN layer computes xₖ = σ(A xₖ₋₁ + B uₖ), yₖ = C xₖ + D uₖ. If σ is replaced by the identity function, what is the layer?",
+      "choices": [
+        "A discrete-time linear state-space model with learned A, B, C, D",
+        "An attention layer",
+        "A Kalman filter",
+        "A feed-forward network with no memory"
+      ],
+      "answer": 0,
+      "explain": "With σ the identity, the update is exactly xₖ = A xₖ₋₁ + B uₖ, yₖ = C xₖ + D uₖ. It still has memory through the state, but it is not a Kalman filter, which needs a noise model and a computed gain.",
+      "source": "https://proceedings.mlr.press/v202/orvieto23a/orvieto23a.pdf"
+    },
+    {
+      "id": "q-br-dyn-s4-1",
+      "node": "s4",
+      "skill": "signals-estimation",
+      "difficulty": 2,
+      "prompt": "S4 can compute its output as a convolution with the kernel (CB̄, CĀB̄, CĀ²B̄, …). In control terms, what is this kernel?",
+      "choices": [
+        "The controllability Gramian",
+        "The impulse response (Markov parameters) of the discretized system",
+        "The transfer function's poles",
+        "The Kalman gain sequence"
+      ],
+      "answer": 1,
+      "explain": "For a linear time-invariant system starting from rest, the output is the input convolved with the impulse response C Āᵏ B̄; S4 uses this to train in parallel and the recurrence to generate step by step.",
+      "source": "https://arxiv.org/html/2111.00396v3"
+    }
+  ]
+}
