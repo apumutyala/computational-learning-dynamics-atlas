@@ -84,7 +84,8 @@
     {"id": "goal-slt", "label": "Run singular learning theory measurements: WBIC, LLC estimation with SGLD, susceptibilities, data interventions", "sets": {}, "goal": "slt-in-practice"},
     {"id": "goal-sampling", "label": "Implement and diagnose posterior samplers: Gibbs and blocked Gibbs, particle MCMC, Metropolis–Hastings and Langevin/SGLD", "sets": {}, "goal": "bayesian-computation-sampling"},
     {"id": "goal-interp", "label": "I come from interpretability research (inherently interpretable models such as sparse trees and Rashomon sets, or mechanistic interpretability) and want to see how it connects to the alignment thesis", "sets": {}, "goal": "interpretable-ml-to-thesis"},
-    {"id": "goal-inference", "label": "I come from ML/LLM inference or performance engineering (GPU kernels, KV caches, batching and serving, quantization, speculative decoding) and want to see how it connects to the alignment thesis", "sets": {}, "goal": "inference-to-thesis"}
+    {"id": "goal-inference", "label": "I come from ML/LLM inference or performance engineering (GPU kernels, KV caches, batching and serving, quantization, speculative decoding) and want to see how it connects to the alignment thesis", "sets": {}, "goal": "inference-to-thesis"},
+    {"id": "goal-intro-safety", "label": "I'm new to AI safety and want an introduction", "sets": {}, "goal": "intro-ai-safety-to-thesis"}
    ]
   }
  ]

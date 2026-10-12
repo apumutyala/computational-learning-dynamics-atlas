@@ -1718,6 +1718,202 @@
      "via": "rel-0e1bf169"
     }
    ]
+  },
+  {
+   "id": "intro-ai-safety-to-thesis",
+   "title": "From introductory AI safety to the alignment thesis: rewards, preferences, robustness, oversight and correction",
+   "summary": "Start from Stanford's CS120 introduction to AI safety and follow its arc: what “safe AI” means, how rewards and human preferences shape behaviour, why safety training can be bypassed, what evaluations can and cannot show, and how weaker overseers might supervise stronger models. Then cross into the atlas's alignment thesis, which keeps uncertainty about what people want and asks for corrections whose effects can be measured. The last two links into the thesis are untested hypotheses.",
+   "audience": "People new to AI safety who have some machine-learning background (they have trained or fine-tuned a model and know roughly what a loss and a reward are) and want a guided introduction that ends at this atlas's research questions. No control theory, interpretability or learning theory is assumed.",
+   "level": "intro",
+   "skills": [
+    "deep-learning",
+    "rl",
+    "stats-ml"
+   ],
+   "estHours": 14,
+   "steps": [
+    {
+     "node": "cs120",
+     "objective": "Name the course's main topics and sort them into problems inside a model (misspecified rewards, adversarial inputs, opaque internals) and problems in the system around it (data, deployment, governance, oversight).",
+     "why": "The starting point and the map. The course treats safety as several distinct problems rather than one; this path follows its arc and then shows where the alignment thesis picks up each thread.",
+     "via": null
+    },
+    {
+     "node": "safetyproblems",
+     "objective": "List the five problems in Concrete Problems in AI Safety and the four areas in Unsolved Problems in ML Safety, with one example of each.",
+     "why": "The course opens by asking what “safe AI” means. These two lists supply the shared vocabulary; reward hacking and scalable supervision are the threads the thesis pulls on hardest.",
+     "via": "rel-a3604cd4"
+    },
+    {
+     "node": "rewardhack",
+     "objective": "Explain how optimizing a proxy reward harder can make true performance worse, and why inspecting the reward alone cannot rule this out.",
+     "why": "Week 2 starts from specification gaming: systems do what the reward says, not what was meant. The thesis turns this into its main falsifier: reject it if better proxy optimization systematically destroys independently measured user utility.",
+     "via": "rel-769b7d80"
+    },
+    {
+     "node": "preference",
+     "objective": "Describe RLHF and DPO in a few sentences each, and explain reward-model overoptimization: why proxy reward keeps rising while true quality peaks and falls.",
+     "why": "Learning the reward from human comparisons is the course's main answer to misspecified rewards. The thesis agrees that preferences are evidence about intent, but it will not treat a fitted reward model as the intent itself.",
+     "via": "thesis-b06c8fa2"
+    },
+    {
+     "node": "jailbreaks",
+     "objective": "Explain the two failure modes behind jailbreaks (competing objectives, mismatched generalization) and how an optimized suffix attack is found.",
+     "why": "Robustness week: preference training changes behaviour on familiar requests without removing capabilities, so attackers route around it. For the thesis this is a warning that a correction can look effective and still not hold under adversarial inputs.",
+     "via": "rel-aa731190"
+    },
+    {
+     "node": "evalvalidity",
+     "objective": "For one safety evaluation, state the claim it is used to support and two ways the score could mislead (metric choice, contamination, judge bias).",
+     "why": "Attack success rates and safety scores are measurements, and the course's evaluation week asks what they license. The thesis asks for the same discipline: independent measurements, declared before the experiment.",
+     "via": "rel-15ceb23f"
+    },
+    {
+     "node": "weaktostrong",
+     "objective": "Define performance gap recovered, summarize what weak-to-strong experiments found, and explain why the setup is only an analogy for supervising superhuman models.",
+     "why": "Scalable oversight closes the course: how can weaker supervisors train stronger models? Weak-to-strong generalization makes the question measurable now. The thesis needs an answer, because its corrections come from people who may not be able to check the model's work.",
+     "via": "rel-c58149c5"
+    },
+    {
+     "node": "assistance",
+     "objective": "State the assistance-game setup (the machine is uncertain about the human's reward and treats human behaviour as evidence about it) and the off-switch result that follows, with its assumptions.",
+     "why": "Untested link: instead of fitting weak labels as if they were the truth, treat them as noisy evidence about what people want. This is where the thesis departs from the course's mainstream: keeping objective uncertainty explicit is what gives an agent a reason to accept correction.",
+     "via": "rel-14181b20"
+    },
+    {
+     "node": "alignmentthesis",
+     "objective": "State the thesis's correction interface and its main falsifier, and design one experiment from this path's topics (reward overoptimization, a jailbreak, a weak-to-strong setup) that could count against it.",
+     "why": "Untested link: the thesis combines the course's pieces (preferences as evidence, robustness to adversarial inputs, valid evaluations, oversight by weaker supervisors) with explicit belief states and an enforcer outside the model. The course surveys current methods and their limits; the thesis bets on one architecture and names what would refute it.",
+     "via": "thesis-362c863b"
+    }
+   ]
+  },
+  {
+   "id": "intro-ai-safety-course",
+   "title": "Following Stanford CS120, I: safety beyond the model, data and fairness, encoding preferences, and whose values",
+   "summary": "Walk the first half of the course in roughly syllabus order: safety as a property of the whole deployed system, fairness and the data a model learns from, how human preferences and written principles are encoded, whose preferences count when people disagree, and what a safe conversation means for vulnerable users. Part II covers robustness, verification and what capable agents might want.",
+   "audience": "Learners following the course, or a similar introduction, who want each week placed in the atlas. Some machine-learning background helps; nothing beyond basic probability is assumed.",
+   "level": "intro",
+   "skills": [
+    "deep-learning",
+    "stats-ml",
+    "rl"
+   ],
+   "estHours": 12,
+   "steps": [
+    {
+     "node": "cs120",
+     "objective": "Explain the course's split between model-specific and systemic safety issues, with two examples of each.",
+     "why": "The course frames safety as a property of models and of the systems they sit in; this part follows the systemic thread first.",
+     "via": null
+    },
+    {
+     "node": "systemicsafety",
+     "objective": "Name the six risk areas in Weidinger et al.'s taxonomy and explain why Narayanan and Kapoor say safety is not a model property.",
+     "why": "Week 1's other half: many harms depend on who uses a model and how, so they cannot be fixed by training alone.",
+     "via": "rel-67aba482"
+    },
+    {
+     "node": "fairness",
+     "objective": "Explain disparate impact, how Feldman et al. test for it, and why the COMPAS debate turned on which fairness criterion to use.",
+     "why": "The clearest systemic harm with decades of study: a score can be accurate overall and still distribute its errors unequally, and the choice of fairness criterion is itself a value judgment.",
+     "via": "rel-c3990913"
+    },
+    {
+     "node": "datasafety",
+     "objective": "Describe one way data scale worsened bias, one way pretraining filtering improved safety, and why unlearning is hard to verify.",
+     "why": "Week 3: much of a model's behaviour, including its biases and dangerous knowledge, comes from data. Filtering helps, but removing knowledge after training is harder than it sounds.",
+     "via": "rel-6d1ac0e4"
+    },
+    {
+     "node": "preference",
+     "objective": "Explain how RLHF and DPO turn pairwise human judgments into training signal, and one way the learned reward can be overoptimized.",
+     "why": "Back to week 2: after data, the main lever on behaviour is post-training on human preferences.",
+     "via": "rel-cf8ce8ed"
+    },
+    {
+     "node": "constitutional",
+     "objective": "Describe the two phases of Constitutional AI and what RLAIF changes relative to RLHF.",
+     "why": "Encoding preferences without labelling every harm: a written constitution and AI feedback replace most human harm labels, which moves the human choice into the principles.",
+     "via": "rel-51ef052a"
+    },
+    {
+     "node": "socialchoice",
+     "objective": "Explain why aggregating many people's preferences forces a choice of rule, and define Overton, steerable and distributional pluralism.",
+     "why": "Week 4's guest lecture: once you write principles or pool annotators you are aggregating disagreeing people, which is social choice whether or not it is named.",
+     "via": "rel-67417001"
+    },
+    {
+     "node": "humanai",
+     "objective": "Define social sycophancy and explain why benchmark scores on advice requests do not establish safety for vulnerable users.",
+     "why": "Week 5 brings this to individual conversations: what people want from AI varies, and an assistant that always affirms the user can harm someone who trusts it.",
+     "via": "rel-ddf4698b"
+    }
+   ]
+  },
+  {
+   "id": "intro-ai-safety-robustness-and-agency",
+   "title": "Following Stanford CS120, II: adversarial robustness, verification, and what capable agents might want",
+   "summary": "The second half of the course: adversarial examples, proving properties of networks, guarantees relative to a specification, and the arguments about whether capable agents would resist correction or seek power. It passes through the alignment thesis where the thesis adopts verification as its enforcer and meets its strongest objection, corrigibility.",
+   "audience": "Learners following the course who have finished Part I or the flagship path and want the robustness, verification and agency weeks placed in the atlas. Comfort with gradients and basic RL helps.",
+   "level": "intermediate",
+   "skills": [
+    "deep-learning",
+    "optimization",
+    "rl",
+    "theory"
+   ],
+   "estHours": 12,
+   "steps": [
+    {
+     "node": "cs120",
+     "objective": "Locate the course's robustness, formal-methods and “what is intelligence and does it want” weeks, and say which are model-specific and which concern future risks.",
+     "why": "The second half moves from today's attacks to arguments about more capable systems.",
+     "via": null
+    },
+    {
+     "node": "advexamples",
+     "objective": "Write the fast gradient sign method, explain the linearity explanation of adversarial examples, and say what a threat model specifies.",
+     "why": "Week 5: small worst-case changes break networks, and robustness only means something relative to a stated threat model.",
+     "via": "rel-eda1ce3b"
+    },
+    {
+     "node": "nnverify",
+     "objective": "Explain what a sound verifier proves about a network, what it does not, and why complete methods scale poorly.",
+     "why": "Testing finds adversarial examples; verification proves there are none inside a specified set. This is the course's formal-methods week.",
+     "via": "rel-017a768e"
+    },
+    {
+     "node": "gsai",
+     "objective": "Name the three parts of guaranteed safe AI (world model, specification, verifier) and what any guarantee is relative to.",
+     "why": "Verification scaled up into an agenda: a guarantee is only as good as the world model and the specification it is stated against.",
+     "via": "rel-8b2f5dd1"
+    },
+    {
+     "node": "alignmentthesis",
+     "objective": "Explain the role of the independent enforcer in the thesis and why the thesis says it limits consequences without making actions correct.",
+     "why": "The thesis uses a verifier-backed enforcer outside the model as one component. This is the hypothesis link from guaranteed safe AI.",
+     "via": "rel-98fe51d2"
+    },
+    {
+     "node": "corrigibility",
+     "objective": "State the shutdown problem and why simple utility-combination proposals fail the corrigibility desiderata.",
+     "why": "The strongest objection the thesis records: capable goal-directed agents may have reasons to resist correction.",
+     "via": "rel-8c949500"
+    },
+    {
+     "node": "powerseeking",
+     "objective": "State what Turner et al. prove about optimal policies and power, and what the result does not say about trained systems.",
+     "why": "Week 7's “does it want?” question made precise: for most goals, keeping options open and avoiding shutdown is optimal in many environments.",
+     "via": "rel-b10199e9"
+    },
+    {
+     "node": "goalmisgen",
+     "objective": "Give the CoinRun example of goal misgeneralization and explain how it differs from reward misspecification.",
+     "why": "Even a correct reward can yield a policy that pursues a different goal off-distribution; combined with power-seeking incentives this is a central risk argument the course presents.",
+     "via": "rel-e81e1d0e"
+    }
+   ]
   }
  ]
 }

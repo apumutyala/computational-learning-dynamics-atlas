@@ -2523,6 +2523,140 @@
     "steering",
     "bestofn"
    ]
+  },
+  "cs120": {
+   "level": 1,
+   "skills": [
+    "deep-learning",
+    "rl"
+   ],
+   "prereqs": []
+  },
+  "safetyproblems": {
+   "level": 1,
+   "skills": [
+    "rl",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "cs120"
+   ]
+  },
+  "systemicsafety": {
+   "level": 1,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "cs120"
+   ]
+  },
+  "constitutional": {
+   "level": 2,
+   "skills": [
+    "rl",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "preference"
+   ]
+  },
+  "socialchoice": {
+   "level": 2,
+   "skills": [
+    "theory",
+    "rl"
+   ],
+   "prereqs": [
+    "preference"
+   ]
+  },
+  "nnverify": {
+   "level": 2,
+   "skills": [
+    "optimization",
+    "deep-learning"
+   ],
+   "prereqs": [
+    "mlp"
+   ]
+  },
+  "datasafety": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "llm"
+   ]
+  },
+  "fairness": {
+   "level": 1,
+   "skills": [
+    "stats-ml"
+   ],
+   "prereqs": [
+    "logistic"
+   ]
+  },
+  "humanai": {
+   "level": 1,
+   "skills": [
+    "deep-learning"
+   ],
+   "prereqs": [
+    "llm"
+   ]
+  },
+  "advexamples": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "optimization"
+   ],
+   "prereqs": [
+    "cnn"
+   ]
+  },
+  "jailbreaks": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "optimization"
+   ],
+   "prereqs": [
+    "advexamples",
+    "preference"
+   ]
+  },
+  "powerseeking": {
+   "level": 2,
+   "skills": [
+    "rl",
+    "theory"
+   ],
+   "prereqs": [
+    "rl"
+   ]
+  },
+  "evalvalidity": {
+   "level": 2,
+   "skills": [
+    "stats-ml",
+    "deep-learning"
+   ],
+   "prereqs": []
+  },
+  "weaktostrong": {
+   "level": 2,
+   "skills": [
+    "deep-learning",
+    "stats-ml"
+   ],
+   "prereqs": [
+    "oversight"
+   ]
   }
  }
 }

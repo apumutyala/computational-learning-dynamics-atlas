@@ -473,13 +473,14 @@ function renderWelcome() {
 
 /* ---------------- learning-track menu (☰) ---------------- */
 const TRACKS = [
+  ['Intro to AI safety', p => p.id.startsWith('intro-ai-safety-')],
   ['Alignment thesis', p => p.id.startsWith('thesis-')],
   ['Forward-deployed research engineer', p => p.id.startsWith('fde-')],
   ['Interpretable-ML researcher', p => p.id === 'interpretable-ml-to-thesis' || p.id.startsWith('mechinterp-')],
   ['Inference & performance engineer', p => p.id.startsWith('inference-')],
 ];
 // Reading order within a track; paths not listed fall back to title order.
-const TRACK_ORDER = ['fde-harness-to-thesis', 'fde-agent-reliability', 'fde-verticals', 'fde-foundations', 'interpretable-ml-to-thesis', 'mechinterp-circuits-causal-tests', 'mechinterp-features-representations', 'mechinterp-circuit-discovery-scale', 'inference-to-thesis', 'inference-serving-systems', 'inference-compression-and-decoding'];
+const TRACK_ORDER = ['intro-ai-safety-to-thesis', 'intro-ai-safety-course', 'intro-ai-safety-robustness-and-agency', 'fde-harness-to-thesis', 'fde-agent-reliability', 'fde-verticals', 'fde-foundations', 'interpretable-ml-to-thesis', 'mechinterp-circuits-causal-tests', 'mechinterp-features-representations', 'mechinterp-circuit-discovery-scale', 'inference-to-thesis', 'inference-serving-systems', 'inference-compression-and-decoding'];
 const trackRank = p => { const i = TRACK_ORDER.indexOf(p.id); return i < 0 ? TRACK_ORDER.length : i; };
 function renderTrackMenu() {
   const used = new Set(), groups = [];

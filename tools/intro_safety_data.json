@@ -1,0 +1,1586 @@
+{
+ "version": 1,
+ "about": "Content for tools/add_intro_safety.py: the 'AI safety foundations' cluster built around Stanford CS120 (Introduction to AI Safety, Fall 2025) and the intro-to-AI-safety learning track.",
+ "cluster": {
+  "name": "AI safety foundations",
+  "color": "#8ad183",
+  "center": [
+   250.0,
+   -120.0,
+   150.0
+  ],
+  "readme_phrase": "AI safety foundations"
+ },
+ "readme_doc": {
+  "after": "structure-informed-capability-learning.pplx.md",
+  "line": "- [`intro-ai-safety-cs120.md`](docs/intro-ai-safety-cs120.md): a week-by-week study guide to Stanford CS120, Introduction to AI Safety, mapped onto the atlas and the alignment thesis."
+ },
+ "nodes": [
+  {
+   "node": {
+    "id": "cs120",
+    "name": "Stanford CS120: Introduction to AI Safety (course)",
+    "group": "AI safety foundations",
+    "authors": "Stanford University course (Fall 2025)",
+    "year": "2025 course",
+    "text": "An introductory course that asks what safe AI means and how to build it, separating problems inside a model from problems in the system around it. It moves from rewards and human preferences through data, fairness and adversarial robustness to interpretability, evaluation, governance and the oversight of more capable systems.",
+    "url": "https://web.stanford.edu/class/cs120/",
+    "sourceLabel": "Course page: a curated syllabus, not evidence",
+    "kind": "topic",
+    "guide": "intro-ai-safety-cs120.md",
+    "handle": "Use the syllabus as a reading map: each week pairs a safety topic with research papers, mostly read at the level of abstract and introduction. Model-specific issues (misspecified rewards, adversarial inputs, opaque internals) sit beside systemic ones (whose objectives, how data and deployment create harm, how governance and oversight work), ending with future risks and how oversight of more capable systems could look ([course page](https://web.stanford.edu/class/cs120/), [Amodei et al.](https://arxiv.org/abs/1606.06565), [Narayanan and Kapoor](https://www.normaltech.ai/p/ai-safety-is-not-a-model-property)).",
+    "boundary": "A syllabus is a curated map, not evidence for any claim: listing a paper says it is worth reading, not that its result holds or generalizes. Readings are often assigned in part, several guest lectures had no public readings, and the course does not test the atlas's alignment thesis. [Course page](https://web.stanford.edu/class/cs120/)",
+    "test": "For each week, find the atlas topic that covers it, read one required paper past its introduction, and write down one claim it establishes and one it does not; then check whether the topic's boundary note agrees.",
+    "p": [
+     250.0,
+     -120.0,
+     150.0
+    ]
+   },
+   "learning": {
+    "level": 1,
+    "skills": [
+     "deep-learning",
+     "rl"
+    ],
+    "prereqs": []
+   }
+  },
+  {
+   "node": {
+    "id": "safetyproblems",
+    "name": "Concrete & unsolved problems in AI safety",
+    "group": "AI safety foundations",
+    "authors": "Dario Amodei et al. · Dan Hendrycks et al.",
+    "year": "2016 · 2021",
+    "text": "Two problem lists that shaped the field's agenda. Amodei et al. name five accident risks: side effects, reward hacking, scalable supervision, safe exploration and distributional shift. Hendrycks et al. group open work into robustness, monitoring, alignment and systemic safety.",
+    "url": "https://arxiv.org/abs/1606.06565",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Amodei et al. sort problems by where they come from: the wrong objective (side effects, reward hacking), an objective too expensive to check often (scalable supervision), or bad behaviour while learning (safe exploration, distributional shift) ([Amodei et al.](https://arxiv.org/abs/1606.06565)). Hendrycks et al. sort by what to do about hazards: withstand them, identify them, reduce the model's own hazards, or reduce systemic ones ([Hendrycks et al.](https://arxiv.org/abs/2109.13916)).",
+    "boundary": "These are research agendas, not results: they name and motivate problems with small illustrative examples. Neither list is complete, and neither estimates how often each failure occurs in deployed systems. [Scope](https://arxiv.org/abs/1606.06565)",
+    "test": "Take a published failure or incident, classify it under both taxonomies, and note where the two disagree or where it fits neither.",
+    "p": [
+     266.9,
+     -79.4,
+     150.0
+    ]
+   },
+   "learning": {
+    "level": 1,
+    "skills": [
+     "rl",
+     "deep-learning"
+    ],
+    "prereqs": [
+     "cs120"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "systemicsafety",
+    "name": "Safety as a system property: risk taxonomies & sociotechnical framing",
+    "group": "AI safety foundations",
+    "authors": "Laura Weidinger et al. · Arvind Narayanan · Sayash Kapoor · Roel Dobbe et al.",
+    "year": "2021–2024",
+    "text": "Many harms depend on who uses a model, for what, and inside which institution, so safety cannot be read off the model alone. Risk taxonomies map harms from discrimination to misuse; sociotechnical work treats choosing objectives and trade-offs as part of the safety problem.",
+    "url": "https://www.normaltech.ai/p/ai-safety-is-not-a-model-property",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Weidinger et al. organize language-model risks into six areas, from discrimination, exclusion and toxicity through misinformation and malicious use to human–computer interaction and environmental and socioeconomic harms ([Weidinger et al.](https://dl.acm.org/doi/10.1145/3531146.3533088)). Narayanan and Kapoor argue that whether an output is harmful often depends on context the model cannot see, so defences against misuse belong mainly outside the model ([Narayanan and Kapoor](https://www.normaltech.ai/p/ai-safety-is-not-a-model-property)). Dobbe et al. treat the vague, contested choices made while specifying a system as safety decisions in their own right ([Dobbe et al.](https://arxiv.org/abs/2106.11022)).",
+    "boundary": "These are taxonomies and arguments, not measurements: they do not rank how often each harm occurs, and saying safety is not only a model property does not make model-level work useless. [Scope](https://www.normaltech.ai/p/ai-safety-is-not-a-model-property)",
+    "test": "Pick one capability, such as writing persuasive text, and list which of its harms a model-level refusal could prevent and which need controls in the product, the institution or the law.",
+    "p": [
+     229.3,
+     -86.2,
+     169.0
+    ]
+   },
+   "learning": {
+    "level": 1,
+    "skills": [
+     "deep-learning"
+    ],
+    "prereqs": [
+     "cs120"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "constitutional",
+    "name": "Constitutional AI & AI feedback (RLAIF)",
+    "group": "AI safety foundations",
+    "authors": "Yuntao Bai et al. · Harrison Lee et al.",
+    "year": "2022 · 2024",
+    "text": "Train a harmless assistant from a written list of principles instead of human harm labels: the model critiques and revises its own answers, then a model judges pairs of answers to train the reward model used for RL from AI feedback.",
+    "url": "https://arxiv.org/abs/2212.08073",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "In the supervised phase the model critiques and revises its own responses against the principles; in the RL phase AI preference labels train the preference model, giving a harmless but non-evasive assistant with far fewer human labels ([Bai et al.](https://arxiv.org/abs/2212.08073)). Across summarization and helpful and harmless dialogue, RLAIF performed comparably to RLHF ([Lee et al.](https://arxiv.org/abs/2309.00267)).",
+    "boundary": "Human judgment does not disappear: it moves into choosing the principles and the feedback model, whose errors and biases are inherited. Comparable scores on the reported tasks do not show that AI feedback stays reliable on tasks humans cannot check. [Scope](https://arxiv.org/abs/2212.08073)",
+    "test": "Train with two different constitutions on the same data and measure which behaviours change; have humans and the AI labeler rate the same held-out pairs and report where they disagree.",
+    "p": [
+     253.0,
+     -92.9,
+     115.5
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "rl",
+     "deep-learning"
+    ],
+    "prereqs": [
+     "preference"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "socialchoice",
+    "name": "Social choice & pluralistic alignment",
+    "group": "AI safety foundations",
+    "authors": "Taylor Sorensen et al. · Tan Zhi-Xuan et al. · Hannah Rose Kirk et al.",
+    "year": "2024",
+    "text": "Aligning to “human preferences” hides an aggregation problem: people disagree, so some rule for combining their judgments has to be chosen. Social choice theory studies such rules; pluralistic alignment asks models to represent, or be steerable to, a range of views.",
+    "url": "https://arxiv.org/abs/2402.05070",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Sorensen et al. define Overton, steerable and distributionally pluralistic models and report evidence that standard alignment procedures may reduce distributional pluralism ([Sorensen et al.](https://arxiv.org/abs/2402.05070)). Zhi-Xuan et al. argue that preferences miss much of what values mean and propose aligning to role-appropriate standards agreed by stakeholders ([Zhi-Xuan et al.](https://arxiv.org/abs/2408.16984)). The PRISM dataset ties feedback to the demographics and stated values of participants from many countries ([Kirk et al.](https://arxiv.org/abs/2404.16019)).",
+    "boundary": "Classical impossibility results, Arrow's theorem among them, show that no ranked voting rule meets a small set of appealing conditions at once, so a choice is unavoidable. These papers offer frameworks and data, not a settled rule, and pluralism benchmarks are early. [Scope](https://arxiv.org/abs/2402.05070)",
+    "test": "Fit one reward model to pooled annotators and one per annotator group, then measure how often the pooled model's preferred answer is rejected by a majority of some group on held-out prompts.",
+    "p": [
+     273.7,
+     -99.7,
+     181.0
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "theory",
+     "rl"
+    ],
+    "prereqs": [
+     "preference"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "nnverify",
+    "name": "Neural-network verification & validation",
+    "group": "AI safety foundations",
+    "authors": "Changliu Liu et al. · Chuyue Sun et al.",
+    "year": "2019–2021 · 2024",
+    "text": "Prove that a trained network satisfies an input–output property for every input in a set, for example that no small perturbation changes a classification or that a controller never issues an unsafe command, instead of only testing sampled inputs.",
+    "url": "https://arxiv.org/abs/1903.06758",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Sound verification methods draw on reachability analysis, optimization and search, and trade completeness against scale ([Liu et al.](https://arxiv.org/abs/1903.06758)). The course pairs this with formal methods for generated code, where a closed loop checks consistency between code, documentation and formal annotations ([Sun et al.](https://arxiv.org/abs/2310.17807)).",
+    "boundary": "A proof covers only the stated property over the stated input set. It says nothing about inputs outside that set or about whether the specification captures what people want, and exact methods scale poorly to large models. [Scope](https://arxiv.org/abs/1903.06758)",
+    "test": "Certify local robustness of a small classifier around test points with a complete and an incomplete method, then search for adversarial examples just outside the certified radius.",
+    "p": [
+     208.8,
+     -106.5,
+     142.7
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "optimization",
+     "deep-learning"
+    ],
+    "prereqs": [
+     "mlp"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "datasafety",
+    "name": "Training data, filtering & machine unlearning",
+    "group": "AI safety foundations",
+    "authors": "Abeba Birhane et al. · A. Feder Cooper et al. · Kyle O'Brien et al.",
+    "year": "2023–2025",
+    "text": "What a model can do and how it behaves depend on what it was trained on. Curating or filtering data changes behaviour, while removing knowledge after training (“unlearning”) is harder to define and check than it sounds.",
+    "url": "https://arxiv.org/abs/2508.06601",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Scaling LAION from 400M to 2B samples raised the measured hateful-content rate by about 12%, and models trained on the larger set associated Black faces with “criminal” more often ([Birhane et al.](https://arxiv.org/abs/2306.13141)). Filtering biothreat-related text before pretraining gave 6.9B models that resisted up to 10,000 steps of adversarial fine-tuning, with no observed loss of unrelated capability ([O'Brien et al.](https://arxiv.org/abs/2508.06601)). Cooper et al. separate removing information from parameters from suppressing it in outputs, and find mismatches between both goals and feasible methods ([Cooper et al.](https://arxiv.org/abs/2412.06966)).",
+    "boundary": "Filtered models could still use dangerous information supplied in context, so filtering is one layer, not a guarantee. The audits measure specific datasets and probes, and unlearning claims rarely show that information is gone rather than hidden. [Scope](https://arxiv.org/abs/2508.06601)",
+    "test": "Train matched models with and without a filtered topic, then compare zero-shot knowledge, recovery under fine-tuning and performance when the information is placed in context.",
+    "p": [
+     286.7,
+     -113.2,
+     126.7
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "stats-ml"
+    ],
+    "prereqs": [
+     "llm"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "fairness",
+    "name": "Algorithmic fairness: disparate impact & fair representations",
+    "group": "AI safety foundations",
+    "authors": "Julia Angwin et al. · Michael Feldman et al. · Richard Zemel et al.",
+    "year": "2013–2016",
+    "text": "A model can be accurate overall yet distribute its errors or outcomes unequally across groups. Fairness work defines group criteria, tests for disparate impact and learns representations that hide group membership while keeping task information.",
+    "url": "https://arxiv.org/abs/1412.3756",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "ProPublica's analysis of the COMPAS risk score found that Black defendants who did not reoffend were labelled higher risk far more often than white defendants who did not ([Angwin et al.](https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing)). Feldman et al. measure disparate impact by how well the protected attribute can be predicted from the other features, and repair data to remove it ([Feldman et al.](https://arxiv.org/abs/1412.3756)); Zemel et al. learn representations that encode the data while obfuscating group membership ([Zemel et al.](https://proceedings.mlr.press/v28/zemel13.html)).",
+    "boundary": "Group fairness criteria can conflict with each other and with accuracy, so satisfying one is a choice, not proof that a system is fair. Dropping a protected attribute does not remove proxies for it, and the COMPAS findings concern one tool in one jurisdiction. [Scope](https://arxiv.org/abs/1412.3756)",
+    "test": "On a public dataset, compute false-positive-rate and calibration gaps across groups before and after a repair, and report the accuracy each repair costs.",
+    "p": [
+     238.6,
+     -120.0,
+     192.5
+    ]
+   },
+   "learning": {
+    "level": 1,
+    "skills": [
+     "stats-ml"
+    ],
+    "prereqs": [
+     "logistic"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "humanai",
+    "name": "Safe human–AI interaction: role play, social sycophancy & vulnerable users",
+    "group": "AI safety foundations",
+    "authors": "Murray Shanahan · Kyle McDonell · Laria Reynolds · Myra Cheng et al.",
+    "year": "2023 · 2025",
+    "text": "Chat assistants talk with people about advice, relationships and mental health, where flattering or role-played answers can mislead someone who trusts them. This topic asks what a safe conversation looks like when the user may be vulnerable.",
+    "url": "https://arxiv.org/abs/2505.13995",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Shanahan et al. describe a dialogue agent as role-playing characters rather than holding beliefs of its own, a framing that guards against over-reading its claims ([Shanahan et al.](https://www.nature.com/articles/s41586-023-06647-8)). ELEPHANT measures social sycophancy, preserving a user's desired self-image: across 11 models, models preserved face 45 percentage points more than humans did, and preference datasets reward it ([Cheng et al.](https://arxiv.org/abs/2505.13995)). The course's guest lecture on AI and mental health had no public readings.",
+    "boundary": "Benchmarks built from advice requests and Reddit posts measure responses, not effects on real users' wellbeing. Role play is a descriptive framing, not a safety method, and none of this establishes that chatbots are safe for mental-health support. [Scope](https://arxiv.org/abs/2505.13995)",
+    "test": "Score a model's replies to first-person advice requests for face preservation against human replies, then test whether a mitigation lowers it without making replies harsher or less helpful.",
+    "p": [
+     230.0,
+     -126.8,
+     111.4
+    ]
+   },
+   "learning": {
+    "level": 1,
+    "skills": [
+     "deep-learning"
+    ],
+    "prereqs": [
+     "llm"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "advexamples",
+    "name": "Adversarial examples & robustness",
+    "group": "AI safety foundations",
+    "authors": "Ian Goodfellow · Jonathon Shlens · Christian Szegedy · Nicholas Carlini et al.",
+    "year": "2015 · 2023",
+    "text": "Small, deliberately chosen input changes can make a network give a confident wrong answer. Robustness asks how a model behaves under worst-case inputs, not just typical ones.",
+    "url": "https://arxiv.org/abs/1412.6572",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Goodfellow et al. attribute the vulnerability to the locally linear behaviour of networks and introduce the fast gradient sign method, x + ε·sign(∇ₓJ), with adversarial training as a defence ([Goodfellow et al.](https://arxiv.org/abs/1412.6572)). Carlini et al. carry the idea to aligned chat models: image perturbations easily steer multimodal models, and failed text attacks do not prove that text models are robust ([Carlini et al.](https://arxiv.org/abs/2306.15447)).",
+    "boundary": "Robustness is always relative to a threat model (perturbation size, norm, attacker access). Adversarial-training gains are specific to the attack trained against, and robustness to known attacks is not a guarantee. [Scope](https://arxiv.org/abs/1412.6572)",
+    "test": "Train a classifier with and without adversarial training, attack both with the training attack and a stronger unseen one, and report accuracy against perturbation size.",
+    "p": [
+     289.3,
+     -133.5,
+     164.4
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "optimization"
+    ],
+    "prereqs": [
+     "cnn"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "jailbreaks",
+    "name": "Jailbreaks & universal adversarial suffixes",
+    "group": "AI safety foundations",
+    "authors": "Alexander Wei · Nika Haghtalab · Jacob Steinhardt · Andy Zou et al.",
+    "year": "2023",
+    "text": "Prompts that get a safety-trained model to do what it was trained to refuse, written by hand or found by optimization. They show that refusal training changes behaviour on familiar requests without removing the underlying capability.",
+    "url": "https://arxiv.org/abs/2307.15043",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Wei et al. trace jailbreaks to two failure modes of safety training, competing objectives and mismatched generalization; attacks built on them succeeded on every prompt in a set of unsafe requests drawn from GPT-4's and Claude v1.3's red-teaming sets ([Wei et al.](https://arxiv.org/abs/2307.02483)). Zou et al.'s greedy coordinate gradient search finds a suffix that makes a model begin with an affirmative answer; suffixes optimized on open models transferred to ChatGPT, Bard and Claude ([Zou et al.](https://arxiv.org/abs/2307.15043)).",
+    "boundary": "Attack success depends on the model version, the harm judge and the request set, and providers patch specific attacks. A jailbreak shows that refusal can be bypassed, not that the output gives meaningful uplift. [Scope](https://arxiv.org/abs/2307.15043)",
+    "test": "Measure the success of hand-written and optimized jailbreaks on a fixed request set, with a harm judge checked against humans, before and after a defence, including an adaptive attack on the defence.",
+    "p": [
+     213.9,
+     -140.3,
+     164.9
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "optimization"
+    ],
+    "prereqs": [
+     "advexamples",
+     "preference"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "powerseeking",
+    "name": "Power-seeking & instrumental convergence",
+    "group": "AI safety foundations",
+    "authors": "Alexander Matt Turner · Logan Smith · Rohin Shah · Andrew Critch · Prasad Tadepalli",
+    "year": "2021 (NeurIPS)",
+    "text": "Whatever an agent's final goal, some sub-goals, such as staying operational and keeping options open, help with most of them. Turner et al. prove a version of this for optimal policies in Markov decision processes.",
+    "url": "https://arxiv.org/abs/1912.01683",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Under environmental symmetries that are common when an agent can be shut down, most reward functions make it optimal to keep a range of options available, which the authors formalize as seeking power ([Turner et al.](https://arxiv.org/abs/1912.01683)). The course pairs this with the orthogonality thesis (intelligence and final goals can vary independently) and with critiques of how AGI is framed ([course page](https://web.stanford.edu/class/cs120/)).",
+    "boundary": "The theorems concern optimal policies and proportions of reward functions, not trained networks, which are neither optimal nor drawn at random. They do not show that current systems seek power. [Scope](https://arxiv.org/abs/1912.01683)",
+    "test": "Train agents on many random rewards in a gridworld with a shutdown state and compare how often the learned policies avoid shutdown with the theory's prediction for optimal policies.",
+    "p": [
+     264.7,
+     -147.1,
+     118.6
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "rl",
+     "theory"
+    ],
+    "prereqs": [
+     "rl"
+    ]
+   }
+  },
+  {
+   "node": {
+    "id": "evalvalidity",
+    "name": "AI evaluations: measurement validity & emergent abilities",
+    "group": "AI safety foundations",
+    "authors": "Olawale Salaudeen · Anka Reuel et al. · Rylan Schaeffer et al. · Ethan Perez et al.",
+    "year": "2023–2025",
+    "text": "An evaluation turns model behaviour into a number that is then used to support a claim, such as “can reason” or “is safe to release”. Validity asks whether the number actually supports that claim.",
+    "url": "https://arxiv.org/abs/2505.10573",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Salaudeen, Reuel et al. adapt psychometric validity to ask which claims a benchmark score licenses ([Salaudeen et al.](https://arxiv.org/abs/2505.10573)). Schaeffer et al. show that apparently sudden “emergent” abilities can come from choosing a discontinuous metric ([Schaeffer et al.](https://arxiv.org/abs/2304.15004)). Perez et al. use models to write evaluations at scale and find, for example, that larger models more often repeat back a user's stated view ([Perez et al.](https://aclanthology.org/2023.findings-acl.847/)).",
+    "boundary": "A validity framework helps interpret a score but supplies no valid test for any particular dangerous capability. Metric-choice effects do not show that no ability ever appears abruptly, and model-written evaluations inherit the writer model's blind spots. [Scope](https://arxiv.org/abs/2505.10573)",
+    "test": "For one benchmark, state the claim it is used to support, then check the score against a second measurement of the same construct and against an unrelated construct it should not track.",
+    "p": [
+     258.4,
+     -153.8,
+     176.8
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "stats-ml",
+     "deep-learning"
+    ],
+    "prereqs": []
+   }
+  },
+  {
+   "node": {
+    "id": "weaktostrong",
+    "name": "Weak-to-strong generalization",
+    "group": "AI safety foundations",
+    "authors": "Collin Burns et al.",
+    "year": "2023",
+    "text": "An analogy for supervising models more capable than their supervisors: fine-tune a strong model on labels from a weaker one and measure how much of the strong model's latent ability the weak labels unlock.",
+    "url": "https://arxiv.org/abs/2312.09390",
+    "sourceLabel": null,
+    "kind": "topic",
+    "guide": null,
+    "handle": "Strong models trained on weak labels consistently beat their weak supervisors, but naive fine-tuning recovers only part of the gap; with an auxiliary confidence loss, GPT-4 supervised by a GPT-2-level model came close to GPT-3.5-level performance on NLP tasks ([Burns et al.](https://arxiv.org/abs/2312.09390)).",
+    "boundary": "It is an analogy: a small model's errors may differ from a human's, and a strong student may imitate weak errors instead of eliciting what it knows. Gains varied by task and were small for reward modeling, and no actually superhuman model was tested. [Scope](https://arxiv.org/abs/2312.09390)",
+    "test": "Report performance gap recovered for several weak–strong pairs and tasks, and check whether the strong student copies its supervisor's specific mistakes on held-out examples.",
+    "p": [
+     235.4,
+     -160.6,
+     141.5
+    ]
+   },
+   "learning": {
+    "level": 2,
+    "skills": [
+     "deep-learning",
+     "stats-ml"
+    ],
+    "prereqs": [
+     "oversight"
+    ]
+   }
+  }
+ ],
+ "edges": [
+  {
+   "a": "cs120",
+   "b": "safetyproblems",
+   "type": "established",
+   "relation": "the course opens with these problem lists",
+   "text": "Week 1 asks what safe AI means and assigns the opening sections of Concrete Problems in AI Safety; week 4 assigns the introduction of Unsolved Problems in ML Safety.",
+   "url": "https://web.stanford.edu/class/cs120/"
+  },
+  {
+   "a": "cs120",
+   "b": "systemicsafety",
+   "type": "established",
+   "relation": "model-specific versus systemic safety",
+   "text": "The course separates model-specific from systemic safety issues and assigns a risk taxonomy, an essay arguing safety is not a model property, and a paper on hard choices in AI in its first week.",
+   "url": "https://web.stanford.edu/class/cs120/"
+  },
+  {
+   "a": "cs120",
+   "b": "preference",
+   "type": "established",
+   "relation": "week 2: rewards and human preferences",
+   "text": "Two lectures cover reward functions and encoding human preferences, with readings on InstructGPT, reward-model overoptimization, open problems of RLHF and DPO.",
+   "url": "https://web.stanford.edu/class/cs120/"
+  },
+  {
+   "a": "cs120",
+   "b": "advexamples",
+   "type": "established",
+   "relation": "week 5: adversarial vulnerabilities",
+   "text": "The red-teaming lecture starts from adversarial examples in image classifiers and moves to adversarial attacks on aligned language models.",
+   "url": "https://web.stanford.edu/class/cs120/"
+  },
+  {
+   "a": "cs120",
+   "b": "circuits",
+   "type": "established",
+   "relation": "week 6: interpretability readings",
+   "text": "The interpretability lecture assigns Zoom In, the essay that sets out the circuits programme, alongside surveys of inner interpretability and mechanistic interpretability for safety.",
+   "url": "https://web.stanford.edu/class/cs120/"
+  },
+  {
+   "a": "cs120",
+   "b": "oversight",
+   "type": "established",
+   "relation": "week 9: scalable oversight",
+   "text": "The last regular lecture asks how to supervise advanced AI, with debate, weak-to-strong generalization and measuring progress on scalable oversight among the readings.",
+   "url": "https://web.stanford.edu/class/cs120/"
+  },
+  {
+   "a": "safetyproblems",
+   "b": "rewardhack",
+   "type": "established",
+   "relation": "reward hacking as a named open problem",
+   "text": "Avoiding reward hacking is one of the five problems in Concrete Problems, filed under having the wrong objective; the atlas's proxy-objectives topic gives the formal account of when proxy gains can reverse true ones.",
+   "url": "https://arxiv.org/abs/1606.06565"
+  },
+  {
+   "a": "safetyproblems",
+   "b": "oversight",
+   "type": "established",
+   "relation": "scalable supervision as a named open problem",
+   "text": "Concrete Problems names scalable supervision, an objective too expensive to evaluate often, as an accident risk; later scalable-oversight work turns it into experiments with human and model overseers.",
+   "url": "https://arxiv.org/abs/1606.06565"
+  },
+  {
+   "a": "safetyproblems",
+   "b": "constrainedrl",
+   "type": "established",
+   "relation": "safe exploration",
+   "text": "Safe exploration, avoiding catastrophic actions while still learning, is one of the five problems; constrained RL and safety filters are standard formal responses.",
+   "url": "https://arxiv.org/abs/1606.06565"
+  },
+  {
+   "a": "safetyproblems",
+   "b": "advexamples",
+   "type": "established",
+   "relation": "robustness as a research area",
+   "text": "Unsolved Problems in ML Safety makes withstanding hazards, including adversarial and long-tail inputs, the first of its four research areas.",
+   "url": "https://arxiv.org/abs/2109.13916"
+  },
+  {
+   "a": "safetyproblems",
+   "b": "systemicsafety",
+   "type": "established",
+   "relation": "model hazards versus systemic hazards",
+   "text": "Hendrycks et al. already list reducing systemic hazards as a separate area; Narayanan and Kapoor push further, arguing many harms cannot be assessed at the model level at all.",
+   "url": "https://www.normaltech.ai/p/ai-safety-is-not-a-model-property"
+  },
+  {
+   "a": "safetyproblems",
+   "b": "alignmentthesis",
+   "type": "hypothesis",
+   "relation": "the thesis's interfaces as answers to the classic problems",
+   "text": "Proposed mapping: objective uncertainty answers reward hacking and side effects, the correction interface answers scalable supervision, belief states address distributional shift, and the independent enforcer bounds unsafe exploration. Untested as a composition.",
+   "url": "https://arxiv.org/abs/1606.06565"
+  },
+  {
+   "a": "systemicsafety",
+   "b": "aigovern",
+   "type": "established",
+   "relation": "context-dependent harms call for governance",
+   "text": "If harm depends on the deployment context, controls must sit in products, institutions and law; risk-tiered regulation and management frameworks are where those controls are specified.",
+   "url": "https://www.normaltech.ai/p/ai-safety-is-not-a-model-property"
+  },
+  {
+   "a": "systemicsafety",
+   "b": "fairness",
+   "type": "established",
+   "relation": "discrimination as a deployment harm",
+   "text": "The COMPAS case shows harm arising from how a risk score is used in sentencing, not only from the model; discrimination and exclusion head standard taxonomies of language-model risk.",
+   "url": "https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing"
+  },
+  {
+   "a": "constitutional",
+   "b": "preference",
+   "type": "established",
+   "relation": "AI feedback in place of human harm labels",
+   "text": "Constitutional AI keeps the RLHF pipeline but trains the harmlessness preference model on AI labels guided by written principles, and RLAIF matched RLHF on the tasks Lee et al. report.",
+   "url": "https://arxiv.org/abs/2212.08073"
+  },
+  {
+   "a": "constitutional",
+   "b": "oversight",
+   "type": "established",
+   "relation": "using AI to help supervise AI",
+   "text": "Bai et al. motivate Constitutional AI as enlisting AI systems to help supervise other AIs, the core move of scalable oversight; human oversight is reduced to the list of principles.",
+   "url": "https://arxiv.org/abs/2212.08073"
+  },
+  {
+   "a": "constitutional",
+   "b": "socialchoice",
+   "type": "established",
+   "relation": "whose principles go in the constitution",
+   "text": "The only human oversight in Constitutional AI is the list of principles, so the method concentrates the question of whose values count into who writes that list.",
+   "url": "https://arxiv.org/abs/2212.08073"
+  },
+  {
+   "a": "socialchoice",
+   "b": "preference",
+   "type": "empirical",
+   "relation": "a single reward model aggregates disagreeing people",
+   "text": "Standard RLHF fits one reward to pooled annotators; Sorensen et al. report evidence that standard alignment procedures may reduce distributional pluralism in models.",
+   "url": "https://arxiv.org/abs/2402.05070"
+  },
+  {
+   "a": "socialchoice",
+   "b": "assistance",
+   "type": "hypothesis",
+   "relation": "one human in the model, many people in the world",
+   "text": "Assistance games model one human with a representable reward. Extending objective uncertainty to many stakeholders needs an aggregation or negotiation step, which Zhi-Xuan et al. argue preferences alone cannot supply. Proposed, not built.",
+   "url": "https://arxiv.org/abs/2408.16984"
+  },
+  {
+   "a": "socialchoice",
+   "b": "alignmentthesis",
+   "type": "hypothesis",
+   "relation": "a specified user versus many stakeholders",
+   "text": "The thesis defines aligned behaviour for a specified user within authorized constraints; pluralistic alignment asks who authorizes the constraints when users and affected people disagree. The thesis does not yet answer this.",
+   "url": "https://arxiv.org/abs/2402.05070"
+  },
+  {
+   "a": "socialchoice",
+   "b": "humanai",
+   "type": "established",
+   "relation": "what people want from AI varies by culture",
+   "text": "Ge et al. find that respondents from different cultural backgrounds weight control of and connection with AI differently, so a single notion of a good interaction already embeds a choice.",
+   "url": "https://arxiv.org/abs/2403.05104"
+  },
+  {
+   "a": "nnverify",
+   "b": "gsai",
+   "type": "established",
+   "relation": "the verifier component",
+   "text": "Guaranteed safe AI needs a verifier that certifies behaviour against a specification; sound neural-network verification is the existing technique, limited to input–output properties at modest scale.",
+   "url": "https://arxiv.org/abs/1903.06758"
+  },
+  {
+   "a": "nnverify",
+   "b": "barrier",
+   "type": "established",
+   "relation": "certifying a safe set by reachability",
+   "text": "Reachability-based verifiers bound a network's outputs over an input set, the same object that invariance certificates for learned controllers need.",
+   "url": "https://arxiv.org/abs/1903.06758"
+  },
+  {
+   "a": "nnverify",
+   "b": "advexamples",
+   "type": "established",
+   "relation": "certified robustness within a perturbation set",
+   "text": "Local robustness, no misclassification anywhere in a small ball around an input, is the standard property neural-network verifiers prove and the one adversarial examples violate.",
+   "url": "https://arxiv.org/abs/1903.06758"
+  },
+  {
+   "a": "nnverify",
+   "b": "redteam",
+   "type": "established",
+   "relation": "testing finds failures, verification proves absence",
+   "text": "Red teaming and adversarial search can only exhibit failures; sound verification proves their absence, but only for a formal property over a bounded input set.",
+   "url": "https://arxiv.org/abs/1903.06758"
+  },
+  {
+   "a": "datasafety",
+   "b": "fairness",
+   "type": "empirical",
+   "relation": "data scale amplifying bias",
+   "text": "In Birhane et al.'s audit, moving from LAION-400M to LAION-2B increased hateful content and roughly doubled to quintupled how often trained models labelled Black faces as criminal.",
+   "url": "https://arxiv.org/abs/2306.13141"
+  },
+  {
+   "a": "datasafety",
+   "b": "scalinglaws",
+   "type": "established",
+   "relation": "more data is not cleaner data",
+   "text": "Scaling laws predict falling loss with more data; the hate-scaling audit shows that the same scaling of web data can increase harmful content and downstream bias.",
+   "url": "https://arxiv.org/abs/2306.13141"
+  },
+  {
+   "a": "datasafety",
+   "b": "sleeperagents",
+   "type": "established",
+   "relation": "poisoning as the way backdoors get in",
+   "text": "Carlini et al. show that poisoning 0.01% of LAION-400M or COYO-700M would have cost about $60; sleeper-agent results show that behaviour inserted this way can survive safety training.",
+   "url": "https://arxiv.org/abs/2302.10149"
+  },
+  {
+   "a": "datasafety",
+   "b": "preference",
+   "type": "empirical",
+   "relation": "pretraining filters versus post-training safety",
+   "text": "Filtering dual-use text before pretraining resisted adversarial fine-tuning more than an order of magnitude longer than post-training safeguards in O'Brien et al.'s 6.9B models.",
+   "url": "https://arxiv.org/abs/2508.06601"
+  },
+  {
+   "a": "datasafety",
+   "b": "alignmentthesis",
+   "type": "hypothesis",
+   "relation": "unlearning as a correction that must persist",
+   "text": "Unlearning is a proposed correction; Cooper et al. find mismatches between its goals and feasible methods. The thesis's persistence falsifier asks the same of any correction: test held-out triggers, recovery under fine-tuning and side effects.",
+   "url": "https://arxiv.org/abs/2412.06966"
+  },
+  {
+   "a": "fairness",
+   "b": "rudin2019",
+   "type": "established",
+   "relation": "high-stakes decisions such as recidivism scoring",
+   "text": "Rudin's argument for inherently interpretable models is made for high-stakes decisions and discusses recidivism prediction, the setting of the COMPAS controversy.",
+   "url": "https://arxiv.org/abs/1811.10154"
+  },
+  {
+   "a": "fairness",
+   "b": "aigovern",
+   "type": "established",
+   "relation": "non-discrimination duties for high-risk systems",
+   "text": "The EU AI Act treats systems such as credit scoring as high-risk and requires data governance that examines possible biases, turning fairness tests into compliance obligations.",
+   "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"
+  },
+  {
+   "a": "humanai",
+   "b": "sycophancy",
+   "type": "established",
+   "relation": "from agreeing with claims to preserving self-image",
+   "text": "ELEPHANT extends sycophancy from agreement with a user's stated beliefs to social sycophancy: affirming the user's desired self-image in advice and moral conflicts.",
+   "url": "https://arxiv.org/abs/2505.13995"
+  },
+  {
+   "a": "humanai",
+   "b": "preference",
+   "type": "empirical",
+   "relation": "preference data rewards face-preserving answers",
+   "text": "Cheng et al. find social sycophancy rewarded in preference datasets; Wen et al. find RLHF made models better at convincing time-limited evaluators without being more correct.",
+   "url": "https://arxiv.org/abs/2505.13995"
+  },
+  {
+   "a": "humanai",
+   "b": "llm",
+   "type": "established",
+   "relation": "dialogue agents as role play",
+   "text": "Shanahan et al. describe a dialogue agent built on a language model as role-playing characters, which helps explain both persona-consistent behaviour and its breakdowns.",
+   "url": "https://www.nature.com/articles/s41586-023-06647-8"
+  },
+  {
+   "a": "advexamples",
+   "b": "jailbreaks",
+   "type": "empirical",
+   "relation": "adversarial examples for aligned language models",
+   "text": "Carlini et al. find image perturbations easily induce arbitrary behaviour in aligned multimodal models, and that failed text attacks do not establish robustness; Zou et al.'s optimized suffixes later supplied stronger text attacks.",
+   "url": "https://arxiv.org/abs/2306.15447"
+  },
+  {
+   "a": "jailbreaks",
+   "b": "redteam",
+   "type": "established",
+   "relation": "optimized attacks supplement human red teaming",
+   "text": "Gradient-guided suffix search automates part of what human red teamers do and found attacks that transfer across models.",
+   "url": "https://arxiv.org/abs/2307.15043"
+  },
+  {
+   "a": "jailbreaks",
+   "b": "promptinject",
+   "type": "established",
+   "relation": "user attacks versus third-party instructions",
+   "text": "A jailbreak is the user attacking the model's own policy; indirect prompt injection plants instructions in data the model reads on the user's behalf. Defences and threat models differ.",
+   "url": "https://arxiv.org/abs/2302.12173"
+  },
+  {
+   "a": "jailbreaks",
+   "b": "guardrail",
+   "type": "empirical",
+   "relation": "classifiers as a defence against universal jailbreaks",
+   "text": "Constitutional classifiers wrapped around a model cut universal-jailbreak success in red-teaming, at a cost in refusals and inference compute.",
+   "url": "https://arxiv.org/abs/2501.18837"
+  },
+  {
+   "a": "jailbreaks",
+   "b": "preference",
+   "type": "empirical",
+   "relation": "why safety training fails",
+   "text": "Wei et al. explain jailbreaks by competing objectives (helpfulness against harmlessness) and mismatched generalization (safety training not covering domains where capabilities exist).",
+   "url": "https://arxiv.org/abs/2307.02483"
+  },
+  {
+   "a": "jailbreaks",
+   "b": "sleeperagents",
+   "type": "established",
+   "relation": "jailbreak backdoors through poisoned feedback",
+   "text": "Rando and Tramèr plant a universal jailbreak trigger by poisoning RLHF data, a backdoor that bypasses refusals without searching for an adversarial prompt.",
+   "url": "https://arxiv.org/abs/2311.14455"
+  },
+  {
+   "a": "jailbreaks",
+   "b": "evalvalidity",
+   "type": "established",
+   "relation": "attack success rates as measurements",
+   "text": "Feffer et al. find red-teaming practices diverge in purpose, setting and judged outcome, and warn that public gestures toward red teaming can become security theater without clear criteria.",
+   "url": "https://arxiv.org/abs/2401.15897"
+  },
+  {
+   "a": "powerseeking",
+   "b": "corrigibility",
+   "type": "established",
+   "relation": "instrumental reasons to resist shutdown",
+   "text": "Corrigibility work starts from the observation that most goals give an agent reason to avoid shutdown; Turner et al. prove a version of this for optimal policies in environments where shutdown is possible.",
+   "url": "https://arxiv.org/abs/1912.01683"
+  },
+  {
+   "a": "powerseeking",
+   "b": "offswitch",
+   "type": "established",
+   "relation": "uncertainty changes the incentive",
+   "text": "In the off-switch game a robot certain of its objective has an incentive to disable the switch, the power-seeking pattern; uncertainty about the objective and treating the human's choice as evidence can reverse it.",
+   "url": "https://arxiv.org/abs/1611.08219"
+  },
+  {
+   "a": "powerseeking",
+   "b": "goalmisgen",
+   "type": "established",
+   "relation": "misgeneralized goals plus power-seeking",
+   "text": "Ngo et al. argue that goals learned through misgeneralization, combined with power-seeking incentives, are a central route to misaligned behaviour in deep-learning systems.",
+   "url": "https://arxiv.org/abs/2209.00626"
+  },
+  {
+   "a": "powerseeking",
+   "b": "rl",
+   "type": "established",
+   "relation": "a theorem about optimal RL policies",
+   "text": "The power-seeking results are stated for optimal policies in Markov decision processes, so they speak to what RL objectives incentivize, not to what a given training run learns.",
+   "url": "https://arxiv.org/abs/1912.01683"
+  },
+  {
+   "a": "evalvalidity",
+   "b": "agentbench",
+   "type": "established",
+   "relation": "benchmark scores and the claims they support",
+   "text": "A validity-centred framework asks whether an agent benchmark's end-state success measures the capability claimed, given contamination, task selection and repeated-trial reliability.",
+   "url": "https://arxiv.org/abs/2505.10573"
+  },
+  {
+   "a": "evalvalidity",
+   "b": "llmjudge",
+   "type": "established",
+   "relation": "models writing and grading evaluations",
+   "text": "Perez et al. generate evaluation datasets with language models and check them with crowd workers; model-written tests and model graders share the risk of inheriting the model's blind spots.",
+   "url": "https://aclanthology.org/2023.findings-acl.847/"
+  },
+  {
+   "a": "evalvalidity",
+   "b": "scalinglaws",
+   "type": "empirical",
+   "relation": "smooth loss, hard-to-predict capabilities",
+   "text": "Pretraining loss scales smoothly, but Schaeffer et al. find downstream capabilities hard to predict from scale, partly because of how multiple-choice metrics are computed.",
+   "url": "https://arxiv.org/abs/2406.04391"
+  },
+  {
+   "a": "evalvalidity",
+   "b": "auditing",
+   "type": "established",
+   "relation": "black-box access limits audits",
+   "text": "Casper et al. argue that black-box access is insufficient for rigorous audits; alignment audits that use weights, activations and training data are one answer.",
+   "url": "https://arxiv.org/abs/2401.14446"
+  },
+  {
+   "a": "evalvalidity",
+   "b": "aigovern",
+   "type": "established",
+   "relation": "evaluations as triggers for regulation",
+   "text": "Hooker argues that training-compute thresholds are a poor proxy for risk, so governance increasingly depends on evaluations whose validity must be established.",
+   "url": "https://arxiv.org/abs/2407.05694"
+  },
+  {
+   "a": "evalvalidity",
+   "b": "sycophancy",
+   "type": "empirical",
+   "relation": "a model-written evaluation found sycophancy",
+   "text": "Perez et al.'s model-written evaluations found larger models more likely to repeat back a dialogue user's preferred answer, one of the first measurements of sycophancy.",
+   "url": "https://aclanthology.org/2023.findings-acl.847/"
+  },
+  {
+   "a": "evalvalidity",
+   "b": "weaktostrong",
+   "type": "established",
+   "relation": "making oversight measurable today",
+   "text": "Weak-to-strong generalization turns supervision of stronger models into an evaluation that can be run now: performance gap recovered, measured on tasks with ground truth.",
+   "url": "https://arxiv.org/abs/2312.09390"
+  },
+  {
+   "a": "weaktostrong",
+   "b": "oversight",
+   "type": "established",
+   "relation": "an empirical analogy for scalable oversight",
+   "text": "Burns et al. study whether weak supervision can elicit a stronger model's capabilities, as a stand-in for humans supervising superhuman models.",
+   "url": "https://arxiv.org/abs/2312.09390"
+  },
+  {
+   "a": "weaktostrong",
+   "b": "elk",
+   "type": "established",
+   "relation": "elicit what the model knows or imitate the supervisor",
+   "text": "Both ask whether training on a weaker overseer's labels makes a strong model report what it knows or merely predict what the overseer would say.",
+   "url": "https://arxiv.org/abs/2312.09390"
+  },
+  {
+   "a": "weaktostrong",
+   "b": "preference",
+   "type": "empirical",
+   "relation": "weak supervision of reward models",
+   "text": "Weak-to-strong generalization was poor on the ChatGPT reward-modeling task, suggesting RLHF-style pipelines may scale poorly to models stronger than their raters without new methods.",
+   "url": "https://arxiv.org/abs/2312.09390"
+  },
+  {
+   "a": "weaktostrong",
+   "b": "alignmentthesis",
+   "type": "hypothesis",
+   "relation": "corrections from weaker overseers",
+   "text": "The thesis's correction interface assumes humans can tell whether a correction worked. Weak-to-strong experiments could test whether corrections from weaker overseers persist and generalize. Untested.",
+   "url": "https://arxiv.org/abs/2312.09390"
+  },
+  {
+   "a": "weaktostrong",
+   "b": "assistance",
+   "type": "hypothesis",
+   "relation": "weak labels as evidence about intent",
+   "text": "Instead of fitting weak labels as ground truth, an assistance-game agent would treat them as noisy evidence about the supervisor's objective and ask when uncertain. Whether this improves gap recovery is untested.",
+   "url": "https://arxiv.org/abs/2312.09390"
+  }
+ ],
+ "paths": [
+  {
+   "id": "intro-ai-safety-to-thesis",
+   "title": "From introductory AI safety to the alignment thesis: rewards, preferences, robustness, oversight and correction",
+   "summary": "Start from Stanford's CS120 introduction to AI safety and follow its arc: what “safe AI” means, how rewards and human preferences shape behaviour, why safety training can be bypassed, what evaluations can and cannot show, and how weaker overseers might supervise stronger models. Then cross into the atlas's alignment thesis, which keeps uncertainty about what people want and asks for corrections whose effects can be measured. The last two links into the thesis are untested hypotheses.",
+   "audience": "People new to AI safety who have some machine-learning background (they have trained or fine-tuned a model and know roughly what a loss and a reward are) and want a guided introduction that ends at this atlas's research questions. No control theory, interpretability or learning theory is assumed.",
+   "level": "intro",
+   "skills": [
+    "deep-learning",
+    "rl",
+    "stats-ml"
+   ],
+   "estHours": 14,
+   "steps": [
+    {
+     "node": "cs120",
+     "objective": "Name the course's main topics and sort them into problems inside a model (misspecified rewards, adversarial inputs, opaque internals) and problems in the system around it (data, deployment, governance, oversight).",
+     "why": "The starting point and the map. The course treats safety as several distinct problems rather than one; this path follows its arc and then shows where the alignment thesis picks up each thread.",
+     "via": null
+    },
+    {
+     "node": "safetyproblems",
+     "objective": "List the five problems in Concrete Problems in AI Safety and the four areas in Unsolved Problems in ML Safety, with one example of each.",
+     "why": "The course opens by asking what “safe AI” means. These two lists supply the shared vocabulary; reward hacking and scalable supervision are the threads the thesis pulls on hardest.",
+     "via": "auto"
+    },
+    {
+     "node": "rewardhack",
+     "objective": "Explain how optimizing a proxy reward harder can make true performance worse, and why inspecting the reward alone cannot rule this out.",
+     "why": "Week 2 starts from specification gaming: systems do what the reward says, not what was meant. The thesis turns this into its main falsifier: reject it if better proxy optimization systematically destroys independently measured user utility.",
+     "via": "auto"
+    },
+    {
+     "node": "preference",
+     "objective": "Describe RLHF and DPO in a few sentences each, and explain reward-model overoptimization: why proxy reward keeps rising while true quality peaks and falls.",
+     "why": "Learning the reward from human comparisons is the course's main answer to misspecified rewards. The thesis agrees that preferences are evidence about intent, but it will not treat a fitted reward model as the intent itself.",
+     "via": "auto"
+    },
+    {
+     "node": "jailbreaks",
+     "objective": "Explain the two failure modes behind jailbreaks (competing objectives, mismatched generalization) and how an optimized suffix attack is found.",
+     "why": "Robustness week: preference training changes behaviour on familiar requests without removing capabilities, so attackers route around it. For the thesis this is a warning that a correction can look effective and still not hold under adversarial inputs.",
+     "via": "auto"
+    },
+    {
+     "node": "evalvalidity",
+     "objective": "For one safety evaluation, state the claim it is used to support and two ways the score could mislead (metric choice, contamination, judge bias).",
+     "why": "Attack success rates and safety scores are measurements, and the course's evaluation week asks what they license. The thesis asks for the same discipline: independent measurements, declared before the experiment.",
+     "via": "auto"
+    },
+    {
+     "node": "weaktostrong",
+     "objective": "Define performance gap recovered, summarize what weak-to-strong experiments found, and explain why the setup is only an analogy for supervising superhuman models.",
+     "why": "Scalable oversight closes the course: how can weaker supervisors train stronger models? Weak-to-strong generalization makes the question measurable now. The thesis needs an answer, because its corrections come from people who may not be able to check the model's work.",
+     "via": "auto"
+    },
+    {
+     "node": "assistance",
+     "objective": "State the assistance-game setup (the machine is uncertain about the human's reward and treats human behaviour as evidence about it) and the off-switch result that follows, with its assumptions.",
+     "why": "Untested link: instead of fitting weak labels as if they were the truth, treat them as noisy evidence about what people want. This is where the thesis departs from the course's mainstream: keeping objective uncertainty explicit is what gives an agent a reason to accept correction.",
+     "via": "auto"
+    },
+    {
+     "node": "alignmentthesis",
+     "objective": "State the thesis's correction interface and its main falsifier, and design one experiment from this path's topics (reward overoptimization, a jailbreak, a weak-to-strong setup) that could count against it.",
+     "why": "Untested link: the thesis combines the course's pieces (preferences as evidence, robustness to adversarial inputs, valid evaluations, oversight by weaker supervisors) with explicit belief states and an enforcer outside the model. The course surveys current methods and their limits; the thesis bets on one architecture and names what would refute it.",
+     "via": "auto"
+    }
+   ]
+  },
+  {
+   "id": "intro-ai-safety-course",
+   "title": "Following Stanford CS120, I: safety beyond the model, data and fairness, encoding preferences, and whose values",
+   "summary": "Walk the first half of the course in roughly syllabus order: safety as a property of the whole deployed system, fairness and the data a model learns from, how human preferences and written principles are encoded, whose preferences count when people disagree, and what a safe conversation means for vulnerable users. Part II covers robustness, verification and what capable agents might want.",
+   "audience": "Learners following the course, or a similar introduction, who want each week placed in the atlas. Some machine-learning background helps; nothing beyond basic probability is assumed.",
+   "level": "intro",
+   "skills": [
+    "deep-learning",
+    "stats-ml",
+    "rl"
+   ],
+   "estHours": 12,
+   "steps": [
+    {
+     "node": "cs120",
+     "objective": "Explain the course's split between model-specific and systemic safety issues, with two examples of each.",
+     "why": "The course frames safety as a property of models and of the systems they sit in; this part follows the systemic thread first.",
+     "via": null
+    },
+    {
+     "node": "systemicsafety",
+     "objective": "Name the six risk areas in Weidinger et al.'s taxonomy and explain why Narayanan and Kapoor say safety is not a model property.",
+     "why": "Week 1's other half: many harms depend on who uses a model and how, so they cannot be fixed by training alone.",
+     "via": "auto"
+    },
+    {
+     "node": "fairness",
+     "objective": "Explain disparate impact, how Feldman et al. test for it, and why the COMPAS debate turned on which fairness criterion to use.",
+     "why": "The clearest systemic harm with decades of study: a score can be accurate overall and still distribute its errors unequally, and the choice of fairness criterion is itself a value judgment.",
+     "via": "auto"
+    },
+    {
+     "node": "datasafety",
+     "objective": "Describe one way data scale worsened bias, one way pretraining filtering improved safety, and why unlearning is hard to verify.",
+     "why": "Week 3: much of a model's behaviour, including its biases and dangerous knowledge, comes from data. Filtering helps, but removing knowledge after training is harder than it sounds.",
+     "via": "auto"
+    },
+    {
+     "node": "preference",
+     "objective": "Explain how RLHF and DPO turn pairwise human judgments into training signal, and one way the learned reward can be overoptimized.",
+     "why": "Back to week 2: after data, the main lever on behaviour is post-training on human preferences.",
+     "via": "auto"
+    },
+    {
+     "node": "constitutional",
+     "objective": "Describe the two phases of Constitutional AI and what RLAIF changes relative to RLHF.",
+     "why": "Encoding preferences without labelling every harm: a written constitution and AI feedback replace most human harm labels, which moves the human choice into the principles.",
+     "via": "auto"
+    },
+    {
+     "node": "socialchoice",
+     "objective": "Explain why aggregating many people's preferences forces a choice of rule, and define Overton, steerable and distributional pluralism.",
+     "why": "Week 4's guest lecture: once you write principles or pool annotators you are aggregating disagreeing people, which is social choice whether or not it is named.",
+     "via": "auto"
+    },
+    {
+     "node": "humanai",
+     "objective": "Define social sycophancy and explain why benchmark scores on advice requests do not establish safety for vulnerable users.",
+     "why": "Week 5 brings this to individual conversations: what people want from AI varies, and an assistant that always affirms the user can harm someone who trusts it.",
+     "via": "auto"
+    }
+   ]
+  },
+  {
+   "id": "intro-ai-safety-robustness-and-agency",
+   "title": "Following Stanford CS120, II: adversarial robustness, verification, and what capable agents might want",
+   "summary": "The second half of the course: adversarial examples, proving properties of networks, guarantees relative to a specification, and the arguments about whether capable agents would resist correction or seek power. It passes through the alignment thesis where the thesis adopts verification as its enforcer and meets its strongest objection, corrigibility.",
+   "audience": "Learners following the course who have finished Part I or the flagship path and want the robustness, verification and agency weeks placed in the atlas. Comfort with gradients and basic RL helps.",
+   "level": "intermediate",
+   "skills": [
+    "deep-learning",
+    "optimization",
+    "rl",
+    "theory"
+   ],
+   "estHours": 12,
+   "steps": [
+    {
+     "node": "cs120",
+     "objective": "Locate the course's robustness, formal-methods and “what is intelligence and does it want” weeks, and say which are model-specific and which concern future risks.",
+     "why": "The second half moves from today's attacks to arguments about more capable systems.",
+     "via": null
+    },
+    {
+     "node": "advexamples",
+     "objective": "Write the fast gradient sign method, explain the linearity explanation of adversarial examples, and say what a threat model specifies.",
+     "why": "Week 5: small worst-case changes break networks, and robustness only means something relative to a stated threat model.",
+     "via": "auto"
+    },
+    {
+     "node": "nnverify",
+     "objective": "Explain what a sound verifier proves about a network, what it does not, and why complete methods scale poorly.",
+     "why": "Testing finds adversarial examples; verification proves there are none inside a specified set. This is the course's formal-methods week.",
+     "via": "auto"
+    },
+    {
+     "node": "gsai",
+     "objective": "Name the three parts of guaranteed safe AI (world model, specification, verifier) and what any guarantee is relative to.",
+     "why": "Verification scaled up into an agenda: a guarantee is only as good as the world model and the specification it is stated against.",
+     "via": "auto"
+    },
+    {
+     "node": "alignmentthesis",
+     "objective": "Explain the role of the independent enforcer in the thesis and why the thesis says it limits consequences without making actions correct.",
+     "why": "The thesis uses a verifier-backed enforcer outside the model as one component. This is the hypothesis link from guaranteed safe AI.",
+     "via": "auto"
+    },
+    {
+     "node": "corrigibility",
+     "objective": "State the shutdown problem and why simple utility-combination proposals fail the corrigibility desiderata.",
+     "why": "The strongest objection the thesis records: capable goal-directed agents may have reasons to resist correction.",
+     "via": "auto"
+    },
+    {
+     "node": "powerseeking",
+     "objective": "State what Turner et al. prove about optimal policies and power, and what the result does not say about trained systems.",
+     "why": "Week 7's “does it want?” question made precise: for most goals, keeping options open and avoiding shutdown is optimal in many environments.",
+     "via": "auto"
+    },
+    {
+     "node": "goalmisgen",
+     "objective": "Give the CoinRun example of goal misgeneralization and explain how it differs from reward misspecification.",
+     "why": "Even a correct reward can yield a policy that pursues a different goal off-distribution; combined with power-seeking incentives this is a central risk argument the course presents.",
+     "via": "auto"
+    }
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "id": "q-ais-cs120-1",
+   "node": "cs120",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "Which distinction does the Stanford CS120 course use to organize safety problems?",
+   "choices": [
+    "Model-specific versus systemic safety issues",
+    "Supervised versus unsupervised learning",
+    "Open versus closed model weights",
+    "Vision versus language models"
+   ],
+   "answer": 0,
+   "explain": "The course overview distinguishes model-specific from systemic safety issues, from fairness and data limits to adversarial vulnerabilities and embedding desired behaviour.",
+   "source": "https://web.stanford.edu/class/cs120/"
+  },
+  {
+   "id": "q-ais-cs120-2",
+   "node": "cs120",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "A paper appears on the CS120 reading list. What does that establish about its claims?",
+   "choices": [
+    "That its results have been independently replicated",
+    "Nothing by itself: a syllabus is a curated map of what is worth reading",
+    "That the course staff endorse every conclusion",
+    "That it is the most-cited paper on the topic"
+   ],
+   "answer": 1,
+   "explain": "A reading list shows a paper is considered worth studying; whether its claims hold depends on the paper's own evidence.",
+   "source": "https://web.stanford.edu/class/cs120/"
+  },
+  {
+   "id": "q-ais-safetyproblems-1",
+   "node": "safetyproblems",
+   "skill": "rl",
+   "difficulty": 1,
+   "prompt": "Which of these is NOT one of the five problems in Concrete Problems in AI Safety (Amodei et al. 2016)?",
+   "choices": [
+    "Avoiding reward hacking",
+    "Safe exploration",
+    "Model weight theft",
+    "Robustness to distributional shift"
+   ],
+   "answer": 2,
+   "explain": "The five are avoiding side effects, avoiding reward hacking, scalable supervision, safe exploration and robustness to distributional shift.",
+   "source": "https://arxiv.org/abs/1606.06565"
+  },
+  {
+   "id": "q-ais-safetyproblems-2",
+   "node": "safetyproblems",
+   "skill": "rl",
+   "difficulty": 2,
+   "prompt": "Amodei et al. file “scalable supervision” under which source of accidents?",
+   "choices": [
+    "Having the wrong objective function",
+    "Undesirable behaviour during learning",
+    "Hardware faults",
+    "An objective that is too expensive to evaluate frequently"
+   ],
+   "answer": 3,
+   "explain": "Scalable supervision addresses objectives that are costly to check often, such as needing a human to judge each output.",
+   "source": "https://arxiv.org/abs/1606.06565"
+  },
+  {
+   "id": "q-ais-systemicsafety-1",
+   "node": "systemicsafety",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What is Narayanan and Kapoor's main argument in “AI safety is not a model property”?",
+   "choices": [
+    "Whether an output is harmful often depends on context the model cannot see, so many defences belong outside the model",
+    "Models are already safe enough",
+    "Only open-source models can be made safe",
+    "Safety can be measured by a single benchmark"
+   ],
+   "answer": 0,
+   "explain": "They argue that harm depends on deployment context, so defences against misuse should mainly sit downstream of the model.",
+   "source": "https://www.normaltech.ai/p/ai-safety-is-not-a-model-property"
+  },
+  {
+   "id": "q-ais-systemicsafety-2",
+   "node": "systemicsafety",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "A model refuses to write phishing emails, but the same text could also be a security-training example. What does this illustrate?",
+   "choices": [
+    "That refusal training is perfectly reliable",
+    "That harm depends on context the model may not observe",
+    "That phishing is impossible with AI",
+    "That the model is misaligned"
+   ],
+   "answer": 1,
+   "explain": "Identical outputs can be benign or harmful depending on use, which is why safety cannot be fully decided at the model level.",
+   "source": "https://www.normaltech.ai/p/ai-safety-is-not-a-model-property"
+  },
+  {
+   "id": "q-ais-constitutional-1",
+   "node": "constitutional",
+   "skill": "rl",
+   "difficulty": 1,
+   "prompt": "In Constitutional AI, what replaces most human labels of harmful outputs?",
+   "choices": [
+    "A larger pretraining corpus",
+    "Rule-based keyword filters",
+    "AI feedback guided by a written list of principles",
+    "Random sampling of responses"
+   ],
+   "answer": 2,
+   "explain": "The model critiques and revises its outputs against principles, and AI preference labels train the preference model used for RLAIF.",
+   "source": "https://arxiv.org/abs/2212.08073"
+  },
+  {
+   "id": "q-ais-constitutional-2",
+   "node": "constitutional",
+   "skill": "rl",
+   "difficulty": 3,
+   "prompt": "Why does Constitutional AI not remove human judgment from alignment?",
+   "choices": [
+    "Humans still label every response",
+    "It only works with human-written test sets",
+    "It requires humans to fine-tune the final model by hand",
+    "Humans choose the principles and the feedback model, whose biases are inherited"
+   ],
+   "answer": 3,
+   "explain": "Human choices move into the constitution and the AI labeler; errors there propagate into training.",
+   "source": "https://arxiv.org/abs/2212.08073"
+  },
+  {
+   "id": "q-ais-socialchoice-1",
+   "node": "socialchoice",
+   "skill": "theory",
+   "difficulty": 1,
+   "prompt": "What does a “distributionally pluralistic” model aim to do, in Sorensen et al.'s roadmap?",
+   "choices": [
+    "Match the distribution of views in a given population",
+    "Always give the single most popular answer",
+    "Refuse all value-laden questions",
+    "Present only expert opinion"
+   ],
+   "answer": 0,
+   "explain": "Distributional pluralism means being calibrated to a population's distribution of responses; Overton and steerable pluralism are the other two forms.",
+   "source": "https://arxiv.org/abs/2402.05070"
+  },
+  {
+   "id": "q-ais-socialchoice-2",
+   "node": "socialchoice",
+   "skill": "theory",
+   "difficulty": 3,
+   "prompt": "Why does fitting one reward model to many annotators raise a social-choice question?",
+   "choices": [
+    "Because reward models cannot be trained on pairwise data",
+    "Because pooling disagreeing judgments implicitly picks an aggregation rule, and no rule satisfies every desirable condition",
+    "Because annotators always agree",
+    "Because it doubles the training cost"
+   ],
+   "answer": 1,
+   "explain": "Pooling preferences aggregates people who disagree; impossibility results show any aggregation rule involves trade-offs.",
+   "source": "https://arxiv.org/abs/2402.05070"
+  },
+  {
+   "id": "q-ais-nnverify-1",
+   "node": "nnverify",
+   "skill": "optimization",
+   "difficulty": 1,
+   "prompt": "What does a sound neural-network verifier establish?",
+   "choices": [
+    "That the network is accurate on the test set",
+    "That the network has no bugs of any kind",
+    "That a stated input–output property holds for every input in a specified set",
+    "That the training data were clean"
+   ],
+   "answer": 2,
+   "explain": "Verification proves a formal property over a bounded input set, such as local robustness around a point.",
+   "source": "https://arxiv.org/abs/1903.06758"
+  },
+  {
+   "id": "q-ais-nnverify-2",
+   "node": "nnverify",
+   "skill": "optimization",
+   "difficulty": 2,
+   "prompt": "A classifier is certified robust within radius ε of an input. What remains unknown?",
+   "choices": [
+    "Its behaviour on perturbations smaller than ε",
+    "Whether it was trained with gradient descent",
+    "Its parameter count",
+    "Its behaviour outside the certified set and whether the property matches what people care about"
+   ],
+   "answer": 3,
+   "explain": "The guarantee covers only the specified set and property; inputs outside it and the adequacy of the specification are open.",
+   "source": "https://arxiv.org/abs/1903.06758"
+  },
+  {
+   "id": "q-ais-datasafety-1",
+   "node": "datasafety",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "What did Deep Ignorance (O'Brien et al. 2025) find about filtering biothreat text from pretraining data?",
+   "choices": [
+    "Filtered models resisted adversarial fine-tuning far longer than post-training safeguards, but could still use such information provided in context",
+    "It destroyed general capabilities",
+    "It had no measurable effect",
+    "It made models refuse all biology questions"
+   ],
+   "answer": 0,
+   "explain": "Filtering built tamper resistance with no observed loss of unrelated capability, yet in-context information remained usable, so it is one layer of defence.",
+   "source": "https://arxiv.org/abs/2508.06601"
+  },
+  {
+   "id": "q-ais-datasafety-2",
+   "node": "datasafety",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "In Birhane et al.'s audit, what happened when LAION grew from 400M to 2B samples?",
+   "choices": [
+    "Hateful content disappeared",
+    "Hateful content and downstream racial bias increased",
+    "Model accuracy collapsed",
+    "Nothing measurable changed"
+   ],
+   "answer": 1,
+   "explain": "The hate-content rate rose by about 12%, and trained models associated Black faces with the “criminal” class more often.",
+   "source": "https://arxiv.org/abs/2306.13141"
+  },
+  {
+   "id": "q-ais-fairness-1",
+   "node": "fairness",
+   "skill": "stats-ml",
+   "difficulty": 1,
+   "prompt": "Why does removing a protected attribute from the features not guarantee a fair model?",
+   "choices": [
+    "Because models ignore all features",
+    "Because fairness only concerns accuracy",
+    "Because other features can act as proxies for it",
+    "Because protected attributes improve accuracy"
+   ],
+   "answer": 2,
+   "explain": "Feldman et al. measure disparate impact by how well the protected attribute can be predicted from the remaining features.",
+   "source": "https://arxiv.org/abs/1412.3756"
+  },
+  {
+   "id": "q-ais-fairness-2",
+   "node": "fairness",
+   "skill": "stats-ml",
+   "difficulty": 3,
+   "prompt": "The COMPAS debate showed a score could be similarly calibrated across groups yet have unequal false-positive rates. What does this imply?",
+   "choices": [
+    "One of the analyses must contain an arithmetic error",
+    "Calibration guarantees equal error rates",
+    "Fairness cannot be measured",
+    "Different fairness criteria can conflict, so choosing one is a value judgment"
+   ],
+   "answer": 3,
+   "explain": "When base rates differ, group criteria such as calibration and equal error rates generally cannot all hold at once.",
+   "source": "https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing"
+  },
+  {
+   "id": "q-ais-humanai-1",
+   "node": "humanai",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What does ELEPHANT mean by “social sycophancy”?",
+   "choices": [
+    "Excessively preserving the user's desired self-image (their “face”)",
+    "Agreeing with factual claims only",
+    "Refusing to answer personal questions",
+    "Copying another model's answers"
+   ],
+   "answer": 0,
+   "explain": "Cheng et al. extend sycophancy beyond factual agreement to affirming a user's self-image, for example in advice and moral conflicts.",
+   "source": "https://arxiv.org/abs/2505.13995"
+  },
+  {
+   "id": "q-ais-humanai-2",
+   "node": "humanai",
+   "skill": "deep-learning",
+   "difficulty": 2,
+   "prompt": "Why do good scores on an advice-sycophancy benchmark not establish that a chatbot is safe for mental-health support?",
+   "choices": [
+    "Benchmarks always overstate harm",
+    "They measure responses to prompts, not effects on real users' wellbeing",
+    "Mental-health use is never sycophantic",
+    "Sycophancy cannot be measured"
+   ],
+   "answer": 1,
+   "explain": "Response-level benchmarks do not measure outcomes for vulnerable users, which needs clinical-style evaluation.",
+   "source": "https://arxiv.org/abs/2505.13995"
+  },
+  {
+   "id": "q-ais-advexamples-1",
+   "node": "advexamples",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "What does the fast gradient sign method do?",
+   "choices": [
+    "Adds random noise to the input",
+    "Retrains the model on clean data",
+    "Moves the input by ε in the direction of the sign of the loss gradient with respect to the input",
+    "Prunes the network's weights"
+   ],
+   "answer": 2,
+   "explain": "FGSM computes x + ε·sign(∇ₓJ), a one-step worst-case perturbation under an L∞ bound.",
+   "source": "https://arxiv.org/abs/1412.6572"
+  },
+  {
+   "id": "q-ais-advexamples-2",
+   "node": "advexamples",
+   "skill": "deep-learning",
+   "difficulty": 3,
+   "prompt": "A defence beats every attack in its paper. Why is that not evidence of robustness?",
+   "choices": [
+    "Because attacks never transfer",
+    "Because adversarial examples only exist for images",
+    "Because accuracy is irrelevant",
+    "Because robustness is relative to the threat model and must be tested against adaptive, stronger attacks"
+   ],
+   "answer": 3,
+   "explain": "Carlini et al. stress that failed attacks do not prove robustness; stronger or adaptive attacks often succeed.",
+   "source": "https://arxiv.org/abs/2306.15447"
+  },
+  {
+   "id": "q-ais-jailbreaks-1",
+   "node": "jailbreaks",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "Wei et al. explain jailbreaks with which two failure modes of safety training?",
+   "choices": [
+    "Competing objectives and mismatched generalization",
+    "Overfitting and underfitting",
+    "Tokenization and quantization",
+    "Exploration and exploitation"
+   ],
+   "answer": 0,
+   "explain": "Helpfulness can compete with harmlessness, and safety training may not generalize to domains where capabilities exist.",
+   "source": "https://arxiv.org/abs/2307.02483"
+  },
+  {
+   "id": "q-ais-jailbreaks-2",
+   "node": "jailbreaks",
+   "skill": "optimization",
+   "difficulty": 2,
+   "prompt": "What does the greedy coordinate gradient attack of Zou et al. optimize?",
+   "choices": [
+    "The model's weights",
+    "An adversarial suffix that makes the model begin with an affirmative response",
+    "The system prompt of a deployed app",
+    "The tokenizer vocabulary"
+   ],
+   "answer": 1,
+   "explain": "It searches token by token for a suffix maximizing the probability of an affirmative opening, and such suffixes transferred across models.",
+   "source": "https://arxiv.org/abs/2307.15043"
+  },
+  {
+   "id": "q-ais-powerseeking-1",
+   "node": "powerseeking",
+   "skill": "rl",
+   "difficulty": 2,
+   "prompt": "What do Turner et al. prove about power-seeking?",
+   "choices": [
+    "All trained RL agents seek power",
+    "Power-seeking is impossible in MDPs",
+    "Under certain environmental symmetries, most reward functions make it optimal to keep options open",
+    "Only language models seek power"
+   ],
+   "answer": 2,
+   "explain": "The result concerns optimal policies and proportions of reward functions in MDPs with symmetries such as possible shutdown.",
+   "source": "https://arxiv.org/abs/1912.01683"
+  },
+  {
+   "id": "q-ais-powerseeking-2",
+   "node": "powerseeking",
+   "skill": "theory",
+   "difficulty": 3,
+   "prompt": "Why does the power-seeking theorem not show that today's trained models seek power?",
+   "choices": [
+    "The theorem has a known error",
+    "Current models cannot be shut down",
+    "Power is undefined in MDPs",
+    "Trained networks are neither optimal policies nor drawn uniformly over reward functions"
+   ],
+   "answer": 3,
+   "explain": "The theorems describe tendencies of optimal policies across reward functions; training produces specific, suboptimal policies.",
+   "source": "https://arxiv.org/abs/1912.01683"
+  },
+  {
+   "id": "q-ais-evalvalidity-1",
+   "node": "evalvalidity",
+   "skill": "stats-ml",
+   "difficulty": 1,
+   "prompt": "According to Schaeffer et al., what can make an ability appear to “emerge” suddenly with scale?",
+   "choices": [
+    "Using a nonlinear or discontinuous metric such as exact match",
+    "Training on more GPUs",
+    "Using a larger tokenizer",
+    "Evaluating on the training set"
+   ],
+   "answer": 0,
+   "explain": "With continuous metrics the same models often improve smoothly; the sharp jump can be an artefact of the metric.",
+   "source": "https://arxiv.org/abs/2304.15004"
+  },
+  {
+   "id": "q-ais-evalvalidity-2",
+   "node": "evalvalidity",
+   "skill": "stats-ml",
+   "difficulty": 2,
+   "prompt": "A model scores highly on a graduate-level exam benchmark. What does a validity-centred framework ask before concluding it “can reason”?",
+   "choices": [
+    "Whether the benchmark was hard",
+    "Whether the evidence supports that broader claim rather than only performance on that test",
+    "Whether the model is large",
+    "Whether other models scored lower"
+   ],
+   "answer": 1,
+   "explain": "Salaudeen et al. separate what a score measures from the broader claims it is used to support.",
+   "source": "https://arxiv.org/abs/2505.10573"
+  },
+  {
+   "id": "q-ais-weaktostrong-1",
+   "node": "weaktostrong",
+   "skill": "deep-learning",
+   "difficulty": 1,
+   "prompt": "In weak-to-strong generalization experiments, what happened when a strong model was fine-tuned on a weak model's labels?",
+   "choices": [
+    "It performed exactly as badly as the weak model",
+    "It always matched its full ground-truth performance",
+    "It beat its weak supervisor but recovered only part of the gap to its full ability",
+    "Training failed to converge"
+   ],
+   "answer": 2,
+   "explain": "Burns et al. found consistent improvement over the supervisor, with naive fine-tuning far from full recovery.",
+   "source": "https://arxiv.org/abs/2312.09390"
+  },
+  {
+   "id": "q-ais-weaktostrong-2",
+   "node": "weaktostrong",
+   "skill": "deep-learning",
+   "difficulty": 3,
+   "prompt": "Why is weak-to-strong generalization only an analogy for humans supervising superhuman AI?",
+   "choices": [
+    "Because GPT-4 is already superhuman",
+    "Because labels are never noisy",
+    "Because humans cannot label data",
+    "Small models' errors may differ from human errors, and the strong student may imitate them instead of eliciting what it knows"
+   ],
+   "answer": 3,
+   "explain": "The authors note disanalogies: weak-model mistakes are easier to imitate than human ones and may differ systematically.",
+   "source": "https://arxiv.org/abs/2312.09390"
+  }
+ ],
+ "background_option": {
+  "question": "bg-goal",
+  "after": "goal-inference",
+  "option": {
+   "id": "goal-intro-safety",
+   "label": "I'm new to AI safety and want an introduction",
+   "sets": {},
+   "goal": "intro-ai-safety-to-thesis"
+  }
+ }
+}

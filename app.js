@@ -22,7 +22,7 @@ const EV_ORDER = ['exact', 'established', 'empirical', 'hypothesis'];
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isMobile = () => innerWidth <= 760;
 
-const data = await (await fetch('atlas.json?v=e026d2c3')).json();
+const data = await (await fetch('atlas.json?v=917c02cd')).json();
 const nodes = data.nodes, edges = data.edges;
 const byId = new Map(nodes.map((n, i) => (n.i = i, [n.id, n])));
 const clusterOf = new Map(data.clusters.map(c => [c.name, c]));
@@ -765,4 +765,4 @@ addEventListener('hashchange', () => { const id = decodeURIComponent(location.ha
 window.__atlas = { S, travel, byId, project, enter };
 // Learning harness (learn.js) gets only this surface; the atlas keeps working if it fails to load.
 const learnAPI = { S, byId, edges, nodes, EV, enter, travel, showRoute, highlightRoute, clearRoute, closePanel, updateOffset, isMobile, esc, clusterColor: id => clusterOf.get(byId.get(id).group).color, edgeById: id => edges.find(e => e.id === id) || null, edgeBetween: (a, b) => adj.get(a)?.find(e => other(e, a) === b) || null };
-import('./learn.js?v=20261011f').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
+import('./learn.js?v=20261012a').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
