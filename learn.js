@@ -293,7 +293,7 @@ let welcomeBack = false; // re-show the welcome window if browsing paths was the
 function openSide(v) {
   if (side().hidden) welcomeBack = !$('#welcome').classList.contains('hide');
   if (v.kind === 'path') welcomeBack = false;
-  view = v; side().hidden = false; document.body.classList.add('learn-open');
+  view = v; side().hidden = false; document.body.classList.add('learn-open'); setPref(VIEW_KEY, 'curriculum'); syncViewBtns();
   $('#welcome').classList.add('hide'); $('#paths-btn')?.setAttribute('aria-expanded', 'true');
   renderSide(); A.updateOffset();
 }
@@ -303,16 +303,21 @@ function closeSide() {
   side().hidden = true; document.body.classList.remove('learn-open'); $('#paths-btn')?.setAttribute('aria-expanded', 'false');
   if (view?.kind === 'path') A.clearRoute();
   if (welcomeBack && $('#panel').hidden && !A.S.current) $('#welcome').classList.remove('hide');
-  welcomeBack = false; view = null; if ($('#learn-pill')) $('#learn-pill').hidden = true; renderTabs(); A.updateOffset();
+  welcomeBack = false; view = null; if ($('#learn-pill')) $('#learn-pill').hidden = true; renderTabs(); setPref(VIEW_KEY, 'graph'); syncViewBtns(); A.updateOffset();
 }
-const sideHead = (eyebrow) => `<div class="panel-head"><span class="eyebrow">${eyebrow}</span><button class="icon-btn" data-l="side-close" aria-label="Close learning paths">${X}</button></div>`;
+const EXPAND = '<svg viewBox="0 0 16 16" fill="none"><path d="M9.5 2.5h4v4M6.5 13.5h-4v-4M13.5 2.5 9 7M2.5 13.5 7 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const SHRINK = '<svg viewBox="0 0 16 16" fill="none"><path d="M13 7H9V3M3 9h4v4M9 7l4.5-4.5M7 9l-4.5 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const isWide = () => document.body.classList.contains('side-wide');
+const sideHead = (eyebrow) => `<div class="panel-head"><span class="eyebrow">${eyebrow}</span><button class="icon-btn" data-l="expand" aria-pressed="${isWide()}" aria-label="${isWide() ? 'Restore window size' : 'Expand window'}" title="${isWide() ? 'Restore window size' : 'Expand window'}">${isWide() ? SHRINK : EXPAND}</button><button class="icon-btn" data-l="side-close" aria-label="Close curriculum (show the graph)">${X}</button></div>`;
 function renderSide(focusSel) {
   const el = side();
   if (view.kind === 'browse') {
     const recId = st.rec?.path || (st.model ? rankPaths(st.model, st.votes || {})[0]?.p.id : null), recLoc = recId && chapterOf(recId);
     const open = view.binder ?? (chapterOf(st.active)?.c.id || recLoc?.c.id || curricula()[0]?.id);
+    const cont = st.active && D.pathById.has(st.active) && chapterOf(st.active);
     el.innerHTML = sideHead('Learning tracks') + `<div class="panel-body"><h2 tabindex="-1" class="l-h">Curriculum</h2>
-    <p class="meta">Each track is a binder; its chapters are learning paths, ordered from overview to depth. Every step follows a recorded connection.</p>
+    <p class="meta">Each track is a binder; its chapters are learning paths, ordered from overview to depth. Every step follows a recorded connection in the atlas graph, which you can open any time with Graph.</p>
+    ${cont ? `<button class="l-rec" data-path="${esc(st.active)}" style="--bc:${binderColor(cont.c)}"><span class="l-k">Continue</span><b>${esc(cont.c.name)} · Chapter ${cont.i + 1}: ${esc(cont.c.chapters[cont.i][1])}</b><small>${pathDone(st.active)} of ${D.pathById.get(st.active).steps.length} steps done</small></button>` : ''}
     ${st.model ? '' : '<div class="l-actions" style="margin:0 0 6px"><button class="btn primary" data-l="personalize">Personalize my path</button></div>'}
     ${recLoc ? `<button class="l-rec" data-path="${esc(recId)}" style="--bc:${binderColor(recLoc.c)}"><span class="l-k">Recommended for you</span><b>${esc(recLoc.c.name)} · Chapter ${recLoc.i + 1}: ${esc(recLoc.c.chapters[recLoc.i][1])}</b><small>${esc(whyText(D.pathById.get(recId)))}</small></button>` : ''}
     <div class="l-lib">${curricula().map(c => {
@@ -439,6 +444,7 @@ function onClick(ev) {
     case 'results': return showResults();
     case 'reset': return resetProgress();
     case 'side-close': return closeSide();
+    case 'expand': return toggleWide();
     case 'topic': { const p = D.pathById.get(view.id), r = routeOf(p); A.enter(p.steps[view.active].node); A.highlightRoute(r.ids, r.edges); return syncPill(); }
     case 'done': { const p = D.pathById.get(view.id), node = p.steps[view.active].node, pr = st.progress[p.id];
       pr.done = pr.done.includes(node) ? pr.done.filter(x => x !== node) : [...pr.done, node]; save(); return renderSide('[data-l="done"]'); }
@@ -561,7 +567,9 @@ export async function init(api) {
   side().addEventListener('click', ev => ev.detail > 1 || onClick(ev));
   document.addEventListener('keydown', onKey, true);
   on('#personalize-btn', 'click', () => openOnboarding());
-  on('#paths-btn', 'click', async () => { if (!side().hidden && view?.kind === 'browse') return closeSide(); await loadData(); if (view?.kind === 'path') A.clearRoute(); openSide({ kind: 'browse' }); renderSide('.l-h'); });
+  on('#paths-btn', 'click', async () => { await loadData(); if (view?.kind === 'path') A.clearRoute(); openSide({ kind: 'browse' }); renderSide('.l-h'); });
+  on('#graph-btn', 'click', () => closeSide());
+  initWindow();
   on('#learn-continue', 'click', async e => { await loadData(); openPath(e.currentTarget.dataset.path); });
   on('#learn-pill', 'click', () => { A.closePanel(); syncPill(); side().querySelector('.l-step[aria-expanded="true"]')?.focus(); });
   on('#t-overview', 'click', () => closeSide());
@@ -573,4 +581,48 @@ export async function init(api) {
     if (view?.kind === 'path' && !A.S.route) { const r = routeOf(D.pathById.get(view.id)); A.highlightRoute(r.ids, r.edges); }
   }).observe($('#panel'), { attributes: true, attributeFilter: ['hidden'], childList: true });
   if (st.active || st.rec) { await loadData(); renderWelcome(); }
+  syncViewBtns();
+  // The curriculum is the main view; a topic link (#id) or a saved choice of the graph opens the graph instead.
+  if (getPref(VIEW_KEY) !== 'graph' && !(location.hash.length > 1 && A.byId.has(decodeURIComponent(location.hash.slice(1))))) {
+    await loadData(); openSide({ kind: 'browse' }); renderSide();
+  }
+}
+
+/* ---------------- curriculum window: view switch, resize, expand ---------------- */
+const VIEW_KEY = 'atlas.view', SIZE_KEY = 'atlas.side';
+function getPref(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function setPref(k, v) { try { localStorage.setItem(k, v); } catch { /* storage unavailable */ } }
+function syncViewBtns() { const cur = !!side() && !side().hidden; $('#paths-btn')?.setAttribute('aria-pressed', String(cur)); $('#graph-btn')?.setAttribute('aria-pressed', String(!cur)); }
+let size = {};
+function applySize() {
+  const r = document.documentElement.style;
+  if (size.w) r.setProperty('--side-w', size.w + 'px'); else r.removeProperty('--side-w');
+  if (size.h) r.setProperty('--sheet-h', size.h + 'px'); else r.removeProperty('--sheet-h');
+}
+function toggleWide() {
+  document.body.classList.toggle('side-wide');
+  const b = side().querySelector('[data-l="expand"]'), w = isWide();
+  if (b) { b.innerHTML = w ? SHRINK : EXPAND; b.setAttribute('aria-pressed', String(w)); b.title = w ? 'Restore window size' : 'Expand window'; b.setAttribute('aria-label', b.title); }
+  A.updateOffset();
+}
+function initWindow() {
+  try { size = JSON.parse(getPref(SIZE_KEY)) || {}; } catch { size = {}; }
+  applySize();
+  const grip = document.createElement('div'); grip.id = 'learn-resize'; grip.title = 'Drag to resize · double-click to reset'; grip.setAttribute('aria-hidden', 'true'); document.body.append(grip);
+  let drag = null;
+  const move = e => {
+    if (!drag) return;
+    if (drag === 'w') size.w = Math.round(clamp(e.clientX - 16, 320, innerWidth - 380));
+    else size.h = Math.round(clamp(innerHeight - e.clientY, innerHeight * .3, innerHeight - $('#topbar').getBoundingClientRect().bottom - 8));
+    document.body.classList.remove('side-wide'); applySize(); A.updateOffset();
+  };
+  const end = () => { if (!drag) return; drag = null; document.body.classList.remove('side-resizing'); setPref(SIZE_KEY, JSON.stringify(size)); };
+  grip.addEventListener('pointerdown', e => { drag = 'w'; grip.setPointerCapture(e.pointerId); document.body.classList.add('side-resizing'); e.preventDefault(); });
+  grip.addEventListener('dblclick', () => { size.w = 0; applySize(); setPref(SIZE_KEY, JSON.stringify(size)); A.updateOffset(); });
+  // Phones: drag the sheet's header up or down to resize it.
+  side().addEventListener('pointerdown', e => {
+    if (!A.isMobile() || !e.target.closest('.panel-head') || e.target.closest('button')) return;
+    drag = 'h'; side().setPointerCapture(e.pointerId); document.body.classList.add('side-resizing');
+  });
+  for (const el of [grip, side()]) { el.addEventListener('pointermove', move); el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end); }
 }

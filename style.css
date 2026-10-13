@@ -514,3 +514,33 @@ body.tools-open #track-menu{display:block}
   .l-toc-row{padding:10px 8px}
   .l-chapnav .btn{height:40px;line-height:38px}
 }
+/* ---------- curriculum as the main view: Curriculum | Graph switch, resizable window ---------- */
+:root{--side-w:clamp(var(--chat-w),34vw,540px)}
+#view-switch{display:flex;align-items:center;gap:2px;height:40px;padding:3px;border-radius:999px}
+#view-switch #paths-btn,#graph-btn{height:32px;padding:0 13px;border:0;border-radius:999px;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:var(--t-sm);color:var(--muted)}
+#view-switch svg{width:15px;height:15px;flex:none}
+#view-switch button:hover{color:var(--ink)}
+#view-switch button[aria-pressed="true"]{background:rgba(159,214,193,.14);color:var(--ink)}
+#learn-side{width:var(--side-w);height:calc(100vh - 88px)}
+body.learn-open{--dl:calc(var(--side-w) + 32px)}
+#learn-tabs{left:calc(16px + var(--side-w) - 1px)}
+body.side-wide{--side-w:calc(100vw - 32px - 40px)}
+body.side-wide #learn-side .panel-body{padding-inline:max(20px,calc((100% - 760px) / 2))}
+#learn-side .panel-head .icon-btn+.icon-btn{margin-left:2px}
+#learn-side .panel-head .eyebrow{flex:1;min-width:0}
+#learn-resize{display:none;position:fixed;top:72px;left:calc(16px + var(--side-w) - 5px);width:10px;height:calc(100vh - 88px);z-index:17;cursor:ew-resize;touch-action:none}
+#learn-resize::after{content:"";position:absolute;left:4px;top:50%;width:2px;height:44px;margin-top:-22px;border-radius:2px;background:var(--edge-strong);opacity:0;transition:opacity .15s}
+#learn-resize:hover::after,body.side-resizing #learn-resize::after{opacity:1}
+body.learn-open:not(.side-wide) #learn-resize{display:block}
+body.side-resizing,body.side-resizing *{user-select:none;cursor:ew-resize}
+@media (max-width:760px){
+  #view-switch{height:42px;padding:3px}
+  #view-switch #paths-btn,#graph-btn{width:36px;height:36px;padding:0;justify-content:center}
+  #view-switch .txt{display:none}
+  #learn-resize{display:none!important}
+  #learn-side{width:auto;height:var(--sheet-h,58dvh);max-height:calc(100dvh - 70px)}
+  body.side-wide #learn-side{height:calc(100dvh - 70px)}
+  body.side-wide #learn-side .panel-body{padding-inline:18px}
+  #learn-pill{bottom:calc(var(--sheet-h,58dvh) + 10px)}
+  body.side-resizing,body.side-resizing *{cursor:ns-resize}
+}
