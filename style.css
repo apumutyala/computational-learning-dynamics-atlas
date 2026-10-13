@@ -544,3 +544,16 @@ body.side-resizing,body.side-resizing *{user-select:none;cursor:ew-resize}
   #learn-pill{bottom:calc(var(--sheet-h,58dvh) + 10px)}
   body.side-resizing,body.side-resizing *{cursor:ns-resize}
 }
+/* ---------- hover: a cluster lists its topics; a hovered point is ringed ---------- */
+#cluster-pop{position:fixed;z-index:18;width:268px;max-height:min(420px,70vh);display:flex;flex-direction:column;padding:8px 6px 6px;background:var(--glass-strong)}
+#cluster-pop[hidden]{display:none}
+.cp-h{display:flex;align-items:center;gap:8px;padding:2px 8px 8px;border-bottom:1px solid var(--edge)}
+.cp-h b{flex:1;min-width:0;font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.cp-h small{color:var(--muted);font-size:11px;white-space:nowrap}
+.cp-list{overflow:auto;padding-top:4px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent}
+.cp-list button{display:block;width:100%;text-align:left;padding:5px 8px;border-radius:7px;font-size:12.5px;line-height:1.35;color:#d6dcd7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cp-list button:hover,.cp-list button:focus-visible{background:rgba(159,214,193,.13);color:#fff;outline:none}
+.cp-list button[aria-current]{color:var(--accent)}
+#hover-ring{position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(255,255,255,.9);box-shadow:0 0 14px rgba(159,214,193,.55),inset 0 0 8px rgba(159,214,193,.25);pointer-events:none;transition:opacity .15s ease}
+.lbl.hover{font-size:13px;font-weight:600;color:#fff;background:rgba(12,17,23,.84);padding:2px 8px;border-radius:6px;border:1px solid rgba(159,214,193,.45);max-width:340px;z-index:2}
+@media (hover:none),(pointer:coarse){#cluster-pop,#hover-ring{display:none!important}}

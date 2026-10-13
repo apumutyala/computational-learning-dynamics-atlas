@@ -138,10 +138,11 @@ function computeTargets() {
       else alpha = .22;
     }
     if (S.cluster && !cur) alpha = n.group === S.cluster ? 1 : .2;
+    else if (S.hoverCluster && !cur && !S.route) alpha = n.group === S.hoverCluster ? 1 : .3;
     if (searchMatch) alpha = searchMatch.has(n.id) ? 1 : .14;
     if (fe && (fe.a === n.id || fe.b === n.id)) { size = Math.max(size, 32); alpha = 1; }
     if (S.route && S.route.includes(n.id)) { size = Math.max(size, 28); alpha = 1; }
-    if (n.id === S.hover) { size += 8; alpha = 1; }
+    if (n.id === S.hover) { size = Math.max(size + 14, 36); alpha = 1; }
     tSize[i] = size; tAlpha[i] = alpha;
   });
   edges.forEach((e, i) => {
@@ -216,6 +217,7 @@ const clusterLabels = data.clusters.map(c => {
   return { el, v: new THREE.Vector3(...c.center).add(new THREE.Vector3(0, 52, 0)), c };
 });
 const nodeLabelPool = new Map();
+const hoverRing = document.createElement('div'); hoverRing.id = 'hover-ring'; hoverRing.style.opacity = 0; labelLayer.append(hoverRing);
 function nodeLabel(id) {
   if (!nodeLabelPool.has(id)) { const el = document.createElement('div'); el.className = 'lbl'; el.textContent = byId.get(id).name; el.style.opacity = 0; labelLayer.append(el); nodeLabelPool.set(id, { el, w: 0 }); }
   return nodeLabelPool.get(id);
@@ -241,7 +243,7 @@ function drawLabels() {
     if (shown.has(id)) continue;
     const L = nodeLabel(id), p = project(byId.get(id).v);
     if (!L.w) L.w = L.el.offsetWidth || byId.get(id).name.length * 6.5;
-    const x = p.x + 10, y = p.y - 8;
+    const x = p.x + (kind === 'hover' ? 22 : 10), y = p.y - (kind === 'hover' ? 10 : 8);
     if (p.behind || x < -50 || x > innerWidth || y < 60 || y > innerHeight - 20 || (shown.size > 2 && !fits(x, y, L.w, 16))) continue;
     if (shown.size <= 2) boxes.push({ x, y, w: L.w, h: 16 });
     shown.add(id);
@@ -249,6 +251,9 @@ function drawLabels() {
     L.el.style.transform = `translate(${x}px,${y}px)`; L.el.style.opacity = 1;
   }
   nodeLabelPool.forEach((L, id) => { if (!shown.has(id)) L.el.style.opacity = 0; });
+  const hp = S.hover && project(byId.get(S.hover).v);
+  hoverRing.style.opacity = hp && !hp.behind ? 1 : 0;
+  if (hp) hoverRing.style.transform = `translate(${hp.x - 17}px,${hp.y - 17}px)`;
   const dim = S.current || searchMatch ? .28 : .7;
   clusterLabels.forEach(({ el, v, c }) => {
     const p = project(v), w = el.offsetWidth;
@@ -282,10 +287,63 @@ canvas.addEventListener('pointerdown', e => {
 ['pointercancel', 'lostpointercapture'].forEach(t => canvas.addEventListener(t, e => { activePointers.delete(e.pointerId); if (t === 'pointercancel') down = null; }));
 canvas.addEventListener('pointermove', e => {
   if (e.pointerType !== 'mouse') return;
-  const id = pick(e.clientX, e.clientY);
+  const id = e.buttons ? null : pick(e.clientX, e.clientY);
   if (id !== S.hover) { S.hover = id; canvas.style.cursor = id ? 'pointer' : 'grab'; computeTargets(); }
+  hoverCluster(e.buttons ? null : id ? byId.get(id).group : clusterAt(e.clientX, e.clientY), e.clientX, e.clientY);
 });
-canvas.addEventListener('pointerleave', () => { S.hover = null; computeTargets(); });
+canvas.addEventListener('pointerleave', e => { S.hover = null; computeTargets(); if (!cpop.contains(e.relatedTarget)) hoverCluster(null); });
+
+/* ---------------- cluster hover: list every topic in the cluster under the pointer ---------------- */
+const cpop = document.createElement('div'); cpop.id = 'cluster-pop'; cpop.className = 'glass'; cpop.hidden = true; cpop.setAttribute('role', 'menu'); document.body.append(cpop);
+let cpopFor = null, cpopShow = null, cpopHide = null;
+function clusterAt(x, y) {
+  // The nearest visible point within 70px names the cluster; hovering a cluster's label counts too.
+  let best = null, bd = 70;
+  for (const n of nodes) {
+    if (nAlpha[n.i] < .18) continue;
+    const p = project(n.v); if (p.behind) continue;
+    const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = n.group; }
+  }
+  if (best) return best;
+  for (const { el, c } of clusterLabels) {
+    if (+el.style.opacity <= 0) continue;
+    const r = el.getBoundingClientRect();
+    if (x >= r.left - 8 && x <= r.right + 8 && y >= r.top - 8 && y <= r.bottom + 8) return c.name;
+  }
+  return null;
+}
+function hoverCluster(name, x, y) {
+  if (name === cpopFor && name) { clearTimeout(cpopHide); return; }
+  clearTimeout(cpopShow);
+  if (!name) { clearTimeout(cpopHide); cpopHide = setTimeout(hideClusterPop, 650); return; }
+  cpopShow = setTimeout(() => showClusterPop(name, x, y), 320);
+}
+function showClusterPop(name, x, y) {
+  clearTimeout(cpopHide);
+  const c = clusterOf.get(name), list = nodes.filter(n => n.group === name).sort((a, b) => a.name.localeCompare(b.name));
+  cpopFor = name; S.hoverCluster = name; computeTargets();
+  cpop.innerHTML = `<div class="cp-h"><span class="dot" style="color:${c.color}"></span><b>${esc(name)}</b><small>${list.length} topics</small></div><div class="cp-list">${list.map(n => `<button role="menuitem" data-go="${n.id}"${n.id === S.current ? ' aria-current="true"' : ''}>${esc(n.name)}</button>`).join('')}</div>`;
+  cpop.hidden = false;
+  // Sit beside the cluster's points (right if there is room, else left) so the list never hides them.
+  const w = cpop.offsetWidth, h = cpop.offsetHeight, bb = { l: Infinity, r: -Infinity, t: Infinity };
+  list.forEach(n => { const p = project(n.v); if (!p.behind) { bb.l = Math.min(bb.l, p.x); bb.r = Math.max(bb.r, p.x); bb.t = Math.min(bb.t, p.y); } });
+  let left = bb.r + 28 + w <= innerWidth - 12 ? bb.r + 28 : bb.l - 28 - w >= 12 ? bb.l - 28 - w : x + 22;
+  if (left + w > innerWidth - 12) left = Math.max(12, x - 22 - w);
+  cpop.style.left = Math.round(left) + 'px';
+  cpop.style.top = Math.round(Math.min(Math.max(70, (isFinite(bb.t) ? bb.t : y) - 20), innerHeight - h - 12)) + 'px';
+}
+function hideClusterPop() {
+  clearTimeout(cpopShow); clearTimeout(cpopHide);
+  if (cpop.hidden && !cpopFor) return;
+  cpop.hidden = true; cpopFor = null;
+  if (S.hoverCluster) { S.hoverCluster = null; computeTargets(); }
+}
+cpop.addEventListener('pointerenter', () => clearTimeout(cpopHide));
+cpop.addEventListener('pointerleave', e => { if (e.relatedTarget !== canvas) hideClusterPop(); if (S.hover) { S.hover = null; computeTargets(); } });
+cpop.addEventListener('pointerover', e => { const b = e.target.closest('[data-go]'); const id = b ? b.dataset.go : null; if (id !== S.hover) { S.hover = id; computeTargets(); } });
+cpop.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (!b) return; hideClusterPop(); S.hover = null; travel(b.dataset.go, 'scene'); });
+canvas.addEventListener('pointerdown', () => hideClusterPop());
+canvas.addEventListener('wheel', () => hideClusterPop(), { passive: true });
 canvas.addEventListener('pointerup', e => {
   activePointers.delete(e.pointerId);
   if (!down) return;
@@ -774,4 +832,4 @@ addEventListener('hashchange', () => { const id = decodeURIComponent(location.ha
 window.__atlas = { S, travel, byId, project, enter };
 // Learning harness (learn.js) gets only this surface; the atlas keeps working if it fails to load.
 const learnAPI = { S, byId, edges, nodes, EV, enter, travel, showRoute, highlightRoute, clearRoute, closePanel, updateOffset, isMobile, esc, clusterColor: id => clusterOf.get(byId.get(id).group).color, edgeById: id => edges.find(e => e.id === id) || null, edgeBetween: (a, b) => adj.get(a)?.find(e => other(e, a) === b) || null };
-import('./learn.js?v=20261012d').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
+import('./learn.js?v=20261012e').then(m => m.init(learnAPI)).catch(err => console.warn('Learning paths unavailable:', err));
