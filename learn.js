@@ -303,29 +303,40 @@ function closeSide() {
   side().hidden = true; document.body.classList.remove('learn-open'); $('#paths-btn')?.setAttribute('aria-expanded', 'false');
   if (view?.kind === 'path') A.clearRoute();
   if (welcomeBack && $('#panel').hidden && !A.S.current) $('#welcome').classList.remove('hide');
-  welcomeBack = false; view = null; if ($('#learn-pill')) $('#learn-pill').hidden = true; A.updateOffset();
+  welcomeBack = false; view = null; if ($('#learn-pill')) $('#learn-pill').hidden = true; renderTabs(); A.updateOffset();
 }
 const sideHead = (eyebrow) => `<div class="panel-head"><span class="eyebrow">${eyebrow}</span><button class="icon-btn" data-l="side-close" aria-label="Close learning paths">${X}</button></div>`;
 function renderSide(focusSel) {
   const el = side();
   if (view.kind === 'browse') {
-    const recId = st.rec?.path;
-    el.innerHTML = sideHead('Learning paths') + `<div class="panel-body"><h2 tabindex="-1" class="l-h">Curated paths</h2>
-    <p class="meta">Each path is a chain of recorded connections. ${st.model ? 'Ordered by fit to your assessment.' : 'Personalize to get a recommendation and a starting step.'}</p>
+    const recId = st.rec?.path || (st.model ? rankPaths(st.model, st.votes || {})[0]?.p.id : null), recLoc = recId && chapterOf(recId);
+    const open = view.binder ?? (chapterOf(st.active)?.c.id || recLoc?.c.id || curricula()[0]?.id);
+    el.innerHTML = sideHead('Learning tracks') + `<div class="panel-body"><h2 tabindex="-1" class="l-h">Curriculum</h2>
+    <p class="meta">Each track is a binder; its chapters are learning paths, ordered from overview to depth. Every step follows a recorded connection.</p>
     ${st.model ? '' : '<div class="l-actions" style="margin:0 0 6px"><button class="btn primary" data-l="personalize">Personalize my path</button></div>'}
-    ${(st.model ? rankPaths(st.model, st.votes || {}).map(r => r.p) : D.paths).map(p => {
-      const pr = st.progress?.[p.id], done = pr?.done.length || 0;
-      return `<button class="l-pathrow" data-path="${esc(p.id)}"><span class="l-pr-top"><b>${esc(p.title)}</b>${p.id === recId ? '<span class="badge c-exact">For you</span>' : ''}</span>
-      <small>${esc(p.level)} · ${p.steps.length} steps${p.estHours ? ` · ~${p.estHours} h` : ''} · ${(p.skills || []).map(s => esc(SKILLS[s] || s)).join(', ')}</small>
-      ${done ? `<span class="l-bar sm"><i style="width:${pct(done / p.steps.length)}%"></i></span>` : ''}</button>`;
-    }).join('') || '<p class="meta">No learning paths are available yet.</p>'}
+    ${recLoc ? `<button class="l-rec" data-path="${esc(recId)}" style="--bc:${binderColor(recLoc.c)}"><span class="l-k">Recommended for you</span><b>${esc(recLoc.c.name)} · Chapter ${recLoc.i + 1}: ${esc(recLoc.c.chapters[recLoc.i][1])}</b><small>${esc(whyText(D.pathById.get(recId)))}</small></button>` : ''}
+    <div class="l-lib">${curricula().map(c => {
+      const isOpen = c.id === open, ps = c.chapters.map(([id]) => D.pathById.get(id));
+      const tot = ps.reduce((n, p) => n + p.steps.length, 0), dn = c.chapters.reduce((n, [id]) => n + pathDone(id), 0), hrs = ps.reduce((n, p) => n + (p.estHours || 0), 0);
+      return `<section class="l-binder${isOpen ? ' open' : ''}" style="--bc:${binderColor(c)}">
+      <button class="l-binder-h" data-binder="${c.id}" aria-expanded="${isOpen}"><span class="l-spine"></span><span class="l-bt"><b>${esc(c.name)}</b><small>${c.chapters.length} chapter${c.chapters.length > 1 ? 's' : ''}${hrs ? ` · ~${hrs} h` : ''}${dn ? ` · ${pct(dn / tot)}% done` : ''}</small></span><span class="l-chev" aria-hidden="true">›</span></button>
+      ${isOpen ? `${c.blurb ? `<p class="l-blurb">${esc(c.blurb)}</p>` : ''}<ol class="l-toc">${c.chapters.map(([id, short], i) => {
+        const p = D.pathById.get(id), d = pathDone(id);
+        return `<li><button class="l-toc-row" data-path="${esc(id)}"><span class="l-cn">${d === p.steps.length ? '✓' : i + 1}</span><span class="l-tc"><b>${esc(short)}${id === recId ? ' <span class="badge c-exact">For you</span>' : ''}</b><small>${esc(p.level)} · ${p.steps.length} steps${p.estHours ? ` · ~${p.estHours} h` : ''}</small>${d ? `<span class="l-bar sm"><i style="width:${pct(d / p.steps.length)}%"></i></span>` : ''}</span></button></li>`;
+      }).join('')}</ol>` : ''}</section>`;
+    }).join('') || '<p class="meta">No learning paths are available yet.</p>'}</div>
     ${st.model ? '<div class="l-actions"><button class="btn" data-l="results">My results</button><button class="btn" data-l="retake">Retake assessment</button><button class="btn" data-l="reset">Reset progress</button></div>' : ''}
     ${D.fixtures ? '<p class="foot-note">Some learning data is still sample content.</p>' : ''}</div>`;
   } else {
     const p = D.pathById.get(view.id), pr = st.progress[view.id] ||= { done: [], at: 0 };
-    const done = new Set(pr.done), a = view.active;
-    el.innerHTML = sideHead(`<button class="l-back" data-l="browse" aria-label="All paths">‹</button>Learning path · ${esc(p.level)}`) + `<div class="panel-body">
-    <h2 tabindex="-1" class="l-h">${esc(p.title)}</h2><p class="meta">${esc(p.audience || p.summary)}</p>
+    const done = new Set(pr.done), a = view.active, loc = chapterOf(p.id), c = loc.c, ci = loc.i, short = c.chapters[ci][1];
+    const prev = c.chapters[ci - 1], next = c.chapters[ci + 1];
+    el.style.setProperty('--bc', binderColor(c));
+    el.innerHTML = sideHead(`<button class="l-back" data-l="browse" aria-label="Table of contents">‹</button>${esc(c.name)}`) + `<div class="panel-body">
+    ${c.chapters.length > 1 ? `<div class="l-tabstrip" role="tablist" aria-label="Chapters">${tabButtons(loc)}</div>` : ''}
+    <div class="l-chap-k">Chapter ${ci + 1} of ${c.chapters.length} · ${esc(p.level)}${p.estHours ? ` · ~${p.estHours} h` : ''}</div>
+    <h2 tabindex="-1" class="l-h">${esc(short)}</h2>${short !== p.title ? `<p class="l-sub">${esc(p.title)}</p>` : ''}
+    <p class="meta">${esc(p.summary)}</p>${p.audience ? `<details class="l-aud"><summary>Who this chapter is for</summary><p>${esc(p.audience)}</p></details>` : ''}
     <div class="l-prog"><span class="l-bar"><i style="width:${pct(done.size / p.steps.length)}%"></i></span><small>${done.size} of ${p.steps.length} done</small></div>
     <ol class="l-steps">${p.steps.map((s, i) => {
       const n = A.byId.get(s.node), e = s.via && A.edgeById(s.via), on = i === a, nm = nodeMeta(s.node);
@@ -337,11 +348,13 @@ function renderSide(focusSel) {
         <p class="l-note">${LEVEL_NAME[nm.level] || ''}${nm.prereqs.length ? ` · builds on ${nm.prereqs.filter(id => A.byId.has(id)).map(id => esc(A.byId.get(id).name)).join(', ')}` : ''}</p>
         <div class="l-actions"><button class="btn" data-l="topic">Open topic window</button><button class="btn" data-l="quiz">Checkpoint · ${checkpointItems(s.node).length} q</button>
         <button class="btn${done.has(s.node) ? '' : ' primary'}" data-l="done" aria-pressed="${done.has(s.node)}">${done.has(s.node) ? 'Done ✓' : 'Mark done'}</button>
-        ${i < p.steps.length - 1 ? '<button class="btn" data-l="nextstep">Next step →</button>' : ''}</div>`}</div>` : ''}</li>`;
+        ${i < p.steps.length - 1 ? '<button class="btn" data-l="nextstep">Next step →</button>' : next ? `<button class="btn" data-path="${esc(next[0])}">Next chapter →</button>` : ''}</div>`}</div>` : ''}</li>`;
     }).join('')}</ol>
+    ${prev || next ? `<nav class="l-chapnav" aria-label="Chapters">${prev ? `<button class="btn" data-path="${esc(prev[0])}" title="${esc(prev[1])}">‹ Ch ${ci}: ${esc(prev[1])}</button>` : '<span></span>'}${next ? `<button class="btn${done.size === p.steps.length ? ' primary' : ''}" data-path="${esc(next[0])}" title="${esc(next[1])}">Ch ${ci + 2}: ${esc(next[1])} ›</button>` : ''}</nav>` : ''}
     <div class="l-actions"><button class="btn" data-l="${st.model ? 'retake' : 'personalize'}">${st.model ? 'Retake assessment' : 'Personalize'}</button><button class="btn" data-l="reset">Reset progress</button></div>
     <p class="foot-note">A path is a chain of recorded connections; evidence labels come from the atlas.</p></div>`;
   }
+  renderTabs();
   const f = focusSel && el.querySelector(focusSel);
   if (f) f.focus();
 }
@@ -407,6 +420,7 @@ function onClick(ev) {
   const t = ev.target.closest('button,[data-path]'); if (!t) return;
   const act = t.dataset.l;
   if (t.dataset.path) { if (ob) closeModal(); return openPath(t.dataset.path); }
+  if (t.dataset.binder) { const id = t.dataset.binder, wasOpen = t.getAttribute('aria-expanded') === 'true'; view.binder = wasOpen ? '' : id; return renderSide(`[data-binder="${id}"]`); }
   if (t.dataset.choice != null) return ob && !side().contains(t) ? answer(+t.dataset.choice) : quizAnswer(+t.dataset.choice);
   if (t.dataset.step != null) {
     const p = D.pathById.get(view.id), i = +t.dataset.step;
@@ -472,29 +486,63 @@ function renderWelcome() {
 }
 
 /* ---------------- learning-track menu (☰) ---------------- */
-const TRACKS = [
-  ['Intro to AI safety', p => p.id.startsWith('intro-ai-safety-')],
-  ['Alignment thesis', p => p.id.startsWith('thesis-')],
-  ['Interpretability → singular learning theory → J-lens', p => ['bridge-interp-to-devinterp', 'how-deep-nets-learn', 'slt-in-practice'].includes(p.id)],
-  ['Dynamics → machine learning → deep learning', p => ['bridge-dynamics-to-deep-learning', 'estimation-to-control', 'sequence-models-rnn-to-ssm'].includes(p.id)],
-  ['Forward-deployed research engineer', p => p.id.startsWith('fde-')],
-  ['Interpretable-ML researcher', p => p.id === 'interpretable-ml-to-thesis' || p.id.startsWith('mechinterp-')],
-  ['Inference & performance engineer', p => p.id.startsWith('inference-')],
+// A track is a binder; its chapters are paths, ordered from the overview chapter to the deeper ones.
+// [pathId, short chapter title]. Paths in no binder land in a final "More paths" binder.
+const CURRICULA = [
+  { id: 'safety', name: 'Intro to AI safety', anchor: 'cs120', blurb: 'For newcomers, following Stanford CS120: what “safe AI” means, from rewards and human preferences to robustness, evaluation and oversight.', chapters: [
+    ['intro-ai-safety-to-thesis', 'Overview: from rewards to oversight'], ['intro-ai-safety-course', 'Data, fairness and preferences'], ['intro-ai-safety-robustness-and-agency', 'Robustness and capable agents']] },
+  { id: 'thesis', name: 'Alignment thesis', anchor: 'alignmentthesis', blurb: 'The atlas’s working thesis about correctable, belief-state systems: the case for it, the case against it, and a capstone.', chapters: [
+    ['thesis-supporting-case', 'The supporting case'], ['thesis-opposing-case', 'The case against'], ['capstone-alignment-belief-state', 'Capstone: correctable belief-state systems']] },
+  { id: 'devinterp', name: 'Interpretability → SLT → J-lens', anchor: 'slt', blurb: 'From mechanistic interpretability to singular learning theory, developmental interpretability, the LLC and the Jacobian lens; then how to measure it.', chapters: [
+    ['bridge-interp-to-devinterp', 'Overview: interpretability to the J-lens'], ['how-deep-nets-learn', 'How deep nets learn'], ['slt-in-practice', 'SLT in practice'], ['bayesian-computation-sampling', 'Sampling the posterior']] },
+  { id: 'dynamics', name: 'Dynamics → deep learning', anchor: 'kalman', blurb: 'For control and signals engineers: from state-space models and Kalman filters to neural networks, then deeper into control, sequence models and physics-informed learning.', chapters: [
+    ['bridge-dynamics-to-deep-learning', 'Overview: state space to deep nets'], ['estimation-to-control', 'Estimation to control'], ['sequence-models-rnn-to-ssm', 'Sequence models'], ['physics-informed-learning', 'Physics-informed learning'], ['capstone-learning-geometry-meets-control', 'Capstone: learning geometry meets control']] },
+  { id: 'fde', name: 'Forward-deployed research engineer', anchor: 'mcp', blurb: 'For engineers shipping LLM agents into high-stakes products: the harness, reliability, regulated verticals and the math underneath.', chapters: [
+    ['fde-harness-to-thesis', 'Overview: from the harness to the thesis'], ['fde-agent-reliability', 'Reliability inside the harness'], ['fde-verticals', 'Regulated verticals'], ['fde-foundations', 'The math under the harness']] },
+  { id: 'interp', name: 'Interpretable-ML researcher', anchor: 'circuits', blurb: 'From inherently interpretable models to mechanistic interpretability: circuits, features and automated circuit discovery.', chapters: [
+    ['interpretable-ml-to-thesis', 'Overview: interpretable ML to the thesis'], ['mechinterp-circuits-causal-tests', 'Circuits and causal tests'], ['mechinterp-features-representations', 'Features and representations'], ['mechinterp-circuit-discovery-scale', 'Circuit discovery at scale']] },
+  { id: 'inference', name: 'Inference & performance engineer', anchor: 'roofline', blurb: 'For people who serve and speed up models: memory-bound decoding, serving systems, compression, and what inference-time compute means for alignment.', chapters: [
+    ['inference-to-thesis', 'Overview: inference to the thesis'], ['inference-serving-systems', 'Serving systems'], ['inference-compression-and-decoding', 'Compression and decoding']] },
+  { id: 'foundations', name: 'ML foundations & electives', anchor: 'ridge', blurb: 'Stand-alone chapters on the core toolkit: regression and kernels, signals, graphical models, forecasting, generative models, model-based RL and capable systems.', chapters: [
+    ['regression-to-gps', 'Regression to Gaussian processes'], ['signals-to-convnets', 'Signals to convolutional networks'], ['graphical-models-to-belief-states', 'Graphical models and belief states'], ['forecasting-evaluation-uncertainty', 'Forecasting and calibration'], ['generative-transport', 'Generative models'], ['model-based-rl-and-safe-action', 'Model-based RL and safe action'], ['capable-systems-llm-to-vla', 'LLMs to VLAs']] },
 ];
-// Reading order within a track; paths not listed fall back to title order.
-const TRACK_ORDER = ['intro-ai-safety-to-thesis', 'intro-ai-safety-course', 'intro-ai-safety-robustness-and-agency', 'thesis-supporting-case', 'thesis-opposing-case', 'bridge-interp-to-devinterp', 'how-deep-nets-learn', 'slt-in-practice', 'bridge-dynamics-to-deep-learning', 'estimation-to-control', 'sequence-models-rnn-to-ssm', 'fde-harness-to-thesis', 'fde-agent-reliability', 'fde-verticals', 'fde-foundations', 'interpretable-ml-to-thesis', 'mechinterp-circuits-causal-tests', 'mechinterp-features-representations', 'mechinterp-circuit-discovery-scale', 'inference-to-thesis', 'inference-serving-systems', 'inference-compression-and-decoding'];
-const trackRank = p => { const i = TRACK_ORDER.indexOf(p.id); return i < 0 ? TRACK_ORDER.length : i; };
-function renderTrackMenu() {
-  const used = new Set(), groups = [];
-  for (const [name, inTrack] of TRACKS) {
-    const ps = D.paths.filter(inTrack).sort((a, b) => trackRank(a) - trackRank(b) || a.title.localeCompare(b.title));
-    ps.forEach(p => used.add(p.id));
-    if (ps.length) groups.push([name, ps]);
-  }
+let CUR = null;
+function curricula() {
+  if (CUR) return CUR;
+  const used = new Set();
+  CUR = CURRICULA.map(c => ({ ...c, chapters: c.chapters.filter(([id]) => D.pathById.has(id) && !used.has(id) && used.add(id)) })).filter(c => c.chapters.length);
   const rest = D.paths.filter(p => !used.has(p.id));
-  if (rest.length) groups.push(['More learning paths', rest]);
-  const html = '<div class="tl-title">Learning tracks</div>' + groups.map(([name, ps]) => `<div role="group" aria-label="${esc(name)}"><div class="tl-h">${esc(name)}</div>${ps.map(p =>
-    `<button class="tl-btn" data-track-path="${esc(p.id)}"><b>${esc(p.title)}</b><small>${p.steps.length} steps · about ${p.estHours} h${st.progress?.[p.id]?.done?.length ? ' · in progress' : ''}</small></button>`).join('')}</div>`).join('');
+  if (rest.length) CUR.push({ id: 'more', name: 'More paths', anchor: null, blurb: '', chapters: rest.map(p => [p.id, p.title.split(/[:·]/)[0].trim()]) });
+  return CUR;
+}
+function chapterOf(id) { if (!id || !D) return null; for (const c of curricula()) { const i = c.chapters.findIndex(([x]) => x === id); if (i >= 0) return { c, i }; } return null; }
+const binderColor = c => c.anchor && A.byId.has(c.anchor) ? A.clusterColor(c.anchor) : 'var(--accent)';
+const pathDone = id => { const p = D.pathById.get(id), d = st.progress?.[id]?.done; return p && d ? p.steps.filter(s => d.includes(s.node)).length : 0; };
+// Chapter divider tabs: popped out of the panel's edge on desktop, a strip at the top of the sheet on phones.
+function tabButtons(loc) {
+  return loc.c.chapters.map(([id, short], i) => {
+    const full = pathDone(id) === D.pathById.get(id).steps.length, on = i === loc.i;
+    return `<button class="l-tab${on ? ' on' : ''}${full ? ' full' : ''}" data-path="${esc(id)}" role="tab" aria-selected="${on}" title="Chapter ${i + 1}: ${esc(short)}"><span class="l-tab-n">${full ? '✓' : i + 1}</span><span class="l-tab-t">${esc(short)}</span></button>`;
+  }).join('');
+}
+function renderTabs() {
+  let nav = $('#learn-tabs');
+  const loc = view?.kind === 'path' && !side().hidden && chapterOf(view.id);
+  if (!nav) {
+    if (!loc) return;
+    nav = document.createElement('nav'); nav.id = 'learn-tabs'; nav.setAttribute('aria-label', 'Chapters in this track');
+    nav.addEventListener('click', ev => ev.detail > 1 || onClick(ev)); document.body.append(nav);
+  }
+  nav.hidden = !loc || loc.c.chapters.length < 2;
+  if (nav.hidden) return;
+  nav.style.setProperty('--bc', binderColor(loc.c));
+  nav.innerHTML = `<button class="l-tab l-tab-toc" data-l="browse" title="Table of contents"><span class="l-tab-n"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 4h10M3 8h10M3 12h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span><span class="l-tab-t">Contents</span></button>${tabButtons(loc)}`;
+}
+function renderTrackMenu() {
+  const html = '<div class="tl-title">Learning tracks</div>' + curricula().map(c => `<div role="group" aria-label="${esc(c.name)}"><div class="tl-h">${esc(c.name)}</div>${c.chapters.map(([id, short], i) => {
+    const p = D.pathById.get(id);
+    return `<button class="tl-btn" data-track-path="${esc(id)}"><b>${i + 1}. ${esc(short)}</b><small>${p.steps.length} steps · about ${p.estHours} h${pathDone(id) ? ' · in progress' : ''}</small></button>`;
+  }).join('')}</div>`).join('');
   document.querySelectorAll('.track-list').forEach(el => { el.innerHTML = html; });
 }
 async function startTrackPath(id) {
